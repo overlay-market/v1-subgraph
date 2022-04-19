@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
-import { OverlayV1Factory as FactoryContract } from '../generated/OverlayV1Factory/OverlayV1Factory'
+import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const FACTORY_ADDRESS = '0x8cCD181113c7Ae40f31D5e8178a98A1A60B55c4C'

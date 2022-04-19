@@ -7,10 +7,26 @@ import {
   ParamUpdated
 } from "../generated/OverlayV1Factory/OverlayV1Factory"
 import { Factory, Market } from "../generated/schema"
+import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO } from "./utils/constants"
 
 export function handleMarketDeployed(event: MarketDeployed): void {
-
   
+  // load factory
+  let factory = Factory.load(FACTORY_ADDRESS)
+  if (factory === null) {
+    factory = new Factory(FACTORY_ADDRESS)
+    factory.marketCount = ZERO_BI
+    factory.txCount = ZERO_BI
+    factory.totalVolumeOVL = ZERO_BD
+    factory.totalFeesOVL = ZERO_BD
+    factory.totalValueLockedOVL = ZERO_BD
+    // @TODO: pass in correct feeRecipient address
+    factory.feeRecipient = ADDRESS_ZERO
+    // @TODO: check if owner field is needed
+    factory.owner = ADDRESS_ZERO
+  }
+
+  factory.marketCount = factory.marketCount.plus(ONE_BI)
 }
 
 
