@@ -30,3 +30,31 @@ dataSources:
         - event: ParamUpdated(indexed address,indexed address,uint8,uint256)
           handler: handleParamUpdated
       file: ./src/mapping.ts
+
+templates:
+  - kind: ethereum
+    name: OverlayV1Market
+    network: kovan
+    source:
+      abi: OverlayV1Market
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Build
+        - Liquidate
+        - Unwind
+      abis:
+        - name: OverlayV1Market
+          file: ./abis/OverlayV1Market.json
+        - name: OverlayV1Factory
+          file: ./abis/OverlayV1Factory.json
+      eventHandlers:
+        - event: Build(indexed address,uint256,uint256,uint256,bool,uint256)
+          handler: handleBuild
+        - event: Liquidate(indexed address,indexed address,uint256,int256,uint256)
+          handler: handleLiquidate
+        - event: Unwind(indexed address,uint256,uint256,int256,uint256)
+          handler: handleUnwind
+      file: ./src/mapping.ts
