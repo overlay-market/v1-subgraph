@@ -16,3 +16,46 @@ type Factory @entity {
   # owner of factory
   owner: ID!
 }
+
+type Market @entity {
+  # market contract address
+  id: ID!
+  # base currency token symbol
+  baseTokenSymbol: String!
+  # quote currency token symbol
+  quoteTokenSymbol: String!
+  # feed contract address
+  feedAddress: String!
+  # factory contract address
+  factoryAddress: String!
+  # creation timestamp
+  createdAtTimestamp: BigInt!
+  # creation block number
+  createdAtBlockNumber: BigInt!
+  # funding constant
+  k: BigInt!
+  # market impact constant
+  lmbda: BigInt!
+  # bid-ask static spread constant
+  delta: BigInt!
+  # cap pay-off
+  capPayoff: BigInt!
+  # notional cap
+  capNotional: BigInt!
+  # leverage cap
+  capLeverage: BigInt!
+  # trailing window
+  circuitBreakingWindow: BigInt!
+  # maintenance margin constant
+  maintenanceMarginFraction: BigInt!
+  # burn rate for maintenance margin constant
+  maintenanceMarginBurnRate: BigInt!
+  # liquidation fees
+  liquidationFeeRate: BigInt!
+  # trading fees on build/unwind
+  tradingFeeRate: BigInt!
+  # minimum collateral to open a position in OVL
+  minCollateral: BigInt!
+  # upper limit for price feed changes since last update
+  priceDriftUpperLimit: BigInt!
+}
