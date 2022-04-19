@@ -120,8 +120,8 @@ export class Market extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("baseTokenSymbol", Value.fromString(""));
-    this.set("quoteTokenSymbol", Value.fromString(""));
+    this.set("baseToken", Value.fromString(""));
+    this.set("quoteToken", Value.fromString(""));
     this.set("feedAddress", Value.fromString(""));
     this.set("factoryAddress", Value.fromString(""));
     this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
@@ -167,22 +167,22 @@ export class Market extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get baseTokenSymbol(): string {
-    let value = this.get("baseTokenSymbol");
+  get baseToken(): string {
+    let value = this.get("baseToken");
     return value!.toString();
   }
 
-  set baseTokenSymbol(value: string) {
-    this.set("baseTokenSymbol", Value.fromString(value));
+  set baseToken(value: string) {
+    this.set("baseToken", Value.fromString(value));
   }
 
-  get quoteTokenSymbol(): string {
-    let value = this.get("quoteTokenSymbol");
+  get quoteToken(): string {
+    let value = this.get("quoteToken");
     return value!.toString();
   }
 
-  set quoteTokenSymbol(value: string) {
-    this.set("quoteTokenSymbol", Value.fromString(value));
+  set quoteToken(value: string) {
+    this.set("quoteToken", Value.fromString(value));
   }
 
   get feedAddress(): string {

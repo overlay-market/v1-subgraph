@@ -20,13 +20,43 @@ export function handleMarketDeployed(event: MarketDeployed): void {
     factory.totalVolumeOVL = ZERO_BD
     factory.totalFeesOVL = ZERO_BD
     factory.totalValueLockedOVL = ZERO_BD
-    // @TODO: pass in correct feeRecipient address
+    // @TO-DO: require event to pass in feeRecipient address
     factory.feeRecipient = ADDRESS_ZERO
-    // @TODO: check if owner field is needed
+    // @TO-DO: check if owner field is needed
     factory.owner = ADDRESS_ZERO
   }
 
   factory.marketCount = factory.marketCount.plus(ONE_BI)
+
+  let market = Market.load(event.params.market.toHexString())
+
+  if (market === null) {
+    market = new Market(event.params.market.toHexString())
+    market.feedAddress = event.params.feed.toHexString()
+    market.factoryAddress = factory.id
+    market.createdAtTimestamp = event.block.timestamp
+    market.createdAtBlockNumber = event.block.number
+    // @TO-DO: pass in token symbol string OR contract address
+    market.baseToken = ADDRESS_ZERO
+    market.quoteToken = ADDRESS_ZERO
+    // @TO-DO: require event to pass back market params
+    market.k = ZERO_BI
+    market.lmbda = ZERO_BI
+    market.delta = ZERO_BI
+    market.capPayoff = ZERO_BI
+    market.capNotional = ZERO_BI
+    market.capLeverage = ZERO_BI
+    market.circuitBreakingWindow = ZERO_BI
+    market.maintenanceMarginFraction = ZERO_BI
+    market.maintenanceMarginBurnRate = ZERO_BI
+    market.liquidationFeeRate = ZERO_BI
+    market.tradingFeeRate = ZERO_BI
+    market.minCollateral = ZERO_BI
+    market.priceDriftUpperLimit = ZERO_BI
+  }
+
+  market.save()
+  factory.save()
 }
 
 
