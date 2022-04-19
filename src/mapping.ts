@@ -7,6 +7,7 @@ import {
   ParamUpdated
 } from "../generated/OverlayV1Factory/OverlayV1Factory"
 import { Factory, Market } from "../generated/schema"
+import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO } from "./utils/constants"
 
 export function handleMarketDeployed(event: MarketDeployed): void {
@@ -28,34 +29,32 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
   factory.marketCount = factory.marketCount.plus(ONE_BI)
 
-  let market = Market.load(event.params.market.toHexString())
-
-  if (market === null) {
-    market = new Market(event.params.market.toHexString())
-    market.feedAddress = event.params.feed.toHexString()
-    market.factoryAddress = factory.id
-    market.createdAtTimestamp = event.block.timestamp
-    market.createdAtBlockNumber = event.block.number
-    // @TO-DO: pass in token symbol string OR contract address
-    market.baseToken = ADDRESS_ZERO
-    market.quoteToken = ADDRESS_ZERO
-    // @TO-DO: require event to pass back market params
-    market.k = ZERO_BI
-    market.lmbda = ZERO_BI
-    market.delta = ZERO_BI
-    market.capPayoff = ZERO_BI
-    market.capNotional = ZERO_BI
-    market.capLeverage = ZERO_BI
-    market.circuitBreakingWindow = ZERO_BI
-    market.maintenanceMarginFraction = ZERO_BI
-    market.maintenanceMarginBurnRate = ZERO_BI
-    market.liquidationFeeRate = ZERO_BI
-    market.tradingFeeRate = ZERO_BI
-    market.minCollateral = ZERO_BI
-    market.priceDriftUpperLimit = ZERO_BI
-  }
+  let market = new Market(event.params.market.toHexString()) as Market
+  market.feedAddress = event.params.feed.toHexString()
+  market.factoryAddress = factory.id
+  market.createdAtTimestamp = event.block.timestamp
+  market.createdAtBlockNumber = event.block.number
+  // @TO-DO: pass in token symbol string OR contract address
+  market.baseToken = ADDRESS_ZERO
+  market.quoteToken = ADDRESS_ZERO
+  // @TO-DO: require event to pass back market params
+  market.k = ZERO_BI
+  market.lmbda = ZERO_BI
+  market.delta = ZERO_BI
+  market.capPayoff = ZERO_BI
+  market.capNotional = ZERO_BI
+  market.capLeverage = ZERO_BI
+  market.circuitBreakingWindow = ZERO_BI
+  market.maintenanceMarginFraction = ZERO_BI
+  market.maintenanceMarginBurnRate = ZERO_BI
+  market.liquidationFeeRate = ZERO_BI
+  market.tradingFeeRate = ZERO_BI
+  market.minCollateral = ZERO_BI
+  market.priceDriftUpperLimit = ZERO_BI
 
   market.save()
+  // create tracked market contract based on template
+  MarketTemplate.create(event.params.market)
   factory.save()
 }
 
