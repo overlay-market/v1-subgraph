@@ -1,6 +1,18 @@
-type ExampleEntity @entity {
+type Factory @entity {
+  # factory address
   id: ID!
-  count: BigInt!
-  user: Bytes! # address
-  recipient: Bytes! # address
+  # amount of markets created
+  marketCount: BigInt!
+  # amount of transactions all time
+  txCount: BigInt!
+  # total volumne all time in OVL
+  totalVolumeOVL: BigDecimal!
+  # total fees generated in OVL
+  totalFeesOVL: BigDecimal!
+  # total value locked in OVL
+  totalValueLockedOVL: BigDecimal!
+  # fee receipient address
+  feeRecipient: ID!
+  # owner of factory
+  owner: ID!
 }
