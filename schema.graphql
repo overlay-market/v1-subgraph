@@ -60,6 +60,8 @@ type Market @entity {
   priceDriftUpperLimit: BigInt!
   # total current oi
   totalOi: BigInt!
+  # positions held in market
+  # positions: [Position!]! @derivedFrom(field: "id")
 }
 
 type Position @entity {
@@ -91,4 +93,16 @@ type Position @entity {
   createdAtTimestamp: BigInt!
   # block number of position creation
   createdAtBlockNumber: BigInt!
+}
+
+type Transaction @entity {
+  # txn hash
+  id: ID!
+  # block txn was included in
+  blockNumber: BigInt!
+  # timestamp txn was confirmed
+  timestamp: BigInt!
+  # gas used during txn execution
+  gasUsed: BigInt!
+  gasPrice: BigInt!
 }

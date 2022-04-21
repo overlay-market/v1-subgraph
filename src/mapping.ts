@@ -70,7 +70,8 @@ export function handleBuild(event: Build): void {
 
   position.owner = event.params.sender.toHexString()
   // @TO-DO: pass in market contract address
-  position.market = ADDRESS_ZERO
+  // check if below passes in market contract address
+  position.market = event.address.toHexString()
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
   position.isLong = event.params.isLong
@@ -93,7 +94,7 @@ export function handleBuild(event: Build): void {
 }
 
 export function handleUnwind(event: Unwind): void {
-
+  let position = Position.load(event.params.positionId.toHexString())
 }
 
 export function handleLiquidate(event: Liquidate): void {}
