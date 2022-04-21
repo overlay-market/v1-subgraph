@@ -104,7 +104,7 @@ type Transaction @entity {
   blockNumber: BigInt!
   # timestamp txn was confirmed
   timestamp: BigInt!
-  # gas used during txn execution
-  gasUsed: BigInt!
+  # gas settings during txn execution
+  gasLimit: BigInt!
   gasPrice: BigInt!
 }

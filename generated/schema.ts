@@ -113,6 +113,15 @@ export class Factory extends Entity {
   set owner(value: string) {
     this.set("owner", Value.fromString(value));
   }
+
+  get markets(): Array<string> {
+    let value = this.get("markets");
+    return value!.toStringArray();
+  }
+
+  set markets(value: Array<string>) {
+    this.set("markets", Value.fromStringArray(value));
+  }
 }
 
 export class Market extends Entity {
@@ -123,7 +132,7 @@ export class Market extends Entity {
     this.set("baseToken", Value.fromString(""));
     this.set("quoteToken", Value.fromString(""));
     this.set("feedAddress", Value.fromString(""));
-    this.set("factoryAddress", Value.fromString(""));
+    this.set("factory", Value.fromString(""));
     this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
     this.set("createdAtBlockNumber", Value.fromBigInt(BigInt.zero()));
     this.set("k", Value.fromBigInt(BigInt.zero()));
@@ -195,13 +204,13 @@ export class Market extends Entity {
     this.set("feedAddress", Value.fromString(value));
   }
 
-  get factoryAddress(): string {
-    let value = this.get("factoryAddress");
+  get factory(): string {
+    let value = this.get("factory");
     return value!.toString();
   }
 
-  set factoryAddress(value: string) {
-    this.set("factoryAddress", Value.fromString(value));
+  set factory(value: string) {
+    this.set("factory", Value.fromString(value));
   }
 
   get createdAtTimestamp(): BigInt {
@@ -529,7 +538,7 @@ export class Transaction extends Entity {
 
     this.set("blockNumber", Value.fromBigInt(BigInt.zero()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
-    this.set("gasUsed", Value.fromBigInt(BigInt.zero()));
+    this.set("gasLimit", Value.fromBigInt(BigInt.zero()));
     this.set("gasPrice", Value.fromBigInt(BigInt.zero()));
   }
 
@@ -577,13 +586,13 @@ export class Transaction extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get gasUsed(): BigInt {
-    let value = this.get("gasUsed");
+  get gasLimit(): BigInt {
+    let value = this.get("gasLimit");
     return value!.toBigInt();
   }
 
-  set gasUsed(value: BigInt) {
-    this.set("gasUsed", Value.fromBigInt(value));
+  set gasLimit(value: BigInt) {
+    this.set("gasLimit", Value.fromBigInt(value));
   }
 
   get gasPrice(): BigInt {
