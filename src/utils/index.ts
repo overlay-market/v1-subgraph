@@ -17,6 +17,7 @@ export function loadTransaction(event: ethereum.Event): Transaction {
 }
 
 // @TO-DO: loadMarket util function to load market based on contract address
+// can we call multiple contract view functions in a single handler function?
 export function loadMarket(event: ethereum.Event): Market | null{
     let marketAddress = event.address.toHexString()
     let market = Market.load(marketAddress)
@@ -24,9 +25,8 @@ export function loadMarket(event: ethereum.Event): Market | null{
     // if market doesn't exist, initialize
     // and query contract storage for params
     if (market === null) {
+      market = new Market(marketAddress)
       let contract = OverlayV1Market.bind(event.address)
-      let marketRiskParamsCall = contract.try_params(integer.ZERO)
-
     }
 
     return market;
