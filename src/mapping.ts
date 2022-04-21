@@ -67,11 +67,13 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
 export function handleBuild(event: Build): void {
   let position = new Position(event.params.positionId.toHexString()) as Position
+  let marketAddress = event.address.toHexString()
+  let market = Market.load(marketAddress)
 
   position.owner = event.params.sender.toHexString()
   // @TO-DO: pass in market contract address
   // check if below passes in market contract address
-  position.market = event.address.toHexString()
+  position.market = market.id
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
   position.isLong = event.params.isLong

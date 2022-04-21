@@ -347,6 +347,15 @@ export class Market extends Entity {
   set totalOi(value: BigInt) {
     this.set("totalOi", Value.fromBigInt(value));
   }
+
+  get positions(): Array<string> {
+    let value = this.get("positions");
+    return value!.toStringArray();
+  }
+
+  set positions(value: Array<string>) {
+    this.set("positions", Value.fromStringArray(value));
+  }
 }
 
 export class Position extends Entity {
