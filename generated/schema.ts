@@ -141,13 +141,15 @@ export class Market extends Entity {
     this.set("capPayoff", Value.fromBigInt(BigInt.zero()));
     this.set("capNotional", Value.fromBigInt(BigInt.zero()));
     this.set("capLeverage", Value.fromBigInt(BigInt.zero()));
-    this.set("circuitBreakingWindow", Value.fromBigInt(BigInt.zero()));
+    this.set("circuitBreakerWindow", Value.fromBigInt(BigInt.zero()));
+    this.set("circuitBreakerMintTarget", Value.fromBigInt(BigInt.zero()));
     this.set("maintenanceMarginFraction", Value.fromBigInt(BigInt.zero()));
     this.set("maintenanceMarginBurnRate", Value.fromBigInt(BigInt.zero()));
     this.set("liquidationFeeRate", Value.fromBigInt(BigInt.zero()));
     this.set("tradingFeeRate", Value.fromBigInt(BigInt.zero()));
     this.set("minCollateral", Value.fromBigInt(BigInt.zero()));
     this.set("priceDriftUpperLimit", Value.fromBigInt(BigInt.zero()));
+    this.set("averageBlockTime", Value.fromBigInt(BigInt.zero()));
     this.set("totalOi", Value.fromBigInt(BigInt.zero()));
   }
 
@@ -285,13 +287,22 @@ export class Market extends Entity {
     this.set("capLeverage", Value.fromBigInt(value));
   }
 
-  get circuitBreakingWindow(): BigInt {
-    let value = this.get("circuitBreakingWindow");
+  get circuitBreakerWindow(): BigInt {
+    let value = this.get("circuitBreakerWindow");
     return value!.toBigInt();
   }
 
-  set circuitBreakingWindow(value: BigInt) {
-    this.set("circuitBreakingWindow", Value.fromBigInt(value));
+  set circuitBreakerWindow(value: BigInt) {
+    this.set("circuitBreakerWindow", Value.fromBigInt(value));
+  }
+
+  get circuitBreakerMintTarget(): BigInt {
+    let value = this.get("circuitBreakerMintTarget");
+    return value!.toBigInt();
+  }
+
+  set circuitBreakerMintTarget(value: BigInt) {
+    this.set("circuitBreakerMintTarget", Value.fromBigInt(value));
   }
 
   get maintenanceMarginFraction(): BigInt {
@@ -346,6 +357,15 @@ export class Market extends Entity {
 
   set priceDriftUpperLimit(value: BigInt) {
     this.set("priceDriftUpperLimit", Value.fromBigInt(value));
+  }
+
+  get averageBlockTime(): BigInt {
+    let value = this.get("averageBlockTime");
+    return value!.toBigInt();
+  }
+
+  set averageBlockTime(value: BigInt) {
+    this.set("averageBlockTime", Value.fromBigInt(value));
   }
 
   get totalOi(): BigInt {

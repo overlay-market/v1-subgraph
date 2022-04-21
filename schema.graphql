@@ -22,10 +22,6 @@ type Factory @entity {
 type Market @entity {
   # market contract address
   id: ID!
-  # base currency token address
-  baseToken: String!
-  # quote currency token address
-  quoteToken: String!
   # feed contract address
   feedAddress: String!
   # factory contract address
@@ -46,8 +42,10 @@ type Market @entity {
   capNotional: BigInt!
   # leverage cap
   capLeverage: BigInt!
-  # trailing window
-  circuitBreakingWindow: BigInt!
+  # trailing window for circuit breaker
+  circuitBreakerWindow: BigInt!
+  # target worst case inflation rate over trailing window
+  circuitBreakerMintTarget: BigInt!
   # maintenance margin constant
   maintenanceMarginFraction: BigInt!
   # burn rate for maintenance margin constant
@@ -60,6 +58,8 @@ type Market @entity {
   minCollateral: BigInt!
   # upper limit for price feed changes since last update
   priceDriftUpperLimit: BigInt!
+  # average block time of the respective chain
+  averageBlockTime: BigInt!
   # total current oi
   totalOi: BigInt!
   # positions held in market

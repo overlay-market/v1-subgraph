@@ -37,12 +37,12 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
   let market = new Market(event.params.market.toHexString()) as Market
   market.feedAddress = event.params.feed.toHexString()
-  market.factoryAddress = factory.id
+  market.factory = factory.id
   market.createdAtTimestamp = event.block.timestamp
   market.createdAtBlockNumber = event.block.number
   // @TO-DO: pass in token symbol string OR contract address
-  market.baseToken = ADDRESS_ZERO
-  market.quoteToken = ADDRESS_ZERO
+  // market.baseToken = ADDRESS_ZERO
+  // market.quoteToken = ADDRESS_ZERO
   // @TO-DO: require event to pass back market params
   market.k = ZERO_BI
   market.lmbda = ZERO_BI
@@ -50,13 +50,15 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.capPayoff = ZERO_BI
   market.capNotional = ZERO_BI
   market.capLeverage = ZERO_BI
-  market.circuitBreakingWindow = ZERO_BI
+  market.circuitBreakerWindow = ZERO_BI
+  market.circuitBreakerMintTarget = ZERO_BI
   market.maintenanceMarginFraction = ZERO_BI
   market.maintenanceMarginBurnRate = ZERO_BI
   market.liquidationFeeRate = ZERO_BI
   market.tradingFeeRate = ZERO_BI
   market.minCollateral = ZERO_BI
   market.priceDriftUpperLimit = ZERO_BI
+  market.averageBlockTime = ZERO_BI
   market.totalOi = ZERO_BI
 
   market.save()
