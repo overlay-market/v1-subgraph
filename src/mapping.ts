@@ -6,6 +6,12 @@ import {
   MarketDeployed,
   ParamUpdated
 } from "../generated/OverlayV1Factory/OverlayV1Factory"
+import {
+  OverlayV1Market,
+  Build,
+  Liquidate,
+  Unwind
+} from "../generated/templates/OverlayV1Market/OverlayV1Market";
 import { Factory, Market } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO } from "./utils/constants"
@@ -113,3 +119,9 @@ export function handleFeedFactoryAdded(event: FeedFactoryAdded): void {}
 
 
 export function handleParamUpdated(event: ParamUpdated): void {}
+
+export function handleBuild(event: Build): void {}
+
+export function handleLiquidate(event: Liquidate): void {}
+
+export function handleUnwind(event: Unwind): void {}
