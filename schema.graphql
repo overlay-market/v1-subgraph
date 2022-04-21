@@ -58,6 +58,8 @@ type Market @entity {
   minCollateral: BigInt!
   # upper limit for price feed changes since last update
   priceDriftUpperLimit: BigInt!
+  # total current oi
+  totalOi: BigInt!
 }
 
 type Position @entity {

@@ -139,6 +139,7 @@ export class Market extends Entity {
     this.set("tradingFeeRate", Value.fromBigInt(BigInt.zero()));
     this.set("minCollateral", Value.fromBigInt(BigInt.zero()));
     this.set("priceDriftUpperLimit", Value.fromBigInt(BigInt.zero()));
+    this.set("totalOi", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -336,6 +337,15 @@ export class Market extends Entity {
 
   set priceDriftUpperLimit(value: BigInt) {
     this.set("priceDriftUpperLimit", Value.fromBigInt(value));
+  }
+
+  get totalOi(): BigInt {
+    let value = this.get("totalOi");
+    return value!.toBigInt();
+  }
+
+  set totalOi(value: BigInt) {
+    this.set("totalOi", Value.fromBigInt(value));
   }
 }
 

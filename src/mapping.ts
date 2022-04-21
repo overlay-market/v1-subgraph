@@ -57,6 +57,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.tradingFeeRate = ZERO_BI
   market.minCollateral = ZERO_BI
   market.priceDriftUpperLimit = ZERO_BI
+  market.totalOi = ZERO_BI
 
   market.save()
   // create tracked market contract based on template
@@ -83,12 +84,20 @@ export function handleBuild(event: Build): void {
   position.createdAtTimestamp = event.block.timestamp
   position.createdAtBlockNumber = event.block.number
 
+  // @TO-DO: pass in market contract to load market
+  // @TO-DO: increment totalOi
+  // let market = Market.load(ADDRESS_ZERO)
+  // market.totalOi = market.totalOi.plus(position.initialOi)
+
   position.save()
+}
+
+export function handleUnwind(event: Unwind): void {
+
 }
 
 export function handleLiquidate(event: Liquidate): void {}
 
-export function handleUnwind(event: Unwind): void {}
 
 export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
   // Entities can be loaded from the store using a string ID; this ID
