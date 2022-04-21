@@ -59,3 +59,32 @@ type Market @entity {
   # upper limit for price feed changes since last update
   priceDriftUpperLimit: BigInt!
 }
+
+type Position @entity {
+  # position id on market contract
+  id: ID!
+  # market contract address related to position
+  market: String!
+  # initial oi when building position
+  initialOi: BigInt!
+  # initial debt when building position
+  initialDebt: BigInt!
+  # long/short
+  isLong: Boolean!
+  # entry price when building position
+  entryPrice: BigInt!
+  # is position liquidated
+  isLiquidated: Boolean!
+  # current oi
+  currentOi: BigInt!
+  # current debt
+  currentDebt: BigInt!
+  # leverage taken on position
+  leverage: BigInt!
+  # total ovl minted/burned from transactions
+  mint: BigInt!
+  # time stamp of position creation
+  createdAtTimestamp: BigInt!
+  # block number of position creation
+  createdAtBlockNumber: BigInt!
+}
