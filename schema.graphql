@@ -63,6 +63,8 @@ type Market @entity {
 type Position @entity {
   # position id on market contract
   id: ID!
+  # owner of position
+  owner: ID!
   # market contract address related to position
   market: String!
   # initial oi when building position

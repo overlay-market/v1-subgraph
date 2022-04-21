@@ -12,7 +12,7 @@ import {
   Liquidate,
   Unwind
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
-import { Factory, Market } from "../generated/schema"
+import { Factory, Market, Position } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO } from "./utils/constants"
 
@@ -64,6 +64,31 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   factory.save()
 }
 
+export function handleBuild(event: Build): void {
+  let position = new Position(event.params.positionId.toHexString()) as Position
+
+  position.owner = event.params.sender.toHexString()
+  // @TO-DO: pass in market contract address
+  position.market = ADDRESS_ZERO
+  position.initialOi = event.params.oi
+  position.initialDebt = event.params.debt
+  position.isLong = event.params.isLong
+  position.entryPrice = event.params.price
+  position.isLiquidated = false
+  position.currentOi = event.params.oi
+  position.currentDebt = event.params.debt
+  // @TO-DO: pass in leverage position built with
+  position.leverage = ZERO_BI
+  position.mint = ZERO_BI
+  position.createdAtTimestamp = event.block.timestamp
+  position.createdAtBlockNumber = event.block.number
+
+  position.save()
+}
+
+export function handleLiquidate(event: Liquidate): void {}
+
+export function handleUnwind(event: Unwind): void {}
 
 export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
   // Entities can be loaded from the store using a string ID; this ID
@@ -119,9 +144,3 @@ export function handleFeedFactoryAdded(event: FeedFactoryAdded): void {}
 
 
 export function handleParamUpdated(event: ParamUpdated): void {}
-
-export function handleBuild(event: Build): void {}
-
-export function handleLiquidate(event: Liquidate): void {}
-
-export function handleUnwind(event: Unwind): void {}

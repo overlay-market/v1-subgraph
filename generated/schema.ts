@@ -338,3 +338,167 @@ export class Market extends Entity {
     this.set("priceDriftUpperLimit", Value.fromBigInt(value));
   }
 }
+
+export class Position extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("owner", Value.fromString(""));
+    this.set("market", Value.fromString(""));
+    this.set("initialOi", Value.fromBigInt(BigInt.zero()));
+    this.set("initialDebt", Value.fromBigInt(BigInt.zero()));
+    this.set("isLong", Value.fromBoolean(false));
+    this.set("entryPrice", Value.fromBigInt(BigInt.zero()));
+    this.set("isLiquidated", Value.fromBoolean(false));
+    this.set("currentOi", Value.fromBigInt(BigInt.zero()));
+    this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
+    this.set("leverage", Value.fromBigInt(BigInt.zero()));
+    this.set("mint", Value.fromBigInt(BigInt.zero()));
+    this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("createdAtBlockNumber", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Position entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Position entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Position", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Position | null {
+    return changetype<Position | null>(store.get("Position", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get owner(): string {
+    let value = this.get("owner");
+    return value!.toString();
+  }
+
+  set owner(value: string) {
+    this.set("owner", Value.fromString(value));
+  }
+
+  get market(): string {
+    let value = this.get("market");
+    return value!.toString();
+  }
+
+  set market(value: string) {
+    this.set("market", Value.fromString(value));
+  }
+
+  get initialOi(): BigInt {
+    let value = this.get("initialOi");
+    return value!.toBigInt();
+  }
+
+  set initialOi(value: BigInt) {
+    this.set("initialOi", Value.fromBigInt(value));
+  }
+
+  get initialDebt(): BigInt {
+    let value = this.get("initialDebt");
+    return value!.toBigInt();
+  }
+
+  set initialDebt(value: BigInt) {
+    this.set("initialDebt", Value.fromBigInt(value));
+  }
+
+  get isLong(): boolean {
+    let value = this.get("isLong");
+    return value!.toBoolean();
+  }
+
+  set isLong(value: boolean) {
+    this.set("isLong", Value.fromBoolean(value));
+  }
+
+  get entryPrice(): BigInt {
+    let value = this.get("entryPrice");
+    return value!.toBigInt();
+  }
+
+  set entryPrice(value: BigInt) {
+    this.set("entryPrice", Value.fromBigInt(value));
+  }
+
+  get isLiquidated(): boolean {
+    let value = this.get("isLiquidated");
+    return value!.toBoolean();
+  }
+
+  set isLiquidated(value: boolean) {
+    this.set("isLiquidated", Value.fromBoolean(value));
+  }
+
+  get currentOi(): BigInt {
+    let value = this.get("currentOi");
+    return value!.toBigInt();
+  }
+
+  set currentOi(value: BigInt) {
+    this.set("currentOi", Value.fromBigInt(value));
+  }
+
+  get currentDebt(): BigInt {
+    let value = this.get("currentDebt");
+    return value!.toBigInt();
+  }
+
+  set currentDebt(value: BigInt) {
+    this.set("currentDebt", Value.fromBigInt(value));
+  }
+
+  get leverage(): BigInt {
+    let value = this.get("leverage");
+    return value!.toBigInt();
+  }
+
+  set leverage(value: BigInt) {
+    this.set("leverage", Value.fromBigInt(value));
+  }
+
+  get mint(): BigInt {
+    let value = this.get("mint");
+    return value!.toBigInt();
+  }
+
+  set mint(value: BigInt) {
+    this.set("mint", Value.fromBigInt(value));
+  }
+
+  get createdAtTimestamp(): BigInt {
+    let value = this.get("createdAtTimestamp");
+    return value!.toBigInt();
+  }
+
+  set createdAtTimestamp(value: BigInt) {
+    this.set("createdAtTimestamp", Value.fromBigInt(value));
+  }
+
+  get createdAtBlockNumber(): BigInt {
+    let value = this.get("createdAtBlockNumber");
+    return value!.toBigInt();
+  }
+
+  set createdAtBlockNumber(value: BigInt) {
+    this.set("createdAtBlockNumber", Value.fromBigInt(value));
+  }
+}
