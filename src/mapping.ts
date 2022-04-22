@@ -70,7 +70,6 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
 export function handleBuild(event: Build): void {
   let position = new Position(event.params.positionId.toHexString()) as Position
-  let marketAddress = event.address.toHexString()
   let market = loadMarket(event)
   
   position.owner = event.params.sender.toHexString()

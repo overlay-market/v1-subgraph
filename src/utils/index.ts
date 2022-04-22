@@ -58,3 +58,8 @@ export function loadMarket(event: ethereum.Event): Market {
 
     return market;
 }
+
+// @TO-DO: create function to load position based on market address and position id
+// export function loadPosition(event: ethereum.Event): Position {
+//   // create new Position if null
+// }
