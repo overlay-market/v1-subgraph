@@ -129,8 +129,6 @@ export class Market extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("baseToken", Value.fromString(""));
-    this.set("quoteToken", Value.fromString(""));
     this.set("feedAddress", Value.fromString(""));
     this.set("factory", Value.fromString(""));
     this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
@@ -177,24 +175,6 @@ export class Market extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
-  }
-
-  get baseToken(): string {
-    let value = this.get("baseToken");
-    return value!.toString();
-  }
-
-  set baseToken(value: string) {
-    this.set("baseToken", Value.fromString(value));
-  }
-
-  get quoteToken(): string {
-    let value = this.get("quoteToken");
-    return value!.toString();
-  }
-
-  set quoteToken(value: string) {
-    this.set("quoteToken", Value.fromString(value));
   }
 
   get feedAddress(): string {
@@ -392,6 +372,7 @@ export class Position extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("positionId", Value.fromBigInt(BigInt.zero()));
     this.set("owner", Value.fromString(""));
     this.set("market", Value.fromString(""));
     this.set("initialOi", Value.fromBigInt(BigInt.zero()));
@@ -431,6 +412,15 @@ export class Position extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get positionId(): BigInt {
+    let value = this.get("positionId");
+    return value!.toBigInt();
+  }
+
+  set positionId(value: BigInt) {
+    this.set("positionId", Value.fromBigInt(value));
   }
 
   get owner(): string {
