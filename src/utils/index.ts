@@ -19,7 +19,7 @@ export function loadTransaction(event: ethereum.Event): Transaction {
 
 // @TO-DO: loadMarket util function to load market based on contract address
 // can we call multiple contract view functions in a single handler function?
-export function loadMarket(event: ethereum.Event): Market | null{
+export function loadMarket(event: ethereum.Event): Market {
     let marketAddress = event.address.toHexString()
     let market = Market.load(marketAddress)
 

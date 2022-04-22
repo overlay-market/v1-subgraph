@@ -15,6 +15,7 @@ import {
 import { Factory, Market, Position } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO } from "./utils/constants"
+import { loadMarket } from "./utils";
 
 export function handleMarketDeployed(event: MarketDeployed): void {
   
@@ -70,12 +71,11 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 export function handleBuild(event: Build): void {
   let position = new Position(event.params.positionId.toHexString()) as Position
   let marketAddress = event.address.toHexString()
-  let market = Market.load(marketAddress)
+  let market = loadMarket(event)
   
   position.owner = event.params.sender.toHexString()
-  // @TO-DO: pass in market contract address
-  // check if below passes in market contract address
-  position.market = event.address.toHexString()
+  // @TO-DO: check if below passes in market contract address
+  position.market = market.id
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
   position.isLong = event.params.isLong
