@@ -60,7 +60,17 @@ export function loadMarket(event: ethereum.Event): Market {
 }
 
 // @TO-DO: create function to load position based on market address and position id
-// export function loadPosition(event: ethereum.Event): Position {
-//   // let position = Position.load()
-//   // create new Position if null
-// }
+export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
+  let marketPositionId = market.id.concat(positionId.toHexString())
+  let position = Position.load(marketPositionId)
+  // create new Position if null
+  if (position === null) {
+    // @TO-DO: bind periphery contract to query current position oi 
+
+    position = new Position(marketPositionId)
+    position.positionId = positionId
+    position.owner = sender.toHexString()
+    position.market = market.id
+
+  }
+}

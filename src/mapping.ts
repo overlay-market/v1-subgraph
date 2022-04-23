@@ -15,7 +15,7 @@ import {
 import { Factory, Market, Position } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO } from "./utils/constants"
-import { loadMarket } from "./utils";
+import { loadMarket, loadPosition } from "./utils";
 
 export function handleMarketDeployed(event: MarketDeployed): void {
   
@@ -100,7 +100,11 @@ export function handleBuild(event: Build): void {
 }
 
 export function handleUnwind(event: Unwind): void {
-  let position = Position.load(event.params.positionId.toHexString())
+  let market = loadMarket(event)
+  let sender = event.params.sender
+  let positionId = event.params.positionId
+
+  let position = loadPosition(event, sender, market, positionId)
 }
 
 export function handleLiquidate(event: Liquidate): void {}
