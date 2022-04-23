@@ -2,7 +2,7 @@ import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { Market, Transaction, Position } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { integer } from '@protofire/subgraph-toolkit'
-import { ZERO_BI } from './constants'
+import { ZERO_BI, positionStateContract } from './constants'
 
 export function loadTransaction(event: ethereum.Event): Transaction {
   let transaction = Transaction.load(event.transaction.hash.toHexString())
@@ -65,12 +65,26 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
   let position = Position.load(marketPositionId)
   // create new Position if null
   if (position === null) {
-    // @TO-DO: bind periphery contract to query current position oi 
-
     position = new Position(marketPositionId)
     position.positionId = positionId
     position.owner = sender.toHexString()
     position.market = market.id
 
+    // @TO-DO: check positionStateContract pulls proper position info
+    position.initialOi = positionStateContract.oi(Address.fromString(market.feedAddress), sender, positionId)
+    position.initialDebt = positionStateContract.debt(Address.fromString(market.feedAddress), sender, positionId)
+    // @TO-DO: pull position isLong value from periphery
+    position.isLong = false
+    position.entryPrice = ZERO_BI
+    position.isLiquidated = false
+    position.currentOi = positionStateContract.oi(Address.fromString(market.feedAddress), sender, positionId)
+    position.currentDebt = positionStateContract.debt(Address.fromString(market.feedAddress), sender, positionId)
+    position.leverage = ZERO_BI
+    position.mint = ZERO_BI
+    
+    position.createdAtTimestamp = event.block.timestamp
+    position.createdAtBlockNumber = event.block.number
   }
+
+  return position
 }

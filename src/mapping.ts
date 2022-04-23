@@ -17,6 +17,7 @@ import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO } from "./utils/constants"
 import { loadMarket, loadPosition } from "./utils";
 
+
 export function handleMarketDeployed(event: MarketDeployed): void {
   
   // load factory
