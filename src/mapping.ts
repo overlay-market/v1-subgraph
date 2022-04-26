@@ -116,7 +116,21 @@ export function handleUnwind(event: Unwind): void {
   position.save()
 }
 
-export function handleLiquidate(event: Liquidate): void {}
+export function handleLiquidate(event: Liquidate): void {
+  let market = loadMarket(event)
+  let sender = event.params.sender
+  let positionId = event.params.positionId
+
+  let position = loadPosition(event, sender, market, positionId)
+
+  // @TO-DO: update position using periphery
+  position.currentOi = positionStateContract.oi(Address.fromString(market.feedAddress), sender, positionId)
+  position.currentDebt = positionStateContract.debt(Address.fromString(market.feedAddress), sender, positionId)
+  position.mint = position.mint.plus(event.params.mint)
+  position.isLiquidated = true
+
+  position.save()
+}
 
 
 export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
