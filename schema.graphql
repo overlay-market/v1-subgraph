@@ -74,7 +74,7 @@ type Position @entity {
   # position id
   positionId: BigInt!
   # owner of position
-  owner: ID!
+  owner: Account!
   # market contract address related to position
   market: Market!
   # initial oi when building position
@@ -116,11 +116,14 @@ type Transaction @entity {
   # derived values
   builds: [Build!]! @derivedFrom(field: "transaction")
   unwinds: [Unwind!]! @derivedFrom(field: "transaction")
+  liquidates: [Liquidate!]! @derivedFrom(field: "transaction")
 }
 
 type Build @entity {
   # caller address
   id: ID!
+  # account performing action
+  owner: Account!
   # position id
   positionId: String!
   # current position oi
@@ -144,6 +147,8 @@ type Build @entity {
 type Unwind @entity {
   # caller address
   id: ID!
+  # account performing action
+  owner: Account!
   # position id
   positionId: String!
   # current position oi
@@ -167,6 +172,8 @@ type Unwind @entity {
 type Liquidate @entity {
   # caller address
   id: ID!
+  # account performing action
+  owner: Account!
   # position id
   positionId: String!
   # current position oi
@@ -185,4 +192,14 @@ type Liquidate @entity {
   timestamp: BigInt!
   # transaction the position was liquidated in
   transaction: Transaction!
+}
+
+type Account @entity {
+  # account address
+  id: ID!
+  # derived account info
+  positions: [Position!]! @derivedFrom(field: "owner")
+  builds: [Build!]! @derivedFrom(field: "owner")
+  unwinds: [Unwind!]! @derivedFrom(field: "owner")
+  liquidates: [Liquidate!]! @derivedFrom(field: "owner")
 }
