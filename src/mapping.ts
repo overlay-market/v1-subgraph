@@ -16,9 +16,7 @@ import {
 import { Factory, Market, Position } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract } from "./utils/constants"
-import { loadMarket, loadPosition, loadFactory } from "./utils";
-
-
+import { loadMarket, loadPosition, loadFactory, loadTransaction } from "./utils";
 
 export function handleMarketDeployed(event: MarketDeployed): void {
   
@@ -98,6 +96,7 @@ export function handleBuild(event: Build): void {
   position.mint = ZERO_BI
   position.createdAtTimestamp = event.block.timestamp
   position.createdAtBlockNumber = event.block.number
+  position.transaction = loadTransaction(event).id
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort

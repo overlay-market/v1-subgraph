@@ -99,6 +99,8 @@ type Position @entity {
   createdAtTimestamp: BigInt!
   # block number of position creation
   createdAtBlockNumber: BigInt!
+  # transaction position was created
+  transaction: Transaction!
 }
 
 type Transaction @entity {
@@ -112,7 +114,7 @@ type Transaction @entity {
   gasLimit: BigInt!
   gasPrice: BigInt!
   # derived values
-  builds: [Build]! @derivedFrom(field: "transaction")
+  builds: [Build!]! @derivedFrom(field: "transaction")
 }
 
 type Build @entity {
@@ -140,6 +142,8 @@ type Build @entity {
   collateral: BigInt!
   # current value of position
   value: BigInt!
+  # timestamp of transaction
+  timestamp: BigInt!
   # transaction the position was built in
   transaction: Transaction!
 }

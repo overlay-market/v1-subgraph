@@ -396,6 +396,7 @@ export class Position extends Entity {
     this.set("mint", Value.fromBigInt(BigInt.zero()));
     this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
     this.set("createdAtBlockNumber", Value.fromBigInt(BigInt.zero()));
+    this.set("transaction", Value.fromString(""));
   }
 
   save(): void {
@@ -549,6 +550,15 @@ export class Position extends Entity {
   set createdAtBlockNumber(value: BigInt) {
     this.set("createdAtBlockNumber", Value.fromBigInt(value));
   }
+
+  get transaction(): string {
+    let value = this.get("transaction");
+    return value!.toString();
+  }
+
+  set transaction(value: string) {
+    this.set("transaction", Value.fromString(value));
+  }
 }
 
 export class Transaction extends Entity {
@@ -623,6 +633,15 @@ export class Transaction extends Entity {
   set gasPrice(value: BigInt) {
     this.set("gasPrice", Value.fromBigInt(value));
   }
+
+  get builds(): Array<string> {
+    let value = this.get("builds");
+    return value!.toStringArray();
+  }
+
+  set builds(value: Array<string>) {
+    this.set("builds", Value.fromStringArray(value));
+  }
 }
 
 export class Build extends Entity {
@@ -641,6 +660,8 @@ export class Build extends Entity {
     this.set("cost", Value.fromBigInt(BigInt.zero()));
     this.set("collateral", Value.fromBigInt(BigInt.zero()));
     this.set("value", Value.fromBigInt(BigInt.zero()));
+    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("transaction", Value.fromString(""));
   }
 
   save(): void {
@@ -766,5 +787,23 @@ export class Build extends Entity {
 
   set value(value: BigInt) {
     this.set("value", Value.fromBigInt(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value!.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get transaction(): string {
+    let value = this.get("transaction");
+    return value!.toString();
+  }
+
+  set transaction(value: string) {
+    this.set("transaction", Value.fromString(value));
   }
 }
