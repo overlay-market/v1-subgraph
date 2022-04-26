@@ -71,7 +71,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 }
 
 export function handleBuild(event: BuildEvent): void {
-  let market = loadMarket(event)
+  let market = loadMarket(event, event.address)
   let sender = event.params.sender
   let feed = Address.fromString(market.feedAddress)
   
@@ -125,7 +125,7 @@ export function handleBuild(event: BuildEvent): void {
 }
 
 export function handleUnwind(event: UnwindEvent): void {
-  let market = loadMarket(event)
+  let market = loadMarket(event, event.address)
   let feed = Address.fromString(market.feedAddress)
   let sender = event.params.sender
   
@@ -163,7 +163,7 @@ export function handleUnwind(event: UnwindEvent): void {
 }
 
 export function handleLiquidate(event: LiquidateEvent): void {
-  let market = loadMarket(event)
+  let market = loadMarket(event, event.address)
   let feed = Address.fromString(market.feedAddress)
   let sender = event.params.sender
 
@@ -213,4 +213,6 @@ export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
 export function handleFeedFactoryAdded(event: FeedFactoryAdded): void {}
 
 
-export function handleParamUpdated(event: ParamUpdated): void {}
+export function handleParamUpdated(event: ParamUpdated): void {
+  let market = loadMarket(event, event.params.market)
+}

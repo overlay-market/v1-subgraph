@@ -38,15 +38,15 @@ export function loadFactory(factoryAddress: string): Factory {
 
 // @TO-DO: loadMarket util function to load market based on contract address
 // can we call multiple contract view functions in a single handler function?
-export function loadMarket(event: ethereum.Event): Market {
-  let marketAddress = event.address.toHexString()
-  let market = Market.load(marketAddress)
+export function loadMarket(event: ethereum.Event, marketAddress: Address): Market {
+  let marketId = marketAddress.toHexString()
+  let market = Market.load(marketId)
 
   // if market doesn't exist, initialize
   // and query contract storage for params
   if (market === null) {
-    market = new Market(marketAddress)
-    let marketContract = OverlayV1Market.bind(event.address)
+    market = new Market(marketId)
+    let marketContract = OverlayV1Market.bind(marketAddress)
 
     // @TO-DO: create feed entity
     market.feedAddress = marketContract.feed().toHexString()
