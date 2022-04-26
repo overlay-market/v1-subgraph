@@ -2,6 +2,7 @@
 import { BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1PositionState as PositionStateContract } from '../../generated/OverlayV1Factory/OverlayV1PositionState'
+import { OverlayV1OIState as OIStateContract } from '../../generated/OverlayV1Factory/OverlayV1OIState'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const FACTORY_ADDRESS = '0x8cCD181113c7Ae40f31D5e8178a98A1A60B55c4C'
@@ -15,3 +16,4 @@ export let BI_18 = BigInt.fromI32(18)
 
 export let factoryContract = FactoryContract.bind(Address.fromString(FACTORY_ADDRESS))
 export let positionStateContract = PositionStateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
+export let oiStateContract = OIStateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
