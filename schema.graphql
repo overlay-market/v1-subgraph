@@ -163,3 +163,26 @@ type Unwind @entity {
   # transaction the position was unwinded in
   transaction: Transaction!
 }
+
+type Liquidate @entity {
+  # caller address
+  id: ID!
+  # position id
+  positionId: String!
+  # current position oi
+  currentOi: BigInt!
+  # current position debt
+  currentDebt: BigInt!
+  # position side taken
+  isLong: Boolean!
+  # price at time of liquidate
+  price: BigInt!
+  # current collateral backing position
+  collateral: BigInt!
+  # current value of position
+  value: BigInt!
+  # timestamp of transaction
+  timestamp: BigInt!
+  # transaction the position was liquidated in
+  transaction: Transaction!
+}

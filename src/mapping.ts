@@ -13,7 +13,7 @@ import {
   Liquidate as LiquidateEvent,
   Unwind as UnwindEvent
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
-import { Factory, Market, Position, Build, Unwind } from "../generated/schema"
+import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract, RiskParams } from "./utils/constants"
 import { loadMarket, loadPosition, loadFactory, loadTransaction } from "./utils";
@@ -61,8 +61,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.minCollateral = marketContract.params(integer.fromNumber(12))
   market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
-  market.oiLong = ZERO_BI
-  market.oiShort = ZERO_BI
+  market.oiLong = oiStateContract.ois(marketContract.feed()).value0
+  market.oiShort = oiStateContract.ois(marketContract.feed()).value1
 
   market.save()
   // create tracked market contract based on template
@@ -72,8 +72,9 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
 export function handleBuild(event: BuildEvent): void {
   let market = loadMarket(event)
-  let feed = Address.fromString(market.feedAddress)
   let sender = event.params.sender
+  let feed = Address.fromString(market.feedAddress)
+  
   let positionId = event.params.positionId
   let id = market.id.concat('-').concat(positionId.toHexString())
   let position = new Position(id) as Position
@@ -105,7 +106,8 @@ export function handleBuild(event: BuildEvent): void {
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
-  let build = new Build(sender.toHexString())
+  let build = new Build(sender.toHexString()) as Build
+
   build.positionId = positionId.toHexString()
   build.currentOi = event.params.oi
   build.currentDebt = event.params.debt
@@ -126,8 +128,8 @@ export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event)
   let feed = Address.fromString(market.feedAddress)
   let sender = event.params.sender
+  
   let positionId = event.params.positionId
-
   let position = loadPosition(event, sender, market, positionId)
 
   // @TO-DO: update position using periphery
@@ -143,7 +145,8 @@ export function handleUnwind(event: UnwindEvent): void {
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
-  let unwind = new Unwind(sender.toHexString())
+  let unwind = new Unwind(sender.toHexString()) as Unwind
+
   unwind.positionId = positionId.toHexString()
   unwind.currentOi = positionStateContract.oi(feed, sender, positionId)
   unwind.currentDebt = positionStateContract.debt(feed, sender, positionId)
@@ -161,9 +164,10 @@ export function handleUnwind(event: UnwindEvent): void {
 
 export function handleLiquidate(event: LiquidateEvent): void {
   let market = loadMarket(event)
+  let feed = Address.fromString(market.feedAddress)
   let sender = event.params.sender
-  let positionId = event.params.positionId
 
+  let positionId = event.params.positionId
   let position = loadPosition(event, sender, market, positionId)
 
   // @TO-DO: update position using periphery
@@ -178,8 +182,23 @@ export function handleLiquidate(event: LiquidateEvent): void {
   market.oiLong = oiStateContract.ois(marketContract.feed()).value0
   market.oiShort = oiStateContract.ois(marketContract.feed()).value1
 
+  // @TO-DO: events to be grouped with position
+  let transaction = loadTransaction(event)
+  let liquidate = new Liquidate(sender.toHexString()) as Liquidate
+
+  liquidate.positionId = positionId.toHexString()
+  liquidate.currentOi = positionStateContract.oi(feed, sender, positionId)
+  liquidate.currentDebt = positionStateContract.debt(feed, sender, positionId)
+  liquidate.isLong = positionStateContract.position(feed, sender, positionId).isLong
+  liquidate.price = event.params.price
+  liquidate.collateral = positionStateContract.collateral(feed, sender, positionId)
+  liquidate.value = positionStateContract.value(feed, sender, positionId)
+  liquidate.timestamp = transaction.timestamp
+  liquidate.transaction = transaction.id
+
   position.save()
   market.save()
+  liquidate.save()
 }
 
 
