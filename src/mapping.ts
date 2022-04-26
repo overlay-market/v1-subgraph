@@ -118,7 +118,15 @@ export function handleUnwind(event: Unwind): void {
   position.currentDebt = positionStateContract.debt(Address.fromString(market.feedAddress), sender, positionId)
   position.mint = position.mint.plus(event.params.mint)
 
+  // @TO-DO: pass in market contract to load market
+  // @TO-DO: update oiLong, oiShort
+  let marketContract = OverlayV1Market.bind(Address.fromString(market.id))
+  let {value0: oiLong, value1: oiShort} = oiStateContract.ois(marketContract.feed())
+  market.oiLong = oiLong
+  market.oiShort = oiShort
+
   position.save()
+  market.save()
 }
 
 export function handleLiquidate(event: Liquidate): void {
@@ -134,7 +142,15 @@ export function handleLiquidate(event: Liquidate): void {
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
 
+  // @TO-DO: pass in market contract to load market
+  // @TO-DO: update oiLong, oiShort
+  let marketContract = OverlayV1Market.bind(Address.fromString(market.id))
+  let {value0: oiLong, value1: oiShort} = oiStateContract.ois(marketContract.feed())
+  market.oiLong = oiLong
+  market.oiShort = oiShort
+
   position.save()
+  market.save()
 }
 
 
