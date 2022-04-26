@@ -159,7 +159,11 @@ export function handleLiquidate(event: Liquidate): void {
 
 
 export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
-  
+  let factoryAddress = event.address.toHexString()
+  let factory = loadFactory(factoryAddress)
+  factory.feeRecipient = event.params.recipient.toHexString()
+
+  factory.save()
 }
 
 export function handleFeedFactoryAdded(event: FeedFactoryAdded): void {}
