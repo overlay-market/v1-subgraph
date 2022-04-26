@@ -14,7 +14,7 @@ import {
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 import { Factory, Market, Position } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract } from "./utils/constants"
+import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract } from "./utils/constants"
 import { loadMarket, loadPosition } from "./utils";
 
 
@@ -95,11 +95,15 @@ export function handleBuild(event: Build): void {
   position.createdAtBlockNumber = event.block.number
 
   // @TO-DO: pass in market contract to load market
-  // @TO-DO: increment totalOi
-  // let market = Market.load(ADDRESS_ZERO)
-  // market.totalOi = market.totalOi.plus(position.initialOi)
+  // @TO-DO: update oiLong, oiShort
+  let marketContract = OverlayV1Market.bind(Address.fromString(market.id))
+  let {value0: oiLong, value1: oiShort} = oiStateContract.ois(marketContract.feed())
+  market.oiLong = oiLong
+  market.oiShort = oiShort
+
 
   position.save()
+  market.save()
 }
 
 export function handleUnwind(event: Unwind): void {
