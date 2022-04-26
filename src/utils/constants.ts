@@ -18,27 +18,27 @@ export let factoryContract = FactoryContract.bind(Address.fromString(FACTORY_ADD
 export let positionStateContract = PositionStateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
 export let oiStateContract = OIStateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
 
-export enum RiskParams {
-  k = 0,
-  lmbda = 1,
-  delta = 2,
-  capPayoff = 3,
-  capNotional = 4,
-  capLeverage = 5,
-  circuitBreakerWindow = 6,
-  circuitBreakerMintTarget = 7,
-  maintenanceMarginFraction = 8,
-  maintenanceMarginBurnRate = 9,
-  liquidationFeeRate = 10,
-  tradingFeeRate = 11,
-  minCollateral = 12,
-  priceDriftUpperLimit = 13,
-  averageBlockTime = 14
+export enum RISK_PARAMS {
+  k = 'k',
+  lmbda = 'lmbda',
+  delta = 'delta',
+  capPayoff = 'capPayoff',
+  capNotional = 'capNotional',
+  capLeverage = 'capLeverage',
+  circuitBreakerWindow = 'circuitBreakerWindow',
+  circuitBreakerMintTarget = 'circuitBreakerMintTarget',
+  maintenanceMarginFraction = 'maintenanceMarginFraction',
+  maintenanceMarginBurnRate = 'maintenanceMarginBurnRate',
+  liquidationFeeRate = 'liquidationFeeRate',
+  tradingFeeRate = 'tradingFeeRate',
+  minCollateral = 'minCollateral',
+  priceDriftUpperLimit = 'priceDriftUpperLimit',
+  averageBlockTime = 'averageBlockTime'
 }
 
-export type RiskParamsMap = { [index: number]: string }
+export type numberToStringMap = { [index: number]: string }
 
-export const RISK_PARAMS: RiskParamsMap = {
+export const RiskParamsToString: numberToStringMap = {
   0: 'k',
   1: 'lmbda',
   2: 'delta',

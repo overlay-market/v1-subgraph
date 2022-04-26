@@ -15,7 +15,7 @@ import {
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract, RiskParams } from "./utils/constants"
+import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract, RISK_PARAMS, RiskParamsToString } from "./utils/constants"
 import { loadMarket, loadPosition, loadFactory, loadTransaction } from "./utils";
 
 export function handleMarketDeployed(event: MarketDeployed): void {
@@ -215,5 +215,23 @@ export function handleFeedFactoryAdded(event: FeedFactoryAdded): void {}
 
 export function handleParamUpdated(event: ParamUpdated): void {
   let market = loadMarket(event, event.params.market)
-  
+  let riskParamToUpdate = RiskParamsToString[event.params.name]
+  let updateValue = event.params.value
+
+  if (riskParamToUpdate === RISK_PARAMS.k) market.k = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.lmbda) market.lmbda = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.delta) market.delta = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.capPayoff) market.capPayoff = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.capLeverage) market.capLeverage = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.circuitBreakerWindow) market.circuitBreakerWindow = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.circuitBreakerMintTarget) market.circuitBreakerMintTarget = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.maintenanceMarginFraction) market.maintenanceMarginFraction = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.maintenanceMarginBurnRate) market.maintenanceMarginBurnRate = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.liquidationFeeRate) market.liquidationFeeRate = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.tradingFeeRate) market.tradingFeeRate = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.minCollateral) market.minCollateral = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.priceDriftUpperLimit) market.priceDriftUpperLimit = updateValue
+  if (riskParamToUpdate === RISK_PARAMS.averageBlockTime) market.averageBlockTime = updateValue
+
+  market.save()
 }
