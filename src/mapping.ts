@@ -1,4 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
+import { integer } from "@protofire/subgraph-toolkit";
 import {
   OverlayV1Factory,
   FeeRecipientUpdated,
@@ -31,14 +32,17 @@ export function handleMarketDeployed(event: MarketDeployed): void {
     factory.totalFeesOVL = ZERO_BD
     factory.totalValueLockedOVL = ZERO_BD
     // @TO-DO: require event to pass in feeRecipient address
-    factory.feeRecipient = ADDRESS_ZERO
+    factory.feeRecipient = factoryContract.feeRecipient().toHexString()
     // @TO-DO: check if owner field is needed
     factory.owner = ADDRESS_ZERO
   }
 
   factory.marketCount = factory.marketCount.plus(ONE_BI)
 
-  let market = new Market(event.params.market.toHexString()) as Market
+  let marketAddress = event.params.market.toHexString()
+  let marketContract = OverlayV1Market.bind(event.params.market)
+  let market = new Market(marketAddress) as Market
+
   market.feedAddress = event.params.feed.toHexString()
   market.factory = factory.id
   market.createdAtTimestamp = event.block.timestamp
@@ -47,21 +51,21 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   // market.baseToken = ADDRESS_ZERO
   // market.quoteToken = ADDRESS_ZERO
   // @TO-DO: require event to pass back market params
-  market.k = ZERO_BI
-  market.lmbda = ZERO_BI
-  market.delta = ZERO_BI
-  market.capPayoff = ZERO_BI
-  market.capNotional = ZERO_BI
-  market.capLeverage = ZERO_BI
-  market.circuitBreakerWindow = ZERO_BI
-  market.circuitBreakerMintTarget = ZERO_BI
-  market.maintenanceMarginFraction = ZERO_BI
-  market.maintenanceMarginBurnRate = ZERO_BI
-  market.liquidationFeeRate = ZERO_BI
-  market.tradingFeeRate = ZERO_BI
-  market.minCollateral = ZERO_BI
-  market.priceDriftUpperLimit = ZERO_BI
-  market.averageBlockTime = ZERO_BI
+  market.k = marketContract.params(integer.fromNumber(0))
+  market.lmbda = marketContract.params(integer.fromNumber(1))
+  market.delta = marketContract.params(integer.fromNumber(2))
+  market.capPayoff = marketContract.params(integer.fromNumber(3))
+  market.capNotional = marketContract.params(integer.fromNumber(4))
+  market.capLeverage = marketContract.params(integer.fromNumber(5))
+  market.circuitBreakerWindow = marketContract.params(integer.fromNumber(6))
+  market.circuitBreakerMintTarget = marketContract.params(integer.fromNumber(7))
+  market.maintenanceMarginFraction = marketContract.params(integer.fromNumber(8))
+  market.maintenanceMarginBurnRate = marketContract.params(integer.fromNumber(9))
+  market.liquidationFeeRate = marketContract.params(integer.fromNumber(10))
+  market.tradingFeeRate = marketContract.params(integer.fromNumber(11))
+  market.minCollateral = marketContract.params(integer.fromNumber(12))
+  market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
+  market.averageBlockTime = marketContract.params(integer.fromNumber(14))
   market.oiLong = ZERO_BI
   market.oiShort = ZERO_BI
 
@@ -155,53 +159,7 @@ export function handleLiquidate(event: Liquidate): void {
 
 
 export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  // let entity = ExampleEntity.load(event.transaction.from.toHex())
 
-  // // Entities only exist after they have been saved to the store;
-  // // `null` checks allow to create entities on demand
-  // if (!entity) {
-  //   entity = new ExampleEntity(event.transaction.from.toHex())
-
-  //   // Entity fields can be set using simple assignments
-  //   entity.count = BigInt.fromI32(0)
-  // }
-
-  // // BigInt and BigDecimal math are supported
-  // entity.count = entity.count + BigInt.fromI32(1)
-
-  // // Entity fields can be set based on event parameters
-  // entity.user = event.params.user
-  // entity.recipient = event.params.recipient
-
-  // // Entities can be written to the store with `.save()`
-  // entity.save()
-
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
-
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.PARAMS_MAX(...)
-  // - contract.PARAMS_MIN(...)
-  // - contract.deployMarket(...)
-  // - contract.deployer(...)
-  // - contract.feeRecipient(...)
-  // - contract.getMarket(...)
-  // - contract.isFeedFactory(...)
-  // - contract.isMarket(...)
-  // - contract.ovl(...)
 }
 
 export function handleFeedFactoryAdded(event: FeedFactoryAdded): void {}
