@@ -651,6 +651,15 @@ export class Transaction extends Entity {
   set unwinds(value: Array<string>) {
     this.set("unwinds", Value.fromStringArray(value));
   }
+
+  get liquidates(): Array<string> {
+    let value = this.get("liquidates");
+    return value!.toStringArray();
+  }
+
+  set liquidates(value: Array<string>) {
+    this.set("liquidates", Value.fromStringArray(value));
+  }
 }
 
 export class Build extends Entity {
@@ -658,6 +667,7 @@ export class Build extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("owner", Value.fromString(""));
     this.set("positionId", Value.fromString(""));
     this.set("currentOi", Value.fromBigInt(BigInt.zero()));
     this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
@@ -693,6 +703,15 @@ export class Build extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get owner(): string {
+    let value = this.get("owner");
+    return value!.toString();
+  }
+
+  set owner(value: string) {
+    this.set("owner", Value.fromString(value));
   }
 
   get positionId(): string {
@@ -782,6 +801,7 @@ export class Unwind extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("owner", Value.fromString(""));
     this.set("positionId", Value.fromString(""));
     this.set("currentOi", Value.fromBigInt(BigInt.zero()));
     this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
@@ -817,6 +837,15 @@ export class Unwind extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get owner(): string {
+    let value = this.get("owner");
+    return value!.toString();
+  }
+
+  set owner(value: string) {
+    this.set("owner", Value.fromString(value));
   }
 
   get positionId(): string {
@@ -906,6 +935,7 @@ export class Liquidate extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("owner", Value.fromString(""));
     this.set("positionId", Value.fromString(""));
     this.set("currentOi", Value.fromBigInt(BigInt.zero()));
     this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
@@ -941,6 +971,15 @@ export class Liquidate extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get owner(): string {
+    let value = this.get("owner");
+    return value!.toString();
+  }
+
+  set owner(value: string) {
+    this.set("owner", Value.fromString(value));
   }
 
   get positionId(): string {
@@ -1022,5 +1061,74 @@ export class Liquidate extends Entity {
 
   set transaction(value: string) {
     this.set("transaction", Value.fromString(value));
+  }
+}
+
+export class Account extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Account entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Account entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Account", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Account | null {
+    return changetype<Account | null>(store.get("Account", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get positions(): Array<string> {
+    let value = this.get("positions");
+    return value!.toStringArray();
+  }
+
+  set positions(value: Array<string>) {
+    this.set("positions", Value.fromStringArray(value));
+  }
+
+  get builds(): Array<string> {
+    let value = this.get("builds");
+    return value!.toStringArray();
+  }
+
+  set builds(value: Array<string>) {
+    this.set("builds", Value.fromStringArray(value));
+  }
+
+  get unwinds(): Array<string> {
+    let value = this.get("unwinds");
+    return value!.toStringArray();
+  }
+
+  set unwinds(value: Array<string>) {
+    this.set("unwinds", Value.fromStringArray(value));
+  }
+
+  get liquidates(): Array<string> {
+    let value = this.get("liquidates");
+    return value!.toStringArray();
+  }
+
+  set liquidates(value: Array<string>) {
+    this.set("liquidates", Value.fromStringArray(value));
   }
 }

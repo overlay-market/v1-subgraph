@@ -1,5 +1,5 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
-import { Market, Transaction, Position, Factory } from '../../generated/schema'
+import { Market, Transaction, Position, Factory, Account } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { integer } from '@protofire/subgraph-toolkit'
 import { ZERO_BI, ZERO_BD, positionStateContract, oiStateContract, factoryContract } from './constants'
@@ -107,4 +107,15 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
   }
 
   return position
+}
+
+export function loadAccount(accountAddress: Address): Account {
+  let accountId = accountAddress.toHexString()
+  let account = Account.load(accountId)
+
+  if (account === null) {
+    account = new Account(accountId)
+  }
+
+  return account
 }
