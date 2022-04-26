@@ -63,6 +63,7 @@ export function loadMarket(event: ethereum.Event): Market {
 // @TO-DO: create function to load position based on market address and position id
 export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
   let marketPositionId = market.id.concat(positionId.toHexString())
+  let feedAddress = Address.fromString(market.feedAddress)
   let position = Position.load(marketPositionId)
   // create new Position if null
   if (position === null) {
@@ -72,14 +73,14 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.market = market.id
 
     // @TO-DO: check positionStateContract pulls proper position info
-    position.initialOi = positionStateContract.oi(Address.fromString(market.feedAddress), sender, positionId)
-    position.initialDebt = positionStateContract.debt(Address.fromString(market.feedAddress), sender, positionId)
+    position.initialOi = positionStateContract.oi(feedAddress, sender, positionId)
+    position.initialDebt = positionStateContract.debt(feedAddress, sender, positionId)
     // @TO-DO: pull position isLong value from periphery
-    position.isLong = false
+    position.isLong = positionStateContract.position(feedAddress, sender, positionId).isLong
     position.entryPrice = ZERO_BI
     position.isLiquidated = false
-    position.currentOi = positionStateContract.oi(Address.fromString(market.feedAddress), sender, positionId)
-    position.currentDebt = positionStateContract.debt(Address.fromString(market.feedAddress), sender, positionId)
+    position.currentOi = positionStateContract.oi(feedAddress, sender, positionId)
+    position.currentDebt = positionStateContract.debt(feedAddress, sender, positionId)
     position.leverage = ZERO_BI
     position.mint = ZERO_BI
     
