@@ -149,9 +149,7 @@ export class Market extends Entity {
     this.set("priceDriftUpperLimit", Value.fromBigInt(BigInt.zero()));
     this.set("averageBlockTime", Value.fromBigInt(BigInt.zero()));
     this.set("oiLong", Value.fromBigInt(BigInt.zero()));
-    this.set("oiLongShares", Value.fromBigInt(BigInt.zero()));
     this.set("oiShort", Value.fromBigInt(BigInt.zero()));
-    this.set("oiShortShares", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -360,15 +358,6 @@ export class Market extends Entity {
     this.set("oiLong", Value.fromBigInt(value));
   }
 
-  get oiLongShares(): BigInt {
-    let value = this.get("oiLongShares");
-    return value!.toBigInt();
-  }
-
-  set oiLongShares(value: BigInt) {
-    this.set("oiLongShares", Value.fromBigInt(value));
-  }
-
   get oiShort(): BigInt {
     let value = this.get("oiShort");
     return value!.toBigInt();
@@ -376,15 +365,6 @@ export class Market extends Entity {
 
   set oiShort(value: BigInt) {
     this.set("oiShort", Value.fromBigInt(value));
-  }
-
-  get oiShortShares(): BigInt {
-    let value = this.get("oiShortShares");
-    return value!.toBigInt();
-  }
-
-  set oiShortShares(value: BigInt) {
-    this.set("oiShortShares", Value.fromBigInt(value));
   }
 
   get positions(): Array<string> {
@@ -642,5 +622,149 @@ export class Transaction extends Entity {
 
   set gasPrice(value: BigInt) {
     this.set("gasPrice", Value.fromBigInt(value));
+  }
+}
+
+export class Build extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("positionId", Value.fromString(""));
+    this.set("currentOi", Value.fromBigInt(BigInt.zero()));
+    this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
+    this.set("isLong", Value.fromBoolean(false));
+    this.set("bid", Value.fromBigInt(BigInt.zero()));
+    this.set("ask", Value.fromBigInt(BigInt.zero()));
+    this.set("mid", Value.fromBigInt(BigInt.zero()));
+    this.set("leverage", Value.fromBigInt(BigInt.zero()));
+    this.set("cost", Value.fromBigInt(BigInt.zero()));
+    this.set("collateral", Value.fromBigInt(BigInt.zero()));
+    this.set("value", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Build entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Build entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Build", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Build | null {
+    return changetype<Build | null>(store.get("Build", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get positionId(): string {
+    let value = this.get("positionId");
+    return value!.toString();
+  }
+
+  set positionId(value: string) {
+    this.set("positionId", Value.fromString(value));
+  }
+
+  get currentOi(): BigInt {
+    let value = this.get("currentOi");
+    return value!.toBigInt();
+  }
+
+  set currentOi(value: BigInt) {
+    this.set("currentOi", Value.fromBigInt(value));
+  }
+
+  get currentDebt(): BigInt {
+    let value = this.get("currentDebt");
+    return value!.toBigInt();
+  }
+
+  set currentDebt(value: BigInt) {
+    this.set("currentDebt", Value.fromBigInt(value));
+  }
+
+  get isLong(): boolean {
+    let value = this.get("isLong");
+    return value!.toBoolean();
+  }
+
+  set isLong(value: boolean) {
+    this.set("isLong", Value.fromBoolean(value));
+  }
+
+  get bid(): BigInt {
+    let value = this.get("bid");
+    return value!.toBigInt();
+  }
+
+  set bid(value: BigInt) {
+    this.set("bid", Value.fromBigInt(value));
+  }
+
+  get ask(): BigInt {
+    let value = this.get("ask");
+    return value!.toBigInt();
+  }
+
+  set ask(value: BigInt) {
+    this.set("ask", Value.fromBigInt(value));
+  }
+
+  get mid(): BigInt {
+    let value = this.get("mid");
+    return value!.toBigInt();
+  }
+
+  set mid(value: BigInt) {
+    this.set("mid", Value.fromBigInt(value));
+  }
+
+  get leverage(): BigInt {
+    let value = this.get("leverage");
+    return value!.toBigInt();
+  }
+
+  set leverage(value: BigInt) {
+    this.set("leverage", Value.fromBigInt(value));
+  }
+
+  get cost(): BigInt {
+    let value = this.get("cost");
+    return value!.toBigInt();
+  }
+
+  set cost(value: BigInt) {
+    this.set("cost", Value.fromBigInt(value));
+  }
+
+  get collateral(): BigInt {
+    let value = this.get("collateral");
+    return value!.toBigInt();
+  }
+
+  set collateral(value: BigInt) {
+    this.set("collateral", Value.fromBigInt(value));
+  }
+
+  get value(): BigInt {
+    let value = this.get("value");
+    return value!.toBigInt();
+  }
+
+  set value(value: BigInt) {
+    this.set("value", Value.fromBigInt(value));
   }
 }
