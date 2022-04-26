@@ -72,17 +72,17 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
 export function handleBuild(event: BuildEvent): void {
   let market = loadMarket(event, event.address)
-  let sender = loadAccount(event.params.sender)
+  let caller = loadAccount(event.params.sender)
 
   let marketAddress = Address.fromString(market.id)
   let feedAddress = Address.fromString(market.feedAddress)
-  let senderAddress = Address.fromString(sender.id)
+  let callerAddress = Address.fromString(caller.id)
 
   let positionId = event.params.positionId
   let id = market.id.concat('-').concat(positionId.toHexString())
   let position = new Position(id) as Position
   
-  position.owner = sender.id
+  position.owner = caller.id
   position.positionId = positionId
   // @TO-DO: check if below passes in market contract address
   position.market = market.id
@@ -109,15 +109,16 @@ export function handleBuild(event: BuildEvent): void {
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
-  let build = new Build(sender.id) as Build
+  let build = new Build(caller.id) as Build
 
   build.positionId = positionId.toHexString()
+  build.owner = caller.id
   build.currentOi = event.params.oi
   build.currentDebt = event.params.debt
   build.isLong = event.params.isLong
   build.price = event.params.price
-  build.collateral = positionStateContract.collateral(feedAddress, senderAddress, positionId)
-  build.value = positionStateContract.value(feedAddress, senderAddress, positionId)
+  build.collateral = positionStateContract.collateral(feedAddress, callerAddress, positionId)
+  build.value = positionStateContract.value(feedAddress, callerAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
 
@@ -125,44 +126,50 @@ export function handleBuild(event: BuildEvent): void {
   position.save()
   market.save()
   build.save()
+  caller.save()
 }
 
 export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event, event.address)
-  let feed = Address.fromString(market.feedAddress)
-  let sender = event.params.sender
+  let caller = loadAccount(event.params.sender)
+  
+  let marketAddress = Address.fromString(market.id)
+  let feedAddress = Address.fromString(market.feedAddress)
+  let callerAddress = Address.fromString(caller.id)
   
   let positionId = event.params.positionId
-  let position = loadPosition(event, sender, market, positionId)
+  let position = loadPosition(event, callerAddress, market, positionId)
 
   // @TO-DO: update position using periphery
-  position.currentOi = positionStateContract.oi(feed, sender, positionId)
-  position.currentDebt = positionStateContract.debt(feed, sender, positionId)
+  position.currentOi = positionStateContract.oi(feedAddress, callerAddress, positionId)
+  position.currentDebt = positionStateContract.debt(feedAddress, callerAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  let marketContract = OverlayV1Market.bind(Address.fromString(market.id))
+  let marketContract = OverlayV1Market.bind(marketAddress)
   market.oiLong = oiStateContract.ois(marketContract.feed()).value0
   market.oiShort = oiStateContract.ois(marketContract.feed()).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
-  let unwind = new Unwind(sender.toHexString()) as Unwind
+  let unwind = new Unwind(caller.id) as Unwind
 
   unwind.positionId = positionId.toHexString()
-  unwind.currentOi = positionStateContract.oi(feed, sender, positionId)
-  unwind.currentDebt = positionStateContract.debt(feed, sender, positionId)
-  unwind.isLong = positionStateContract.position(feed, sender, positionId).isLong
+  unwind.owner = caller.id
+  unwind.currentOi = positionStateContract.oi(feedAddress, callerAddress, positionId)
+  unwind.currentDebt = positionStateContract.debt(feedAddress, callerAddress, positionId)
+  unwind.isLong = positionStateContract.position(feedAddress, callerAddress, positionId).isLong
   unwind.price = event.params.price
-  unwind.collateral = positionStateContract.collateral(feed, sender, positionId)
-  unwind.value = positionStateContract.value(feed, sender, positionId)
+  unwind.collateral = positionStateContract.collateral(feedAddress, callerAddress, positionId)
+  unwind.value = positionStateContract.value(feedAddress, callerAddress, positionId)
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
 
   position.save()
   market.save()
   unwind.save()
+  caller.save()
 }
 
 export function handleLiquidate(event: LiquidateEvent): void {
