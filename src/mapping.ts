@@ -102,9 +102,8 @@ export function handleBuild(event: BuildEvent): void {
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
   let marketContract = OverlayV1Market.bind(Address.fromString(market.id))
-  let {value0: oiLong, value1: oiShort} = oiStateContract.ois(marketContract.feed())
-  market.oiLong = oiLong
-  market.oiShort = oiShort
+  market.oiLong = oiStateContract.ois(marketContract.feed()).value0
+  market.oiShort = oiStateContract.ois(marketContract.feed()).value1
 
 
   // @TO-DO: events to be grouped with position
@@ -142,9 +141,8 @@ export function handleUnwind(event: UnwindEvent): void {
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
   let marketContract = OverlayV1Market.bind(Address.fromString(market.id))
-  let {value0: oiLong, value1: oiShort} = oiStateContract.ois(marketContract.feed())
-  market.oiLong = oiLong
-  market.oiShort = oiShort
+  market.oiLong = oiStateContract.ois(marketContract.feed()).value0
+  market.oiShort = oiStateContract.ois(marketContract.feed()).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
@@ -180,9 +178,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
   let marketContract = OverlayV1Market.bind(Address.fromString(market.id))
-  let {value0: oiLong, value1: oiShort} = oiStateContract.ois(marketContract.feed())
-  market.oiLong = oiLong
-  market.oiShort = oiShort
+  market.oiLong = oiStateContract.ois(marketContract.feed()).value0
+  market.oiShort = oiStateContract.ois(marketContract.feed()).value1
 
   position.save()
   market.save()
