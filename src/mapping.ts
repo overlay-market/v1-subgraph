@@ -13,7 +13,7 @@ import {
   Liquidate as LiquidateEvent,
   Unwind as UnwindEvent
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
-import { Factory, Market, Position, Build } from "../generated/schema"
+import { Factory, Market, Position, Build, Unwind } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract } from "./utils/constants"
 import { loadMarket, loadPosition, loadFactory, loadTransaction } from "./utils";
@@ -125,6 +125,7 @@ export function handleBuild(event: BuildEvent): void {
 
 export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event)
+  let marketFeedAddress = Address.fromString(market.feedAddress)
   let sender = event.params.sender
   let positionId = event.params.positionId
 
@@ -141,6 +142,17 @@ export function handleUnwind(event: UnwindEvent): void {
   let {value0: oiLong, value1: oiShort} = oiStateContract.ois(marketContract.feed())
   market.oiLong = oiLong
   market.oiShort = oiShort
+
+  // @TO-DO: events to be grouped with position
+  let transaction = loadTransaction(event)
+  let unwind = new Unwind(sender.toHexString())
+  unwind.positionId = positionId.toHexString()
+  unwind.currentOi = positionStateContract.oi(marketFeedAddress, sender, positionId)
+  unwind.currentDebt = positionStateContract.debt(marketFeedAddress, sender, positionId)
+  unwind.isLong = positionStateContract.position(marketFeedAddress, sender, positionId).isLong
+  unwind.price = event.params.price
+  unwind.timestamp = transaction.timestamp
+  unwind.transaction = transaction.id
 
   position.save()
   market.save()

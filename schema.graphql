@@ -115,6 +115,7 @@ type Transaction @entity {
   gasPrice: BigInt!
   # derived values
   builds: [Build!]! @derivedFrom(field: "transaction")
+  unwinds: [Unwind!]! @derivedFrom(field: "transaction")
 }
 
 type Build @entity {
@@ -137,5 +138,28 @@ type Build @entity {
   # timestamp of transaction
   timestamp: BigInt!
   # transaction the position was built in
+  transaction: Transaction!
+}
+
+type Unwind @entity {
+  # caller address
+  id: ID!
+  # position id
+  positionId: String!
+  # current position oi
+  currentOi: BigInt!
+  # current position debt
+  currentDebt: BigInt!
+  # position side taken
+  isLong: Boolean!
+  # price at time of unwind
+  price: BigInt!
+  # # current collateral backing position
+  # collateral: BigInt!
+  # # current value of position
+  # value: BigInt!
+  # timestamp of transaction
+  timestamp: BigInt!
+  # transaction the position was unwinded in
   transaction: Transaction!
 }

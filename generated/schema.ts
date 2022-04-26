@@ -642,6 +642,15 @@ export class Transaction extends Entity {
   set builds(value: Array<string>) {
     this.set("builds", Value.fromStringArray(value));
   }
+
+  get unwinds(): Array<string> {
+    let value = this.get("unwinds");
+    return value!.toStringArray();
+  }
+
+  set unwinds(value: Array<string>) {
+    this.set("unwinds", Value.fromStringArray(value));
+  }
 }
 
 export class Build extends Entity {
@@ -654,10 +663,6 @@ export class Build extends Entity {
     this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
     this.set("isLong", Value.fromBoolean(false));
     this.set("price", Value.fromBigInt(BigInt.zero()));
-    this.set("leverage", Value.fromBigInt(BigInt.zero()));
-    this.set("cost", Value.fromBigInt(BigInt.zero()));
-    this.set("collateral", Value.fromBigInt(BigInt.zero()));
-    this.set("value", Value.fromBigInt(BigInt.zero()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
     this.set("transaction", Value.fromString(""));
   }
@@ -733,40 +738,108 @@ export class Build extends Entity {
     this.set("price", Value.fromBigInt(value));
   }
 
-  get leverage(): BigInt {
-    let value = this.get("leverage");
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
     return value!.toBigInt();
   }
 
-  set leverage(value: BigInt) {
-    this.set("leverage", Value.fromBigInt(value));
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get cost(): BigInt {
-    let value = this.get("cost");
+  get transaction(): string {
+    let value = this.get("transaction");
+    return value!.toString();
+  }
+
+  set transaction(value: string) {
+    this.set("transaction", Value.fromString(value));
+  }
+}
+
+export class Unwind extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("positionId", Value.fromString(""));
+    this.set("currentOi", Value.fromBigInt(BigInt.zero()));
+    this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
+    this.set("isLong", Value.fromBoolean(false));
+    this.set("price", Value.fromBigInt(BigInt.zero()));
+    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("transaction", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Unwind entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Unwind entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Unwind", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Unwind | null {
+    return changetype<Unwind | null>(store.get("Unwind", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get positionId(): string {
+    let value = this.get("positionId");
+    return value!.toString();
+  }
+
+  set positionId(value: string) {
+    this.set("positionId", Value.fromString(value));
+  }
+
+  get currentOi(): BigInt {
+    let value = this.get("currentOi");
     return value!.toBigInt();
   }
 
-  set cost(value: BigInt) {
-    this.set("cost", Value.fromBigInt(value));
+  set currentOi(value: BigInt) {
+    this.set("currentOi", Value.fromBigInt(value));
   }
 
-  get collateral(): BigInt {
-    let value = this.get("collateral");
+  get currentDebt(): BigInt {
+    let value = this.get("currentDebt");
     return value!.toBigInt();
   }
 
-  set collateral(value: BigInt) {
-    this.set("collateral", Value.fromBigInt(value));
+  set currentDebt(value: BigInt) {
+    this.set("currentDebt", Value.fromBigInt(value));
   }
 
-  get value(): BigInt {
-    let value = this.get("value");
+  get isLong(): boolean {
+    let value = this.get("isLong");
+    return value!.toBoolean();
+  }
+
+  set isLong(value: boolean) {
+    this.set("isLong", Value.fromBoolean(value));
+  }
+
+  get price(): BigInt {
+    let value = this.get("price");
     return value!.toBigInt();
   }
 
-  set value(value: BigInt) {
-    this.set("value", Value.fromBigInt(value));
+  set price(value: BigInt) {
+    this.set("price", Value.fromBigInt(value));
   }
 
   get timestamp(): BigInt {
