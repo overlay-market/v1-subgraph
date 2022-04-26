@@ -34,7 +34,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
     // @TO-DO: require event to pass in feeRecipient address
     factory.feeRecipient = factoryContract.feeRecipient().toHexString()
     // @TO-DO: check if owner field is needed
-    factory.owner = ADDRESS_ZERO
+    factory.owner = factoryContract.deployer().toHexString()
   }
 
   factory.marketCount = factory.marketCount.plus(ONE_BI)
@@ -50,7 +50,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   // @TO-DO: pass in token symbol string OR contract address
   // market.baseToken = ADDRESS_ZERO
   // market.quoteToken = ADDRESS_ZERO
-  // @TO-DO: require event to pass back market params
+  // @TO-DO: pass back market params
   market.k = marketContract.params(integer.fromNumber(0))
   market.lmbda = marketContract.params(integer.fromNumber(1))
   market.delta = marketContract.params(integer.fromNumber(2))
@@ -77,11 +77,12 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
 export function handleBuild(event: Build): void {
   let market = loadMarket(event)
+  let sender = event.params.sender
   let positionId = event.params.positionId
   let id = market.id.concat('-').concat(positionId.toHexString())
   let position = new Position(id) as Position
   
-  position.owner = event.params.sender.toHexString()
+  position.owner = sender.toHexString()
   position.positionId = positionId
   // @TO-DO: check if below passes in market contract address
   position.market = market.id
