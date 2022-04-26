@@ -653,9 +653,7 @@ export class Build extends Entity {
     this.set("currentOi", Value.fromBigInt(BigInt.zero()));
     this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
     this.set("isLong", Value.fromBoolean(false));
-    this.set("bid", Value.fromBigInt(BigInt.zero()));
-    this.set("ask", Value.fromBigInt(BigInt.zero()));
-    this.set("mid", Value.fromBigInt(BigInt.zero()));
+    this.set("price", Value.fromBigInt(BigInt.zero()));
     this.set("leverage", Value.fromBigInt(BigInt.zero()));
     this.set("cost", Value.fromBigInt(BigInt.zero()));
     this.set("collateral", Value.fromBigInt(BigInt.zero()));
@@ -726,31 +724,13 @@ export class Build extends Entity {
     this.set("isLong", Value.fromBoolean(value));
   }
 
-  get bid(): BigInt {
-    let value = this.get("bid");
+  get price(): BigInt {
+    let value = this.get("price");
     return value!.toBigInt();
   }
 
-  set bid(value: BigInt) {
-    this.set("bid", Value.fromBigInt(value));
-  }
-
-  get ask(): BigInt {
-    let value = this.get("ask");
-    return value!.toBigInt();
-  }
-
-  set ask(value: BigInt) {
-    this.set("ask", Value.fromBigInt(value));
-  }
-
-  get mid(): BigInt {
-    let value = this.get("mid");
-    return value!.toBigInt();
-  }
-
-  set mid(value: BigInt) {
-    this.set("mid", Value.fromBigInt(value));
+  set price(value: BigInt) {
+    this.set("price", Value.fromBigInt(value));
   }
 
   get leverage(): BigInt {

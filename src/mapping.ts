@@ -9,11 +9,11 @@ import {
 } from "../generated/OverlayV1Factory/OverlayV1Factory"
 import {
   OverlayV1Market,
-  Build,
-  Liquidate,
-  Unwind
+  Build as BuildEvent,
+  Liquidate as LiquidateEvent,
+  Unwind as UnwindEvent
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
-import { Factory, Market, Position } from "../generated/schema"
+import { Factory, Market, Position, Build } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract } from "./utils/constants"
 import { loadMarket, loadPosition, loadFactory, loadTransaction } from "./utils";
@@ -73,7 +73,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   factory.save()
 }
 
-export function handleBuild(event: Build): void {
+export function handleBuild(event: BuildEvent): void {
   let market = loadMarket(event)
   let sender = event.params.sender
   let positionId = event.params.positionId
@@ -106,11 +106,24 @@ export function handleBuild(event: Build): void {
   market.oiShort = oiShort
 
 
+  // @TO-DO: events to be grouped with position
+  let transaction = loadTransaction(event)
+  let build = new Build(sender.toHexString())
+  build.positionId = positionId.toHexString()
+  build.currentOi = event.params.oi
+  build.currentDebt = event.params.debt
+  build.isLong = event.params.isLong
+  build.price = event.params.price
+  build.timestamp = transaction.timestamp
+  build.transaction = transaction.id
+
+
   position.save()
   market.save()
+  build.save()
 }
 
-export function handleUnwind(event: Unwind): void {
+export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event)
   let sender = event.params.sender
   let positionId = event.params.positionId
@@ -133,7 +146,7 @@ export function handleUnwind(event: Unwind): void {
   market.save()
 }
 
-export function handleLiquidate(event: Liquidate): void {
+export function handleLiquidate(event: LiquidateEvent): void {
   let market = loadMarket(event)
   let sender = event.params.sender
   let positionId = event.params.positionId
