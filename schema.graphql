@@ -131,10 +131,10 @@ type Build @entity {
   isLong: Boolean!
   # price at time of build
   price: BigInt!
-  # # current collateral backing position
-  # collateral: BigInt!
-  # # current value of position
-  # value: BigInt!
+  # current collateral backing position
+  collateral: BigInt!
+  # current value of position
+  value: BigInt!
   # timestamp of transaction
   timestamp: BigInt!
   # transaction the position was built in
@@ -154,10 +154,10 @@ type Unwind @entity {
   isLong: Boolean!
   # price at time of unwind
   price: BigInt!
-  # # current collateral backing position
-  # collateral: BigInt!
-  # # current value of position
-  # value: BigInt!
+  # current collateral backing position
+  collateral: BigInt!
+  # current value of position
+  value: BigInt!
   # timestamp of transaction
   timestamp: BigInt!
   # transaction the position was unwinded in

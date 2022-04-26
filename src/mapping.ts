@@ -75,6 +75,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
 export function handleBuild(event: BuildEvent): void {
   let market = loadMarket(event)
+  let feed = Address.fromString(market.feedAddress)
   let sender = event.params.sender
   let positionId = event.params.positionId
   let id = market.id.concat('-').concat(positionId.toHexString())
@@ -114,6 +115,8 @@ export function handleBuild(event: BuildEvent): void {
   build.currentDebt = event.params.debt
   build.isLong = event.params.isLong
   build.price = event.params.price
+  build.collateral = positionStateContract.collateral(feed, sender, positionId)
+  build.value = positionStateContract.value(feed, sender, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
 
@@ -125,15 +128,15 @@ export function handleBuild(event: BuildEvent): void {
 
 export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event)
-  let marketFeedAddress = Address.fromString(market.feedAddress)
+  let feed = Address.fromString(market.feedAddress)
   let sender = event.params.sender
   let positionId = event.params.positionId
 
   let position = loadPosition(event, sender, market, positionId)
 
   // @TO-DO: update position using periphery
-  position.currentOi = positionStateContract.oi(Address.fromString(market.feedAddress), sender, positionId)
-  position.currentDebt = positionStateContract.debt(Address.fromString(market.feedAddress), sender, positionId)
+  position.currentOi = positionStateContract.oi(feed, sender, positionId)
+  position.currentDebt = positionStateContract.debt(feed, sender, positionId)
   position.mint = position.mint.plus(event.params.mint)
 
   // @TO-DO: pass in market contract to load market
@@ -147,15 +150,18 @@ export function handleUnwind(event: UnwindEvent): void {
   let transaction = loadTransaction(event)
   let unwind = new Unwind(sender.toHexString())
   unwind.positionId = positionId.toHexString()
-  unwind.currentOi = positionStateContract.oi(marketFeedAddress, sender, positionId)
-  unwind.currentDebt = positionStateContract.debt(marketFeedAddress, sender, positionId)
-  unwind.isLong = positionStateContract.position(marketFeedAddress, sender, positionId).isLong
+  unwind.currentOi = positionStateContract.oi(feed, sender, positionId)
+  unwind.currentDebt = positionStateContract.debt(feed, sender, positionId)
+  unwind.isLong = positionStateContract.position(feed, sender, positionId).isLong
   unwind.price = event.params.price
+  unwind.collateral = positionStateContract.collateral(feed, sender, positionId)
+  unwind.value = positionStateContract.value(feed, sender, positionId)
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
 
   position.save()
   market.save()
+  unwind.save()
 }
 
 export function handleLiquidate(event: LiquidateEvent): void {
