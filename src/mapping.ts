@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts"
+import { Address, BigInt } from "@graphprotocol/graph-ts"
 import {
   OverlayV1Factory,
   FeeRecipientUpdated,
@@ -14,8 +14,9 @@ import {
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 import { Factory, Market, Position } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO } from "./utils/constants"
+import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract } from "./utils/constants"
 import { loadMarket, loadPosition } from "./utils";
+
 
 
 export function handleMarketDeployed(event: MarketDeployed): void {
@@ -106,6 +107,13 @@ export function handleUnwind(event: Unwind): void {
   let positionId = event.params.positionId
 
   let position = loadPosition(event, sender, market, positionId)
+
+  // @TO-DO: update position using periphery
+  position.currentOi = positionStateContract.oi(Address.fromString(market.feedAddress), sender, positionId)
+  position.currentDebt = positionStateContract.debt(Address.fromString(market.feedAddress), sender, positionId)
+  position.mint = position.mint.plus(event.params.mint)
+
+  position.save()
 }
 
 export function handleLiquidate(event: Liquidate): void {}
