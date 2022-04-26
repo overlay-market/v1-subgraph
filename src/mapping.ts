@@ -16,7 +16,7 @@ import {
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract, RISK_PARAMS, RiskParamsToString } from "./utils/constants"
-import { loadMarket, loadPosition, loadFactory, loadTransaction } from "./utils";
+import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
 
 export function handleMarketDeployed(event: MarketDeployed): void {
   
@@ -72,14 +72,17 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
 export function handleBuild(event: BuildEvent): void {
   let market = loadMarket(event, event.address)
-  let sender = event.params.sender
-  let feed = Address.fromString(market.feedAddress)
-  
+  let sender = loadAccount(event.params.sender)
+
+  let marketAddress = Address.fromString(market.id)
+  let feedAddress = Address.fromString(market.feedAddress)
+  let senderAddress = Address.fromString(sender.id)
+
   let positionId = event.params.positionId
   let id = market.id.concat('-').concat(positionId.toHexString())
   let position = new Position(id) as Position
   
-  position.owner = sender.toHexString()
+  position.owner = sender.id
   position.positionId = positionId
   // @TO-DO: check if below passes in market contract address
   position.market = market.id
@@ -99,22 +102,22 @@ export function handleBuild(event: BuildEvent): void {
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  let marketContract = OverlayV1Market.bind(Address.fromString(market.id))
+  let marketContract = OverlayV1Market.bind(marketAddress)
   market.oiLong = oiStateContract.ois(marketContract.feed()).value0
   market.oiShort = oiStateContract.ois(marketContract.feed()).value1
 
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
-  let build = new Build(sender.toHexString()) as Build
+  let build = new Build(sender.id) as Build
 
   build.positionId = positionId.toHexString()
   build.currentOi = event.params.oi
   build.currentDebt = event.params.debt
   build.isLong = event.params.isLong
   build.price = event.params.price
-  build.collateral = positionStateContract.collateral(feed, sender, positionId)
-  build.value = positionStateContract.value(feed, sender, positionId)
+  build.collateral = positionStateContract.collateral(feedAddress, senderAddress, positionId)
+  build.value = positionStateContract.value(feedAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
 
