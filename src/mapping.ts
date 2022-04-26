@@ -62,7 +62,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.minCollateral = ZERO_BI
   market.priceDriftUpperLimit = ZERO_BI
   market.averageBlockTime = ZERO_BI
-  market.totalOi = ZERO_BI
+  market.oiLong = ZERO_BI
+  market.oiShort = ZERO_BI
 
   market.save()
   // create tracked market contract based on template

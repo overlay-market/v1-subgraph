@@ -2,7 +2,7 @@ import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { Market, Transaction, Position } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { integer } from '@protofire/subgraph-toolkit'
-import { ZERO_BI, positionStateContract } from './constants'
+import { ZERO_BI, positionStateContract, oiStateContract } from './constants'
 
 export function loadTransaction(event: ethereum.Event): Transaction {
   let transaction = Transaction.load(event.transaction.hash.toHexString())
@@ -51,9 +51,10 @@ export function loadMarket(event: ethereum.Event): Market {
     market.minCollateral = marketContract.params(integer.fromNumber(12))
     market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
-    // @TO-DO: calculate current total oi based on 
-    // oiLong(), oiShort(), oiLongShares(), oiShortShares()
-    market.totalOi = ZERO_BI
+    // @TO-DO: calculate current total oi based on oiState
+    let {value0: oiLong, value1: oiShort} = oiStateContract.ois(marketContract.feed())
+    market.oiLong = oiLong
+    market.oiShort = oiShort
   }
 
   return market;

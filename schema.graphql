@@ -62,10 +62,8 @@ type Market @entity {
   averageBlockTime: BigInt!
   # total current oi long
   oiLong: BigInt!
-  oiLongShares: BigInt!
   # total current oi short
   oiShort: BigInt!
-  oiShortShares: BigInt!
   # positions held in market
   positions: [Position!]! @derivedFrom(field: "market")
 }
