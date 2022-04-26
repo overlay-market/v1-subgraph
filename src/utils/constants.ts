@@ -35,3 +35,23 @@ export enum RiskParams {
   priceDriftUpperLimit = 13,
   averageBlockTime = 14
 }
+
+export type RiskParamsMap = { [index: number]: string }
+
+export const RISK_PARAMS: RiskParamsMap = {
+  0: 'k',
+  1: 'lmbda',
+  2: 'delta',
+  3: 'capPayoff',
+  4: 'capNotional',
+  5: 'capLeverage',
+  6: 'circuitBreakerWindow',
+  7: 'circuitBreakerMintTarget',
+  8: 'maintenanceMarginFraction',
+  9: 'maintenanceMarginBurnRate',
+  10: 'liquidationFeeRate',
+  11: 'tradingFeeRate',
+  12: 'minCollateral',
+  13: 'priceDriftUpperLimit',
+  14: 'averageBlockTime'
+}

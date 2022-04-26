@@ -215,4 +215,5 @@ export function handleFeedFactoryAdded(event: FeedFactoryAdded): void {}
 
 export function handleParamUpdated(event: ParamUpdated): void {
   let market = loadMarket(event, event.params.market)
+  
 }
