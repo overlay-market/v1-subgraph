@@ -1,8 +1,8 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
-import { Market, Transaction, Position } from '../../generated/schema'
+import { Market, Transaction, Position, Factory } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { integer } from '@protofire/subgraph-toolkit'
-import { ZERO_BI, positionStateContract, oiStateContract } from './constants'
+import { ZERO_BI, ZERO_BD, positionStateContract, oiStateContract, factoryContract } from './constants'
 
 export function loadTransaction(event: ethereum.Event): Transaction {
   let transaction = Transaction.load(event.transaction.hash.toHexString())
@@ -18,7 +18,23 @@ export function loadTransaction(event: ethereum.Event): Transaction {
 }
 
 // @TO-DO: loadFactory to load factory based on address
-// export function loadFactory(event: ethereum.Event): Factory {}
+export function loadFactory(factoryAddress: string): Factory {
+  let factory = Factory.load(factoryAddress)
+  if (factory === null) {
+    factory = new Factory(factoryAddress)
+    factory.marketCount = ZERO_BI
+    factory.txCount = ZERO_BI
+    factory.totalVolumeOVL = ZERO_BD
+    factory.totalFeesOVL = ZERO_BD
+    factory.totalValueLockedOVL = ZERO_BD
+    // @TO-DO: require event to pass in feeRecipient address
+    factory.feeRecipient = factoryContract.feeRecipient().toHexString()
+    // @TO-DO: check if owner field is needed
+    factory.owner = factoryContract.deployer().toHexString()
+  }
+
+  return factory
+}
 
 // @TO-DO: loadMarket util function to load market based on contract address
 // can we call multiple contract view functions in a single handler function?

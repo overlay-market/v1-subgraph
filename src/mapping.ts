@@ -16,7 +16,7 @@ import {
 import { Factory, Market, Position } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract } from "./utils/constants"
-import { loadMarket, loadPosition } from "./utils";
+import { loadMarket, loadPosition, loadFactory } from "./utils";
 
 
 
@@ -159,7 +159,7 @@ export function handleLiquidate(event: Liquidate): void {
 
 
 export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
-
+  
 }
 
 export function handleFeedFactoryAdded(event: FeedFactoryAdded): void {}
