@@ -15,7 +15,7 @@ import {
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 import { Factory, Market, Position, Build, Unwind } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract } from "./utils/constants"
+import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract, RiskParams } from "./utils/constants"
 import { loadMarket, loadPosition, loadFactory, loadTransaction } from "./utils";
 
 export function handleMarketDeployed(event: MarketDeployed): void {
@@ -45,9 +45,6 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.factory = factory.id
   market.createdAtTimestamp = event.block.timestamp
   market.createdAtBlockNumber = event.block.number
-  // @TO-DO: pass in token symbol string OR contract address
-  // market.baseToken = ADDRESS_ZERO
-  // market.quoteToken = ADDRESS_ZERO
   // @TO-DO: pass back market params
   market.k = marketContract.params(integer.fromNumber(0))
   market.lmbda = marketContract.params(integer.fromNumber(1))

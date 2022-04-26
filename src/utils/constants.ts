@@ -17,3 +17,21 @@ export let BI_18 = BigInt.fromI32(18)
 export let factoryContract = FactoryContract.bind(Address.fromString(FACTORY_ADDRESS))
 export let positionStateContract = PositionStateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
 export let oiStateContract = OIStateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
+
+export enum RiskParams {
+  k = 0,
+  lmbda = 1,
+  delta = 2,
+  capPayoff = 3,
+  capNotional = 4,
+  capLeverage = 5,
+  circuitBreakerWindow = 6,
+  circuitBreakerMintTarget = 7,
+  maintenanceMarginFraction = 8,
+  maintenanceMarginBurnRate = 9,
+  liquidationFeeRate = 10,
+  tradingFeeRate = 11,
+  minCollateral = 12,
+  priceDriftUpperLimit = 13,
+  averageBlockTime = 14
+}
