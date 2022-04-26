@@ -28,6 +28,8 @@ dataSources:
           file: ./abis/ERC20NameBytes.json
         - name: OverlayV1PositionState
           file: ./abis/OverlayV1PositionState.json
+        - name: OverlayV1OIState
+          file: ./abis/OverlayV1OIState.json
       eventHandlers:
         - event: FeeRecipientUpdated(indexed address,address)
           handler: handleFeeRecipientUpdated
@@ -62,6 +64,8 @@ templates:
           file: ./abis/ERC20.json
         - name: OverlayV1PositionState
           file: ./abis/OverlayV1PositionState.json
+        - name: OverlayV1OIState
+          file: ./abis/OverlayV1OIState.json
       eventHandlers:
         - event: Build(indexed address,uint256,uint256,uint256,bool,uint256)
           handler: handleBuild

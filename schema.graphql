@@ -60,8 +60,12 @@ type Market @entity {
   priceDriftUpperLimit: BigInt!
   # average block time of the respective chain
   averageBlockTime: BigInt!
-  # total current oi
-  totalOi: BigInt!
+  # total current oi long
+  oiLong: BigInt!
+  oiLongShares: BigInt!
+  # total current oi short
+  oiShort: BigInt!
+  oiShortShares: BigInt!
   # positions held in market
   positions: [Position!]! @derivedFrom(field: "market")
 }

@@ -148,7 +148,10 @@ export class Market extends Entity {
     this.set("minCollateral", Value.fromBigInt(BigInt.zero()));
     this.set("priceDriftUpperLimit", Value.fromBigInt(BigInt.zero()));
     this.set("averageBlockTime", Value.fromBigInt(BigInt.zero()));
-    this.set("totalOi", Value.fromBigInt(BigInt.zero()));
+    this.set("oiLong", Value.fromBigInt(BigInt.zero()));
+    this.set("oiLongShares", Value.fromBigInt(BigInt.zero()));
+    this.set("oiShort", Value.fromBigInt(BigInt.zero()));
+    this.set("oiShortShares", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -348,13 +351,40 @@ export class Market extends Entity {
     this.set("averageBlockTime", Value.fromBigInt(value));
   }
 
-  get totalOi(): BigInt {
-    let value = this.get("totalOi");
+  get oiLong(): BigInt {
+    let value = this.get("oiLong");
     return value!.toBigInt();
   }
 
-  set totalOi(value: BigInt) {
-    this.set("totalOi", Value.fromBigInt(value));
+  set oiLong(value: BigInt) {
+    this.set("oiLong", Value.fromBigInt(value));
+  }
+
+  get oiLongShares(): BigInt {
+    let value = this.get("oiLongShares");
+    return value!.toBigInt();
+  }
+
+  set oiLongShares(value: BigInt) {
+    this.set("oiLongShares", Value.fromBigInt(value));
+  }
+
+  get oiShort(): BigInt {
+    let value = this.get("oiShort");
+    return value!.toBigInt();
+  }
+
+  set oiShort(value: BigInt) {
+    this.set("oiShort", Value.fromBigInt(value));
+  }
+
+  get oiShortShares(): BigInt {
+    let value = this.get("oiShortShares");
+    return value!.toBigInt();
+  }
+
+  set oiShortShares(value: BigInt) {
+    this.set("oiShortShares", Value.fromBigInt(value));
   }
 
   get positions(): Array<string> {

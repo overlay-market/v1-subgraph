@@ -14,7 +14,7 @@ import {
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 import { Factory, Market, Position } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract } from "./utils/constants"
+import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract } from "./utils/constants"
 import { loadMarket, loadPosition } from "./utils";
 
 
