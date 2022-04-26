@@ -112,3 +112,30 @@ type Transaction @entity {
   gasLimit: BigInt!
   gasPrice: BigInt!
 }
+
+type Build @entity {
+  # caller address
+  id: ID!
+  # position id
+  positionId: ID!
+  # current position oi
+  currentOi: BigInt!
+  # current position debt
+  currentDebt: BigInt!
+  # position side taken
+  isLong: Boolean!
+  # bid price at time of build
+  bid: BigInt!
+  # ask price at time of build
+  ask: BigInt!
+  # mid price at time of build
+  mid: BigInt!
+  # leverage taken on position
+  leverage: BigInt!
+  # cost to build position
+  cost: BigInt!
+  # current collateral backing position
+  collateral: BigInt!
+  # current value of position
+  value: BigInt!
+}
