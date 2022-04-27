@@ -10,13 +10,11 @@ export function loadTransaction(event: ethereum.Event): Transaction {
 
   if (transaction === null) {
     transaction = new Transaction(event.transaction.hash.toHexString())
+    transaction.blockNumber = event.block.number
+    transaction.timestamp = event.block.timestamp
+    transaction.gasLimit = event.transaction.gasLimit
+    transaction.gasPrice = event.transaction.gasPrice
   }
-  
-  transaction.blockNumber = event.block.number
-  transaction.timestamp = event.block.timestamp
-  transaction.gasLimit = event.transaction.gasLimit
-  transaction.gasPrice = event.transaction.gasPrice
-  transaction.save()
 
   return transaction as Transaction
 }
@@ -75,8 +73,8 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
     // @TO-DO: calculate current total oi based on oiState
-    market.oiLong = ZERO_BI
-    market.oiShort = ZERO_BI
+    market.oiLong = stateContract.ois(marketContract.feed()).value0
+    market.oiShort = stateContract.ois(marketContract.feed()).value1
 
     MarketTemplate.create(marketAddress)
   }
@@ -86,7 +84,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
 
 // @TO-DO: create function to load position based on market address and position id
 export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
-  let marketPositionId = market.id.concat(positionId.toHexString())
+  let marketPositionId = market.id.concat('-').concat(positionId.toHexString())
   let feedAddress = Address.fromString(market.feedAddress)
   let position = Position.load(marketPositionId)
   // create new Position if null

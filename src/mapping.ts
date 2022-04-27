@@ -105,15 +105,7 @@ export function handleBuild(event: BuildEvent): void {
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
   let marketContract = OverlayV1Market.bind(marketAddress)
-  // let callResult = stateContract.try_ois(feedAddress)
-  // if (callResult.reverted) {
-  //   log.info('try_ois reverted', [])
-  //   log.info(`feedAddress: ${feedAddress.toHexString()}`, [])
-  //   log.info(`oiContract: ${PERIPHERY_ADDRESS}`, [])
-  // } else {
-  //   log.info('try_ois worked', [])
-    market.oiLong = stateContract.ois(feedAddress).value0
-  // }
+  market.oiLong = stateContract.ois(feedAddress).value0
   market.oiShort = stateContract.ois(feedAddress).value1
 
 
@@ -137,6 +129,7 @@ export function handleBuild(event: BuildEvent): void {
   market.save()
   build.save()
   caller.save()
+  transaction.save()
 }
 
 export function handleUnwind(event: UnwindEvent): void {
@@ -180,6 +173,7 @@ export function handleUnwind(event: UnwindEvent): void {
   market.save()
   unwind.save()
   caller.save()
+  transaction.save()
 }
 
 export function handleLiquidate(event: LiquidateEvent): void {
@@ -224,6 +218,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   market.save()
   liquidate.save()
   caller.save()
+  transaction.save()
 }
 
 
