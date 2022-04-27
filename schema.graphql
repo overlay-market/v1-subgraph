@@ -72,7 +72,7 @@ type Position @entity {
   # market contract concat'd with position id
   id: ID!
   # position id
-  positionId: BigInt!
+  positionId: String!
   # owner of position
   owner: Account!
   # market contract address related to position

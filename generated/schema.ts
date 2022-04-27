@@ -382,7 +382,7 @@ export class Position extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("positionId", Value.fromBigInt(BigInt.zero()));
+    this.set("positionId", Value.fromString(""));
     this.set("owner", Value.fromString(""));
     this.set("market", Value.fromString(""));
     this.set("initialOi", Value.fromBigInt(BigInt.zero()));
@@ -425,13 +425,13 @@ export class Position extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get positionId(): BigInt {
+  get positionId(): string {
     let value = this.get("positionId");
-    return value!.toBigInt();
+    return value!.toString();
   }
 
-  set positionId(value: BigInt) {
-    this.set("positionId", Value.fromBigInt(value));
+  set positionId(value: string) {
+    this.set("positionId", Value.fromString(value));
   }
 
   get owner(): string {

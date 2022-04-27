@@ -13,6 +13,7 @@ import {
   Liquidate as LiquidateEvent,
   Unwind as UnwindEvent
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
+
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract, RISK_PARAMS } from "./utils/constants"
@@ -61,8 +62,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.minCollateral = marketContract.params(integer.fromNumber(12))
   market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
-  market.oiLong = oiStateContract.ois(marketContract.feed()).value0
-  market.oiShort = oiStateContract.ois(marketContract.feed()).value1
+  market.oiLong = ZERO_BI
+  market.oiShort = ZERO_BI
 
   market.save()
   // create tracked market contract based on template
@@ -83,7 +84,7 @@ export function handleBuild(event: BuildEvent): void {
   let position = new Position(id) as Position
   
   position.owner = caller.id
-  position.positionId = positionId
+  position.positionId = positionId.toHexString()
   // @TO-DO: check if below passes in market contract address
   position.market = market.id
   position.initialOi = event.params.oi
@@ -103,8 +104,8 @@ export function handleBuild(event: BuildEvent): void {
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
   let marketContract = OverlayV1Market.bind(marketAddress)
-  market.oiLong = oiStateContract.ois(marketContract.feed()).value0
-  market.oiShort = oiStateContract.ois(marketContract.feed()).value1
+  // market.oiLong = oiStateContract.ois(feedAddress).value0
+  // market.oiShort = oiStateContract.ois(feedAddress).value1
 
 
   // @TO-DO: events to be grouped with position
@@ -117,8 +118,8 @@ export function handleBuild(event: BuildEvent): void {
   build.currentDebt = event.params.debt
   build.isLong = event.params.isLong
   build.price = event.params.price
-  build.collateral = positionStateContract.collateral(feedAddress, callerAddress, positionId)
-  build.value = positionStateContract.value(feedAddress, callerAddress, positionId)
+  // build.collateral = positionStateContract.collateral(feedAddress, callerAddress, positionId)
+  // build.value = positionStateContract.value(feedAddress, callerAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
 

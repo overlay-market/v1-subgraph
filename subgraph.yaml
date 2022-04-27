@@ -31,6 +31,8 @@ dataSources:
           file: ./abis/OverlayV1PositionState.json
         - name: OverlayV1OIState
           file: ./abis/OverlayV1OIState.json
+        - name: OverlayV1Market
+          file: ./abis/OverlayV1Market.json
       eventHandlers:
         - event: FeeRecipientUpdated(indexed address,address)
           handler: handleFeeRecipientUpdated

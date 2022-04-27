@@ -6,14 +6,17 @@ import { ZERO_BI, ZERO_BD, positionStateContract, oiStateContract, factoryContra
 
 export function loadTransaction(event: ethereum.Event): Transaction {
   let transaction = Transaction.load(event.transaction.hash.toHexString())
+
   if (transaction === null) {
     transaction = new Transaction(event.transaction.hash.toHexString())
   }
+  
   transaction.blockNumber = event.block.number
   transaction.timestamp = event.block.timestamp
   transaction.gasLimit = event.transaction.gasLimit
   transaction.gasPrice = event.transaction.gasPrice
   transaction.save()
+
   return transaction as Transaction
 }
 
@@ -71,8 +74,8 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
     // @TO-DO: calculate current total oi based on oiState
-    market.oiLong = oiStateContract.ois(marketContract.feed()).value0
-    market.oiShort = oiStateContract.ois(marketContract.feed()).value1
+    market.oiLong = ZERO_BI
+    market.oiShort = ZERO_BI
   }
 
   return market;
@@ -86,7 +89,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
   // create new Position if null
   if (position === null) {
     position = new Position(marketPositionId)
-    position.positionId = positionId
+    position.positionId = positionId.toHexString()
     position.owner = sender.toHexString()
     position.market = market.id
 
