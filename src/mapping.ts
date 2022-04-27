@@ -16,8 +16,7 @@ import {
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { OverlayV1OIState as OIStateContract } from './../generated/OverlayV1Factory/OverlayV1OIState'
-import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from "./utils/constants"
+import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from "./utils/constants"
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
 
 export function handleMarketDeployed(event: MarketDeployed): void {
@@ -40,10 +39,11 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   factory.marketCount = factory.marketCount.plus(ONE_BI)
 
   let marketAddress = event.params.market.toHexString()
+  let feedAddress = event.params.feed
   let marketContract = OverlayV1Market.bind(event.params.market)
   let market = new Market(marketAddress) as Market
 
-  market.feedAddress = event.params.feed.toHexString()
+  market.feedAddress = feedAddress.toHexString()
   market.factory = factory.id
   market.createdAtTimestamp = event.block.timestamp
   market.createdAtBlockNumber = event.block.number
@@ -63,8 +63,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.minCollateral = marketContract.params(integer.fromNumber(12))
   market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
-  market.oiLong = ZERO_BI
-  market.oiShort = ZERO_BI
+  market.oiLong = stateContract.ois(feedAddress).value0
+  market.oiShort = stateContract.ois(feedAddress).value1
 
   market.save()
   // create tracked market contract based on template
@@ -105,17 +105,16 @@ export function handleBuild(event: BuildEvent): void {
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
   let marketContract = OverlayV1Market.bind(marketAddress)
-  let oiContract = OIStateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
-  let callResult = oiContract.try_ois(feedAddress)
-  if (callResult.reverted) {
-    log.info('try_ois reverted', [])
-    log.info(`feedAddress: ${feedAddress.toHexString()}`, [])
-    log.info(`oiContract: ${PERIPHERY_ADDRESS}`, [])
-  } else {
-    log.info('try_ois worked', [])
-    market.oiLong = oiStateContract.ois(feedAddress).value0
-  }
-  market.oiShort = oiStateContract.ois(feedAddress).value1
+  // let callResult = stateContract.try_ois(feedAddress)
+  // if (callResult.reverted) {
+  //   log.info('try_ois reverted', [])
+  //   log.info(`feedAddress: ${feedAddress.toHexString()}`, [])
+  //   log.info(`oiContract: ${PERIPHERY_ADDRESS}`, [])
+  // } else {
+  //   log.info('try_ois worked', [])
+    market.oiLong = stateContract.ois(feedAddress).value0
+  // }
+  market.oiShort = stateContract.ois(feedAddress).value1
 
 
   // @TO-DO: events to be grouped with position
@@ -128,8 +127,8 @@ export function handleBuild(event: BuildEvent): void {
   build.currentDebt = event.params.debt
   build.isLong = event.params.isLong
   build.price = event.params.price
-  // build.collateral = positionStateContract.collateral(feedAddress, callerAddress, positionId)
-  // build.value = positionStateContract.value(feedAddress, callerAddress, positionId)
+  build.collateral = stateContract.collateral(feedAddress, callerAddress, positionId)
+  build.value = stateContract.value(feedAddress, callerAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
 
@@ -152,15 +151,15 @@ export function handleUnwind(event: UnwindEvent): void {
   let position = loadPosition(event, callerAddress, market, positionId)
 
   // @TO-DO: update position using periphery
-  position.currentOi = positionStateContract.oi(feedAddress, callerAddress, positionId)
-  position.currentDebt = positionStateContract.debt(feedAddress, callerAddress, positionId)
+  position.currentOi = stateContract.oi(feedAddress, callerAddress, positionId)
+  position.currentDebt = stateContract.debt(feedAddress, callerAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
   let marketContract = OverlayV1Market.bind(marketAddress)
-  market.oiLong = oiStateContract.ois(marketContract.feed()).value0
-  market.oiShort = oiStateContract.ois(marketContract.feed()).value1
+  market.oiLong = stateContract.ois(marketContract.feed()).value0
+  market.oiShort = stateContract.ois(marketContract.feed()).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
@@ -168,12 +167,12 @@ export function handleUnwind(event: UnwindEvent): void {
 
   unwind.positionId = positionId.toHexString()
   unwind.owner = caller.id
-  unwind.currentOi = positionStateContract.oi(feedAddress, callerAddress, positionId)
-  unwind.currentDebt = positionStateContract.debt(feedAddress, callerAddress, positionId)
-  unwind.isLong = positionStateContract.position(feedAddress, callerAddress, positionId).isLong
+  unwind.currentOi = stateContract.oi(feedAddress, callerAddress, positionId)
+  unwind.currentDebt = stateContract.debt(feedAddress, callerAddress, positionId)
+  unwind.isLong = stateContract.position(feedAddress, callerAddress, positionId).isLong
   unwind.price = event.params.price
-  unwind.collateral = positionStateContract.collateral(feedAddress, callerAddress, positionId)
-  unwind.value = positionStateContract.value(feedAddress, callerAddress, positionId)
+  unwind.collateral = stateContract.collateral(feedAddress, callerAddress, positionId)
+  unwind.value = stateContract.value(feedAddress, callerAddress, positionId)
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
 
@@ -195,16 +194,16 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let position = loadPosition(event, callerAddress, market, positionId)
 
   // @TO-DO: update position using periphery
-  position.currentOi = positionStateContract.oi(feedAddress, callerAddress, positionId)
-  position.currentDebt = positionStateContract.debt(feedAddress, callerAddress, positionId)
+  position.currentOi = stateContract.oi(feedAddress, callerAddress, positionId)
+  position.currentDebt = stateContract.debt(feedAddress, callerAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
   let marketContract = OverlayV1Market.bind(marketAddress)
-  market.oiLong = oiStateContract.ois(marketContract.feed()).value0
-  market.oiShort = oiStateContract.ois(marketContract.feed()).value1
+  market.oiLong = stateContract.ois(marketContract.feed()).value0
+  market.oiShort = stateContract.ois(marketContract.feed()).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
@@ -212,12 +211,12 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   liquidate.positionId = positionId.toHexString()
   liquidate.owner = caller.id
-  liquidate.currentOi = positionStateContract.oi(feedAddress, callerAddress, positionId)
-  liquidate.currentDebt = positionStateContract.debt(feedAddress, callerAddress, positionId)
-  liquidate.isLong = positionStateContract.position(feedAddress, callerAddress, positionId).isLong
+  liquidate.currentOi = stateContract.oi(feedAddress, callerAddress, positionId)
+  liquidate.currentDebt = stateContract.debt(feedAddress, callerAddress, positionId)
+  liquidate.isLong = stateContract.position(feedAddress, callerAddress, positionId).isLong
   liquidate.price = event.params.price
-  liquidate.collateral = positionStateContract.collateral(feedAddress, callerAddress, positionId)
-  liquidate.value = positionStateContract.value(feedAddress, callerAddress, positionId)
+  liquidate.collateral = stateContract.collateral(feedAddress, callerAddress, positionId)
+  liquidate.value = stateContract.value(feedAddress, callerAddress, positionId)
   liquidate.timestamp = transaction.timestamp
   liquidate.transaction = transaction.id
 

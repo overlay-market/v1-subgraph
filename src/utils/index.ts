@@ -3,7 +3,7 @@ import { Market, Transaction, Position, Factory, Account } from '../../generated
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
-import { ZERO_BI, ZERO_BD, positionStateContract, oiStateContract, factoryContract } from './constants'
+import { ZERO_BI, ZERO_BD, stateContract, factoryContract } from './constants'
 
 export function loadTransaction(event: ethereum.Event): Transaction {
   let transaction = Transaction.load(event.transaction.hash.toHexString())
@@ -96,15 +96,15 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.owner = sender.toHexString()
     position.market = market.id
 
-    // @TO-DO: check positionStateContract pulls proper position info
-    position.initialOi = positionStateContract.oi(feedAddress, sender, positionId)
-    position.initialDebt = positionStateContract.debt(feedAddress, sender, positionId)
+    // @TO-DO: check stateContract pulls proper position info
+    position.initialOi = stateContract.oi(feedAddress, sender, positionId)
+    position.initialDebt = stateContract.debt(feedAddress, sender, positionId)
     // @TO-DO: pull position isLong value from periphery
-    position.isLong = positionStateContract.position(feedAddress, sender, positionId).isLong
+    position.isLong = stateContract.position(feedAddress, sender, positionId).isLong
     position.entryPrice = ZERO_BI
     position.isLiquidated = false
-    position.currentOi = positionStateContract.oi(feedAddress, sender, positionId)
-    position.currentDebt = positionStateContract.debt(feedAddress, sender, positionId)
+    position.currentOi = stateContract.oi(feedAddress, sender, positionId)
+    position.currentDebt = stateContract.debt(feedAddress, sender, positionId)
     position.leverage = ZERO_BI
     position.mint = ZERO_BI
     
