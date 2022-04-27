@@ -398,6 +398,185 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  liquidatable(feed: Address, owner: Address, id: BigInt): boolean {
+    let result = super.call(
+      "liquidatable",
+      "liquidatable(address,address,uint256):(bool)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_liquidatable(
+    feed: Address,
+    owner: Address,
+    id: BigInt
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "liquidatable",
+      "liquidatable(address,address,uint256):(bool)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  liquidationFee(feed: Address, owner: Address, id: BigInt): BigInt {
+    let result = super.call(
+      "liquidationFee",
+      "liquidationFee(address,address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_liquidationFee(
+    feed: Address,
+    owner: Address,
+    id: BigInt
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "liquidationFee",
+      "liquidationFee(address,address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  liquidationPrice(feed: Address, owner: Address, id: BigInt): BigInt {
+    let result = super.call(
+      "liquidationPrice",
+      "liquidationPrice(address,address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_liquidationPrice(
+    feed: Address,
+    owner: Address,
+    id: BigInt
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "liquidationPrice",
+      "liquidationPrice(address,address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  maintenanceMargin(feed: Address, owner: Address, id: BigInt): BigInt {
+    let result = super.call(
+      "maintenanceMargin",
+      "maintenanceMargin(address,address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_maintenanceMargin(
+    feed: Address,
+    owner: Address,
+    id: BigInt
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "maintenanceMargin",
+      "maintenanceMargin(address,address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  marginExcessBeforeLiquidation(
+    feed: Address,
+    owner: Address,
+    id: BigInt
+  ): BigInt {
+    let result = super.call(
+      "marginExcessBeforeLiquidation",
+      "marginExcessBeforeLiquidation(address,address,uint256):(int256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_marginExcessBeforeLiquidation(
+    feed: Address,
+    owner: Address,
+    id: BigInt
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "marginExcessBeforeLiquidation",
+      "marginExcessBeforeLiquidation(address,address,uint256):(int256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   market(feed: Address): Address {
     let result = super.call("market", "market(address):(address)", [
       ethereum.Value.fromAddress(feed)
@@ -626,6 +805,41 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
         value[2].toBigInt()
       )
     );
+  }
+
+  tradingFee(feed: Address, owner: Address, id: BigInt): BigInt {
+    let result = super.call(
+      "tradingFee",
+      "tradingFee(address,address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_tradingFee(
+    feed: Address,
+    owner: Address,
+    id: BigInt
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "tradingFee",
+      "tradingFee(address,address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(owner),
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   value(feed: Address, owner: Address, id: BigInt): BigInt {

@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts"
+import { Address, BigInt, log } from "@graphprotocol/graph-ts"
 import { integer } from "@protofire/subgraph-toolkit";
 import {
   OverlayV1Factory,
@@ -16,7 +16,8 @@ import {
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract, RISK_PARAMS } from "./utils/constants"
+import { OverlayV1OIState as OIStateContract } from './../generated/OverlayV1Factory/OverlayV1OIState'
+import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, positionStateContract, factoryContract, oiStateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from "./utils/constants"
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
 
 export function handleMarketDeployed(event: MarketDeployed): void {
@@ -104,8 +105,17 @@ export function handleBuild(event: BuildEvent): void {
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
   let marketContract = OverlayV1Market.bind(marketAddress)
-  // market.oiLong = oiStateContract.ois(feedAddress).value0
-  // market.oiShort = oiStateContract.ois(feedAddress).value1
+  let oiContract = OIStateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
+  let callResult = oiContract.try_ois(feedAddress)
+  if (callResult.reverted) {
+    log.info('try_ois reverted', [])
+    log.info(`feedAddress: ${feedAddress.toHexString()}`, [])
+    log.info(`oiContract: ${PERIPHERY_ADDRESS}`, [])
+  } else {
+    log.info('try_ois worked', [])
+    market.oiLong = oiStateContract.ois(feedAddress).value0
+  }
+  market.oiShort = oiStateContract.ois(feedAddress).value1
 
 
   // @TO-DO: events to be grouped with position

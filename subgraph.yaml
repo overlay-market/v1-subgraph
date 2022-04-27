@@ -27,10 +27,8 @@ dataSources:
           file: ./abis/ERC20SymbolBytes.json
         - name: ERC20NameBytes
           file: ./abis/ERC20NameBytes.json
-        - name: OverlayV1PositionState
-          file: ./abis/OverlayV1PositionState.json
-        - name: OverlayV1OIState
-          file: ./abis/OverlayV1OIState.json
+        - name: OverlayV1State
+          file: ./abis/OverlayV1State.json
         - name: OverlayV1Market
           file: ./abis/OverlayV1Market.json
       eventHandlers:
@@ -65,10 +63,8 @@ templates:
           file: ./abis/OverlayV1Factory.json
         - name: ERC20
           file: ./abis/ERC20.json
-        - name: OverlayV1PositionState
-          file: ./abis/OverlayV1PositionState.json
-        - name: OverlayV1OIState
-          file: ./abis/OverlayV1OIState.json
+        - name: OverlayV1State
+          file: ./abis/OverlayV1State.json
       eventHandlers:
         - event: Build(indexed address,uint256,uint256,uint256,bool,uint256)
           handler: handleBuild

@@ -10,7 +10,7 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
-export class OverlayV1PositionState__dataResultData_Struct extends ethereum.Tuple {
+export class OverlayV1State__dataResultData_Struct extends ethereum.Tuple {
   get timestamp(): BigInt {
     return this[0].toBigInt();
   }
@@ -44,7 +44,7 @@ export class OverlayV1PositionState__dataResultData_Struct extends ethereum.Tupl
   }
 }
 
-export class OverlayV1PositionState__oisResult {
+export class OverlayV1State__oisResult {
   value0: BigInt;
   value1: BigInt;
 
@@ -61,7 +61,7 @@ export class OverlayV1PositionState__oisResult {
   }
 }
 
-export class OverlayV1PositionState__positionResultPosition_Struct extends ethereum.Tuple {
+export class OverlayV1State__positionResultPosition_Struct extends ethereum.Tuple {
   get notional(): BigInt {
     return this[0].toBigInt();
   }
@@ -87,7 +87,7 @@ export class OverlayV1PositionState__positionResultPosition_Struct extends ether
   }
 }
 
-export class OverlayV1PositionState__pricesResult {
+export class OverlayV1State__pricesResult {
   value0: BigInt;
   value1: BigInt;
   value2: BigInt;
@@ -107,7 +107,7 @@ export class OverlayV1PositionState__pricesResult {
   }
 }
 
-export class OverlayV1PositionState__volumesResult {
+export class OverlayV1State__volumesResult {
   value0: BigInt;
   value1: BigInt;
 
@@ -124,9 +124,9 @@ export class OverlayV1PositionState__volumesResult {
   }
 }
 
-export class OverlayV1PositionState extends ethereum.SmartContract {
-  static bind(address: Address): OverlayV1PositionState {
-    return new OverlayV1PositionState("OverlayV1PositionState", address);
+export class OverlayV1State extends ethereum.SmartContract {
+  static bind(address: Address): OverlayV1State {
+    return new OverlayV1State("OverlayV1State", address);
   }
 
   ask(feed: Address, fractionOfCapOi: BigInt): BigInt {
@@ -279,21 +279,21 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  data(feed: Address): OverlayV1PositionState__dataResultData_Struct {
+  data(feed: Address): OverlayV1State__dataResultData_Struct {
     let result = super.call(
       "data",
       "data(address):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool))",
       [ethereum.Value.fromAddress(feed)]
     );
 
-    return changetype<OverlayV1PositionState__dataResultData_Struct>(
+    return changetype<OverlayV1State__dataResultData_Struct>(
       result[0].toTuple()
     );
   }
 
   try_data(
     feed: Address
-  ): ethereum.CallResult<OverlayV1PositionState__dataResultData_Struct> {
+  ): ethereum.CallResult<OverlayV1State__dataResultData_Struct> {
     let result = super.tryCall(
       "data",
       "data(address):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool))",
@@ -304,9 +304,7 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<OverlayV1PositionState__dataResultData_Struct>(
-        value[0].toTuple()
-      )
+      changetype<OverlayV1State__dataResultData_Struct>(value[0].toTuple())
     );
   }
 
@@ -696,20 +694,18 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  ois(feed: Address): OverlayV1PositionState__oisResult {
+  ois(feed: Address): OverlayV1State__oisResult {
     let result = super.call("ois", "ois(address):(uint256,uint256)", [
       ethereum.Value.fromAddress(feed)
     ]);
 
-    return new OverlayV1PositionState__oisResult(
+    return new OverlayV1State__oisResult(
       result[0].toBigInt(),
       result[1].toBigInt()
     );
   }
 
-  try_ois(
-    feed: Address
-  ): ethereum.CallResult<OverlayV1PositionState__oisResult> {
+  try_ois(feed: Address): ethereum.CallResult<OverlayV1State__oisResult> {
     let result = super.tryCall("ois", "ois(address):(uint256,uint256)", [
       ethereum.Value.fromAddress(feed)
     ]);
@@ -718,10 +714,7 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new OverlayV1PositionState__oisResult(
-        value[0].toBigInt(),
-        value[1].toBigInt()
-      )
+      new OverlayV1State__oisResult(value[0].toBigInt(), value[1].toBigInt())
     );
   }
 
@@ -729,7 +722,7 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     feed: Address,
     owner: Address,
     id: BigInt
-  ): OverlayV1PositionState__positionResultPosition_Struct {
+  ): OverlayV1State__positionResultPosition_Struct {
     let result = super.call(
       "position",
       "position(address,address,uint256):((uint96,uint96,uint48,bool,bool,uint256))",
@@ -740,7 +733,7 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
       ]
     );
 
-    return changetype<OverlayV1PositionState__positionResultPosition_Struct>(
+    return changetype<OverlayV1State__positionResultPosition_Struct>(
       result[0].toTuple()
     );
   }
@@ -749,9 +742,7 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     feed: Address,
     owner: Address,
     id: BigInt
-  ): ethereum.CallResult<
-    OverlayV1PositionState__positionResultPosition_Struct
-  > {
+  ): ethereum.CallResult<OverlayV1State__positionResultPosition_Struct> {
     let result = super.tryCall(
       "position",
       "position(address,address,uint256):((uint96,uint96,uint48,bool,bool,uint256))",
@@ -766,29 +757,27 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<OverlayV1PositionState__positionResultPosition_Struct>(
+      changetype<OverlayV1State__positionResultPosition_Struct>(
         value[0].toTuple()
       )
     );
   }
 
-  prices(feed: Address): OverlayV1PositionState__pricesResult {
+  prices(feed: Address): OverlayV1State__pricesResult {
     let result = super.call(
       "prices",
       "prices(address):(uint256,uint256,uint256)",
       [ethereum.Value.fromAddress(feed)]
     );
 
-    return new OverlayV1PositionState__pricesResult(
+    return new OverlayV1State__pricesResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
       result[2].toBigInt()
     );
   }
 
-  try_prices(
-    feed: Address
-  ): ethereum.CallResult<OverlayV1PositionState__pricesResult> {
+  try_prices(feed: Address): ethereum.CallResult<OverlayV1State__pricesResult> {
     let result = super.tryCall(
       "prices",
       "prices(address):(uint256,uint256,uint256)",
@@ -799,7 +788,7 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new OverlayV1PositionState__pricesResult(
+      new OverlayV1State__pricesResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
         value[2].toBigInt()
@@ -941,12 +930,12 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  volumes(feed: Address): OverlayV1PositionState__volumesResult {
+  volumes(feed: Address): OverlayV1State__volumesResult {
     let result = super.call("volumes", "volumes(address):(uint256,uint256)", [
       ethereum.Value.fromAddress(feed)
     ]);
 
-    return new OverlayV1PositionState__volumesResult(
+    return new OverlayV1State__volumesResult(
       result[0].toBigInt(),
       result[1].toBigInt()
     );
@@ -954,7 +943,7 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
 
   try_volumes(
     feed: Address
-  ): ethereum.CallResult<OverlayV1PositionState__volumesResult> {
+  ): ethereum.CallResult<OverlayV1State__volumesResult> {
     let result = super.tryCall(
       "volumes",
       "volumes(address):(uint256,uint256)",
@@ -965,10 +954,40 @@ export class OverlayV1PositionState extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new OverlayV1PositionState__volumesResult(
+      new OverlayV1State__volumesResult(
         value[0].toBigInt(),
         value[1].toBigInt()
       )
     );
+  }
+}
+
+export class ConstructorCall extends ethereum.Call {
+  get inputs(): ConstructorCall__Inputs {
+    return new ConstructorCall__Inputs(this);
+  }
+
+  get outputs(): ConstructorCall__Outputs {
+    return new ConstructorCall__Outputs(this);
+  }
+}
+
+export class ConstructorCall__Inputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+
+  get _factory(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class ConstructorCall__Outputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
   }
 }

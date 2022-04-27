@@ -1,6 +1,7 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { Market, Transaction, Position, Factory, Account } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
+import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
 import { ZERO_BI, ZERO_BD, positionStateContract, oiStateContract, factoryContract } from './constants'
 
@@ -76,6 +77,8 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     // @TO-DO: calculate current total oi based on oiState
     market.oiLong = ZERO_BI
     market.oiShort = ZERO_BI
+
+    MarketTemplate.create(marketAddress)
   }
 
   return market;
