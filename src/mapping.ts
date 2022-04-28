@@ -110,7 +110,6 @@ export function handleBuild(event: BuildEvent): void {
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  let marketContract = OverlayV1Market.bind(marketAddress)
   market.oiLong = stateContract.ois(feedAddress).value0
   market.oiShort = stateContract.ois(feedAddress).value1
 
@@ -156,9 +155,8 @@ export function handleUnwind(event: UnwindEvent): void {
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  let marketContract = OverlayV1Market.bind(marketAddress)
-  market.oiLong = stateContract.ois(marketContract.feed()).value0
-  market.oiShort = stateContract.ois(marketContract.feed()).value1
+  market.oiLong = stateContract.ois(feedAddress).value0
+  market.oiShort = stateContract.ois(feedAddress).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
@@ -201,9 +199,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  let marketContract = OverlayV1Market.bind(marketAddress)
-  market.oiLong = stateContract.ois(marketContract.feed()).value0
-  market.oiShort = stateContract.ois(marketContract.feed()).value1
+  market.oiLong = stateContract.ois(feedAddress).value0
+  market.oiShort = stateContract.ois(feedAddress).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
