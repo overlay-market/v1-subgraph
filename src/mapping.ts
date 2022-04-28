@@ -26,6 +26,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   if (factory === null) {
     factory = new Factory(FACTORY_ADDRESS)
     factory.marketCount = ZERO_BI
+    // @TO-DO: calculate global factory values below
     factory.txCount = ZERO_BI
     factory.totalVolumeOVL = ZERO_BD
     factory.totalFeesOVL = ZERO_BD
