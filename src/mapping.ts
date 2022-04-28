@@ -74,29 +74,34 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
 export function handleBuild(event: BuildEvent): void {
   let market = loadMarket(event, event.address)
-  let caller = loadAccount(event.params.sender)
+  let sender = loadAccount(event.params.sender)
 
   let marketAddress = Address.fromString(market.id)
   let feedAddress = Address.fromString(market.feedAddress)
-  let callerAddress = Address.fromString(caller.id)
+  let senderAddress = Address.fromString(sender.id)
 
   let positionId = event.params.positionId
   let id = market.id.concat('-').concat(positionId.toHexString())
   let position = new Position(id) as Position
   
-  position.owner = caller.id
+  position.owner = sender.id
   position.positionId = positionId.toHexString()
   // @TO-DO: check if below passes in market contract address
   position.market = market.id
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
+
+  let initialCollateral = stateContract.collateral(feedAddress, senderAddress, positionId)
+  let initialNotional = stateContract.collateral(feedAddress, senderAddress, positionId)
+  position.initialCollateral = initialCollateral
+  position.initialNotional = initialNotional
+  position.leverage = initialNotional.div(initialCollateral)
   position.isLong = event.params.isLong
   position.entryPrice = event.params.price
   position.isLiquidated = false
   position.currentOi = event.params.oi
   position.currentDebt = event.params.debt
   // @TO-DO: pass in leverage position built with
-  position.leverage = ZERO_BI
   position.mint = ZERO_BI
   position.createdAtTimestamp = event.block.timestamp
   position.createdAtBlockNumber = event.block.number
@@ -111,16 +116,16 @@ export function handleBuild(event: BuildEvent): void {
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
-  let build = new Build(caller.id) as Build
+  let build = new Build(sender.id) as Build
 
   build.positionId = positionId.toHexString()
-  build.owner = caller.id
+  build.owner = sender.id
   build.currentOi = event.params.oi
   build.currentDebt = event.params.debt
   build.isLong = event.params.isLong
   build.price = event.params.price
-  build.collateral = stateContract.collateral(feedAddress, callerAddress, positionId)
-  build.value = stateContract.value(feedAddress, callerAddress, positionId)
+  build.collateral = stateContract.collateral(feedAddress, senderAddress, positionId)
+  build.value = stateContract.value(feedAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
 
@@ -128,24 +133,24 @@ export function handleBuild(event: BuildEvent): void {
   position.save()
   market.save()
   build.save()
-  caller.save()
+  sender.save()
   transaction.save()
 }
 
 export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event, event.address)
-  let caller = loadAccount(event.params.sender)
+  let sender = loadAccount(event.params.sender)
   
   let marketAddress = Address.fromString(market.id)
   let feedAddress = Address.fromString(market.feedAddress)
-  let callerAddress = Address.fromString(caller.id)
+  let senderAddress = Address.fromString(sender.id)
   
   let positionId = event.params.positionId
-  let position = loadPosition(event, callerAddress, market, positionId)
+  let position = loadPosition(event, senderAddress, market, positionId)
 
   // @TO-DO: update position using periphery
-  position.currentOi = stateContract.oi(feedAddress, callerAddress, positionId)
-  position.currentDebt = stateContract.debt(feedAddress, callerAddress, positionId)
+  position.currentOi = stateContract.oi(feedAddress, senderAddress, positionId)
+  position.currentDebt = stateContract.debt(feedAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
 
   // @TO-DO: pass in market contract to load market
@@ -156,40 +161,40 @@ export function handleUnwind(event: UnwindEvent): void {
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
-  let unwind = new Unwind(caller.id) as Unwind
+  let unwind = new Unwind(sender.id) as Unwind
 
   unwind.positionId = positionId.toHexString()
-  unwind.owner = caller.id
-  unwind.currentOi = stateContract.oi(feedAddress, callerAddress, positionId)
-  unwind.currentDebt = stateContract.debt(feedAddress, callerAddress, positionId)
-  unwind.isLong = stateContract.position(feedAddress, callerAddress, positionId).isLong
+  unwind.owner = sender.id
+  unwind.currentOi = stateContract.oi(feedAddress, senderAddress, positionId)
+  unwind.currentDebt = stateContract.debt(feedAddress, senderAddress, positionId)
+  unwind.isLong = stateContract.position(feedAddress, senderAddress, positionId).isLong
   unwind.price = event.params.price
-  unwind.collateral = stateContract.collateral(feedAddress, callerAddress, positionId)
-  unwind.value = stateContract.value(feedAddress, callerAddress, positionId)
+  unwind.collateral = stateContract.collateral(feedAddress, senderAddress, positionId)
+  unwind.value = stateContract.value(feedAddress, senderAddress, positionId)
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
 
   position.save()
   market.save()
   unwind.save()
-  caller.save()
+  sender.save()
   transaction.save()
 }
 
 export function handleLiquidate(event: LiquidateEvent): void {
   let market = loadMarket(event, event.address)
-  let caller = loadAccount(event.params.sender)
+  let sender = loadAccount(event.params.sender)
 
   let marketAddress = Address.fromString(market.id)
   let feedAddress = Address.fromString(market.feedAddress)
-  let callerAddress = Address.fromString(caller.id)
+  let senderAddress = Address.fromString(sender.id)
 
   let positionId = event.params.positionId
-  let position = loadPosition(event, callerAddress, market, positionId)
+  let position = loadPosition(event, senderAddress, market, positionId)
 
   // @TO-DO: update position using periphery
-  position.currentOi = stateContract.oi(feedAddress, callerAddress, positionId)
-  position.currentDebt = stateContract.debt(feedAddress, callerAddress, positionId)
+  position.currentOi = stateContract.oi(feedAddress, senderAddress, positionId)
+  position.currentDebt = stateContract.debt(feedAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
 
@@ -201,23 +206,23 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
-  let liquidate = new Liquidate(caller.id) as Liquidate
+  let liquidate = new Liquidate(sender.id) as Liquidate
 
   liquidate.positionId = positionId.toHexString()
-  liquidate.owner = caller.id
-  liquidate.currentOi = stateContract.oi(feedAddress, callerAddress, positionId)
-  liquidate.currentDebt = stateContract.debt(feedAddress, callerAddress, positionId)
-  liquidate.isLong = stateContract.position(feedAddress, callerAddress, positionId).isLong
+  liquidate.owner = sender.id
+  liquidate.currentOi = stateContract.oi(feedAddress, senderAddress, positionId)
+  liquidate.currentDebt = stateContract.debt(feedAddress, senderAddress, positionId)
+  liquidate.isLong = stateContract.position(feedAddress, senderAddress, positionId).isLong
   liquidate.price = event.params.price
-  liquidate.collateral = stateContract.collateral(feedAddress, callerAddress, positionId)
-  liquidate.value = stateContract.value(feedAddress, callerAddress, positionId)
+  liquidate.collateral = stateContract.collateral(feedAddress, senderAddress, positionId)
+  liquidate.value = stateContract.value(feedAddress, senderAddress, positionId)
   liquidate.timestamp = transaction.timestamp
   liquidate.transaction = transaction.id
 
   position.save()
   market.save()
   liquidate.save()
-  caller.save()
+  sender.save()
   transaction.save()
 }
 

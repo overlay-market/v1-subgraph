@@ -387,12 +387,14 @@ export class Position extends Entity {
     this.set("market", Value.fromString(""));
     this.set("initialOi", Value.fromBigInt(BigInt.zero()));
     this.set("initialDebt", Value.fromBigInt(BigInt.zero()));
+    this.set("initialCollateral", Value.fromBigInt(BigInt.zero()));
+    this.set("initialNotional", Value.fromBigInt(BigInt.zero()));
+    this.set("leverage", Value.fromBigInt(BigInt.zero()));
     this.set("isLong", Value.fromBoolean(false));
     this.set("entryPrice", Value.fromBigInt(BigInt.zero()));
     this.set("isLiquidated", Value.fromBoolean(false));
     this.set("currentOi", Value.fromBigInt(BigInt.zero()));
     this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
-    this.set("leverage", Value.fromBigInt(BigInt.zero()));
     this.set("mint", Value.fromBigInt(BigInt.zero()));
     this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
     this.set("createdAtBlockNumber", Value.fromBigInt(BigInt.zero()));
@@ -470,6 +472,33 @@ export class Position extends Entity {
     this.set("initialDebt", Value.fromBigInt(value));
   }
 
+  get initialCollateral(): BigInt {
+    let value = this.get("initialCollateral");
+    return value!.toBigInt();
+  }
+
+  set initialCollateral(value: BigInt) {
+    this.set("initialCollateral", Value.fromBigInt(value));
+  }
+
+  get initialNotional(): BigInt {
+    let value = this.get("initialNotional");
+    return value!.toBigInt();
+  }
+
+  set initialNotional(value: BigInt) {
+    this.set("initialNotional", Value.fromBigInt(value));
+  }
+
+  get leverage(): BigInt {
+    let value = this.get("leverage");
+    return value!.toBigInt();
+  }
+
+  set leverage(value: BigInt) {
+    this.set("leverage", Value.fromBigInt(value));
+  }
+
   get isLong(): boolean {
     let value = this.get("isLong");
     return value!.toBoolean();
@@ -513,15 +542,6 @@ export class Position extends Entity {
 
   set currentDebt(value: BigInt) {
     this.set("currentDebt", Value.fromBigInt(value));
-  }
-
-  get leverage(): BigInt {
-    let value = this.get("leverage");
-    return value!.toBigInt();
-  }
-
-  set leverage(value: BigInt) {
-    this.set("leverage", Value.fromBigInt(value));
   }
 
   get mint(): BigInt {

@@ -81,6 +81,12 @@ type Position @entity {
   initialOi: BigInt!
   # initial debt when building position
   initialDebt: BigInt!
+  # initial collateral at time of building position
+  initialCollateral: BigInt!
+  # initial notional at time of building position
+  initialNotional: BigInt!
+  # leverage taken on position
+  leverage: BigInt!
   # long/short
   isLong: Boolean!
   # entry price when building position
@@ -91,8 +97,6 @@ type Position @entity {
   currentOi: BigInt!
   # current debt
   currentDebt: BigInt!
-  # leverage taken on position
-  leverage: BigInt!
   # total ovl minted/burned from transactions
   mint: BigInt!
   # time stamp of position creation
