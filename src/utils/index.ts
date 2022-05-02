@@ -73,8 +73,8 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
     // @TO-DO: calculate current total oi based on oiState
-    market.oiLong = stateContract.ois(marketContract.feed()).value0
-    market.oiShort = stateContract.ois(marketContract.feed()).value1
+    market.oiLong = stateContract.ois(marketAddress).value0
+    market.oiShort = stateContract.ois(marketAddress).value1
 
     MarketTemplate.create(marketAddress)
   }
@@ -85,7 +85,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
 // @TO-DO: create function to load position based on market address and position id
 export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
   let marketPositionId = market.id.concat('-').concat(positionId.toHexString())
-  let feedAddress = Address.fromString(market.feedAddress)
+  let marketAddress = Address.fromString(market.id)
   let position = Position.load(marketPositionId)
   // create new Position if null
   if (position === null) {
@@ -95,30 +95,30 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.market = market.id
 
     // @TO-DO: check stateContract pulls proper position info
-    position.initialOi = stateContract.oi(feedAddress, sender, positionId)
-    position.initialDebt = stateContract.debt(feedAddress, sender, positionId)
+    position.initialOi = stateContract.oi(marketAddress, sender, positionId)
+    position.initialDebt = stateContract.debt(marketAddress, sender, positionId)
 
-    let initialCollateral = stateContract.collateral(feedAddress, sender, positionId)
-    let initialNotional = stateContract.collateral(feedAddress, sender, positionId)
+    let initialCollateral = stateContract.collateral(marketAddress, sender, positionId)
+    let initialNotional = stateContract.collateral(marketAddress, sender, positionId)
     position.initialCollateral = initialCollateral
     position.initialNotional = initialNotional
     position.leverage = initialNotional.div(initialCollateral)
 
     // @TO-DO: pull position isLong value from periphery
-    let isLong = stateContract.position(feedAddress, sender, positionId).isLong
+    let isLong = stateContract.position(marketAddress, sender, positionId).isLong
     position.isLong = isLong
 
     if (isLong === true) {
-      let askPrice = stateContract.prices(feedAddress).value1
+      let askPrice = stateContract.prices(marketAddress).value1
       position.entryPrice = askPrice
     } else {
-      let bidPrice = stateContract.prices(feedAddress).value0
+      let bidPrice = stateContract.prices(marketAddress).value0
       position.entryPrice = bidPrice
     }
 
     position.isLiquidated = false
-    position.currentOi = stateContract.oi(feedAddress, sender, positionId)
-    position.currentDebt = stateContract.debt(feedAddress, sender, positionId)
+    position.currentOi = stateContract.oi(marketAddress, sender, positionId)
+    position.currentDebt = stateContract.debt(marketAddress, sender, positionId)
     position.mint = ZERO_BI
     
     position.createdAtTimestamp = event.block.timestamp

@@ -5,7 +5,8 @@ import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factor
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const FACTORY_ADDRESS = '0x8cCD181113c7Ae40f31D5e8178a98A1A60B55c4C'
-export const PERIPHERY_ADDRESS = '0x96079957e7eAEb2B9810E8FB0027B3553d86a719'
+export const PERIPHERY_ADDRESS = '0xeCA28606F2BE3209550c5e347E825af200D916c4'
+// periphery deployed on kovan block 31363554
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)
