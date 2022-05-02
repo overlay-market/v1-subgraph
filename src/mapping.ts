@@ -39,10 +39,10 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
   factory.marketCount = factory.marketCount.plus(ONE_BI)
 
-  let marketAddress = event.params.market.toHexString()
+  let marketAddress = event.params.market
   let feedAddress = event.params.feed
   let marketContract = OverlayV1Market.bind(event.params.market)
-  let market = new Market(marketAddress) as Market
+  let market = new Market(marketAddress.toHexString()) as Market
 
   market.feedAddress = feedAddress.toHexString()
   market.factory = factory.id
@@ -64,8 +64,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.minCollateral = marketContract.params(integer.fromNumber(12))
   market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
-  market.oiLong = stateContract.ois(feedAddress).value0
-  market.oiShort = stateContract.ois(feedAddress).value1
+  market.oiLong = stateContract.ois(marketAddress).value0
+  market.oiShort = stateContract.ois(marketAddress).value1
 
   market.save()
   // create tracked market contract based on template
@@ -78,7 +78,6 @@ export function handleBuild(event: BuildEvent): void {
   let sender = loadAccount(event.params.sender)
 
   let marketAddress = Address.fromString(market.id)
-  let feedAddress = Address.fromString(market.feedAddress)
   let senderAddress = Address.fromString(sender.id)
 
   let positionId = event.params.positionId
@@ -92,8 +91,8 @@ export function handleBuild(event: BuildEvent): void {
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
 
-  let initialCollateral = stateContract.collateral(feedAddress, senderAddress, positionId)
-  let initialNotional = stateContract.collateral(feedAddress, senderAddress, positionId)
+  let initialCollateral = stateContract.collateral(marketAddress, senderAddress, positionId)
+  let initialNotional = stateContract.collateral(marketAddress, senderAddress, positionId)
   position.initialCollateral = initialCollateral
   position.initialNotional = initialNotional
   position.leverage = initialNotional.div(initialCollateral)
@@ -110,8 +109,8 @@ export function handleBuild(event: BuildEvent): void {
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  market.oiLong = stateContract.ois(feedAddress).value0
-  market.oiShort = stateContract.ois(feedAddress).value1
+  market.oiLong = stateContract.ois(marketAddress).value0
+  market.oiShort = stateContract.ois(marketAddress).value1
 
 
   // @TO-DO: events to be grouped with position
@@ -124,8 +123,8 @@ export function handleBuild(event: BuildEvent): void {
   build.currentDebt = event.params.debt
   build.isLong = event.params.isLong
   build.price = event.params.price
-  build.collateral = stateContract.collateral(feedAddress, senderAddress, positionId)
-  build.value = stateContract.value(feedAddress, senderAddress, positionId)
+  build.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
+  build.value = stateContract.value(marketAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
 
@@ -142,21 +141,20 @@ export function handleUnwind(event: UnwindEvent): void {
   let sender = loadAccount(event.params.sender)
   
   let marketAddress = Address.fromString(market.id)
-  let feedAddress = Address.fromString(market.feedAddress)
   let senderAddress = Address.fromString(sender.id)
   
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
 
   // @TO-DO: update position using periphery
-  position.currentOi = stateContract.oi(feedAddress, senderAddress, positionId)
-  position.currentDebt = stateContract.debt(feedAddress, senderAddress, positionId)
+  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
+  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  market.oiLong = stateContract.ois(feedAddress).value0
-  market.oiShort = stateContract.ois(feedAddress).value1
+  market.oiLong = stateContract.ois(marketAddress).value0
+  market.oiShort = stateContract.ois(marketAddress).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
@@ -164,12 +162,12 @@ export function handleUnwind(event: UnwindEvent): void {
 
   unwind.positionId = positionId.toHexString()
   unwind.owner = sender.id
-  unwind.currentOi = stateContract.oi(feedAddress, senderAddress, positionId)
-  unwind.currentDebt = stateContract.debt(feedAddress, senderAddress, positionId)
-  unwind.isLong = stateContract.position(feedAddress, senderAddress, positionId).isLong
+  unwind.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
+  unwind.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
+  unwind.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
   unwind.price = event.params.price
-  unwind.collateral = stateContract.collateral(feedAddress, senderAddress, positionId)
-  unwind.value = stateContract.value(feedAddress, senderAddress, positionId)
+  unwind.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
+  unwind.value = stateContract.value(marketAddress, senderAddress, positionId)
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
 
@@ -185,22 +183,21 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let sender = loadAccount(event.params.sender)
 
   let marketAddress = Address.fromString(market.id)
-  let feedAddress = Address.fromString(market.feedAddress)
   let senderAddress = Address.fromString(sender.id)
 
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
 
   // @TO-DO: update position using periphery
-  position.currentOi = stateContract.oi(feedAddress, senderAddress, positionId)
-  position.currentDebt = stateContract.debt(feedAddress, senderAddress, positionId)
+  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
+  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  market.oiLong = stateContract.ois(feedAddress).value0
-  market.oiShort = stateContract.ois(feedAddress).value1
+  market.oiLong = stateContract.ois(marketAddress).value0
+  market.oiShort = stateContract.ois(marketAddress).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
@@ -208,12 +205,12 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   liquidate.positionId = positionId.toHexString()
   liquidate.owner = sender.id
-  liquidate.currentOi = stateContract.oi(feedAddress, senderAddress, positionId)
-  liquidate.currentDebt = stateContract.debt(feedAddress, senderAddress, positionId)
-  liquidate.isLong = stateContract.position(feedAddress, senderAddress, positionId).isLong
+  liquidate.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
+  liquidate.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
+  liquidate.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
   liquidate.price = event.params.price
-  liquidate.collateral = stateContract.collateral(feedAddress, senderAddress, positionId)
-  liquidate.value = stateContract.value(feedAddress, senderAddress, positionId)
+  liquidate.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
+  liquidate.value = stateContract.value(marketAddress, senderAddress, positionId)
   liquidate.timestamp = transaction.timestamp
   liquidate.transaction = transaction.id
 

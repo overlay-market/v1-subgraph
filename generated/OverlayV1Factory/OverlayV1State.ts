@@ -44,6 +44,48 @@ export class OverlayV1State__dataResultData_Struct extends ethereum.Tuple {
   }
 }
 
+export class OverlayV1State__marketStateResultState_Struct extends ethereum.Tuple {
+  get bid(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get ask(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get mid(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get volumeBid(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get volumeAsk(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get oiLong(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get oiShort(): BigInt {
+    return this[6].toBigInt();
+  }
+
+  get capOi(): BigInt {
+    return this[7].toBigInt();
+  }
+
+  get circuitBreakerLevel(): BigInt {
+    return this[8].toBigInt();
+  }
+
+  get fundingRate(): BigInt {
+    return this[9].toBigInt();
+  }
+}
+
 export class OverlayV1State__oisResult {
   value0: BigInt;
   value1: BigInt;
@@ -129,18 +171,21 @@ export class OverlayV1State extends ethereum.SmartContract {
     return new OverlayV1State("OverlayV1State", address);
   }
 
-  ask(feed: Address, fractionOfCapOi: BigInt): BigInt {
+  ask(market: Address, fractionOfCapOi: BigInt): BigInt {
     let result = super.call("ask", "ask(address,uint256):(uint256)", [
-      ethereum.Value.fromAddress(feed),
+      ethereum.Value.fromAddress(market),
       ethereum.Value.fromUnsignedBigInt(fractionOfCapOi)
     ]);
 
     return result[0].toBigInt();
   }
 
-  try_ask(feed: Address, fractionOfCapOi: BigInt): ethereum.CallResult<BigInt> {
+  try_ask(
+    market: Address,
+    fractionOfCapOi: BigInt
+  ): ethereum.CallResult<BigInt> {
     let result = super.tryCall("ask", "ask(address,uint256):(uint256)", [
-      ethereum.Value.fromAddress(feed),
+      ethereum.Value.fromAddress(market),
       ethereum.Value.fromUnsignedBigInt(fractionOfCapOi)
     ]);
     if (result.reverted) {
@@ -150,18 +195,21 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  bid(feed: Address, fractionOfCapOi: BigInt): BigInt {
+  bid(market: Address, fractionOfCapOi: BigInt): BigInt {
     let result = super.call("bid", "bid(address,uint256):(uint256)", [
-      ethereum.Value.fromAddress(feed),
+      ethereum.Value.fromAddress(market),
       ethereum.Value.fromUnsignedBigInt(fractionOfCapOi)
     ]);
 
     return result[0].toBigInt();
   }
 
-  try_bid(feed: Address, fractionOfCapOi: BigInt): ethereum.CallResult<BigInt> {
+  try_bid(
+    market: Address,
+    fractionOfCapOi: BigInt
+  ): ethereum.CallResult<BigInt> {
     let result = super.tryCall("bid", "bid(address,uint256):(uint256)", [
-      ethereum.Value.fromAddress(feed),
+      ethereum.Value.fromAddress(market),
       ethereum.Value.fromUnsignedBigInt(fractionOfCapOi)
     ]);
     if (result.reverted) {
@@ -171,17 +219,17 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  capOi(feed: Address): BigInt {
+  capOi(market: Address): BigInt {
     let result = super.call("capOi", "capOi(address):(uint256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
 
     return result[0].toBigInt();
   }
 
-  try_capOi(feed: Address): ethereum.CallResult<BigInt> {
+  try_capOi(market: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall("capOi", "capOi(address):(uint256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -190,21 +238,21 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  circuitBreakerLevel(feed: Address): BigInt {
+  circuitBreakerLevel(market: Address): BigInt {
     let result = super.call(
       "circuitBreakerLevel",
       "circuitBreakerLevel(address):(uint256)",
-      [ethereum.Value.fromAddress(feed)]
+      [ethereum.Value.fromAddress(market)]
     );
 
     return result[0].toBigInt();
   }
 
-  try_circuitBreakerLevel(feed: Address): ethereum.CallResult<BigInt> {
+  try_circuitBreakerLevel(market: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "circuitBreakerLevel",
       "circuitBreakerLevel(address):(uint256)",
-      [ethereum.Value.fromAddress(feed)]
+      [ethereum.Value.fromAddress(market)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -213,12 +261,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  collateral(feed: Address, owner: Address, id: BigInt): BigInt {
+  collateral(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call(
       "collateral",
       "collateral(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -228,7 +276,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_collateral(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -236,7 +284,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "collateral",
       "collateral(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -248,9 +296,9 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  cost(feed: Address, owner: Address, id: BigInt): BigInt {
+  cost(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call("cost", "cost(address,address,uint256):(uint256)", [
-      ethereum.Value.fromAddress(feed),
+      ethereum.Value.fromAddress(market),
       ethereum.Value.fromAddress(owner),
       ethereum.Value.fromUnsignedBigInt(id)
     ]);
@@ -259,7 +307,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_cost(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -267,7 +315,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "cost",
       "cost(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -308,9 +356,9 @@ export class OverlayV1State extends ethereum.SmartContract {
     );
   }
 
-  debt(feed: Address, owner: Address, id: BigInt): BigInt {
+  debt(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call("debt", "debt(address,address,uint256):(uint256)", [
-      ethereum.Value.fromAddress(feed),
+      ethereum.Value.fromAddress(market),
       ethereum.Value.fromAddress(owner),
       ethereum.Value.fromUnsignedBigInt(id)
     ]);
@@ -319,7 +367,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_debt(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -327,7 +375,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "debt",
       "debt(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -354,21 +402,30 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  fractionOfCapOi(feed: Address, oi: BigInt): BigInt {
+  fractionOfCapOi(market: Address, oi: BigInt): BigInt {
     let result = super.call(
       "fractionOfCapOi",
       "fractionOfCapOi(address,uint256):(uint256)",
-      [ethereum.Value.fromAddress(feed), ethereum.Value.fromUnsignedBigInt(oi)]
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(oi)
+      ]
     );
 
     return result[0].toBigInt();
   }
 
-  try_fractionOfCapOi(feed: Address, oi: BigInt): ethereum.CallResult<BigInt> {
+  try_fractionOfCapOi(
+    market: Address,
+    oi: BigInt
+  ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "fractionOfCapOi",
       "fractionOfCapOi(address,uint256):(uint256)",
-      [ethereum.Value.fromAddress(feed), ethereum.Value.fromUnsignedBigInt(oi)]
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(oi)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -377,17 +434,17 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  fundingRate(feed: Address): BigInt {
+  fundingRate(market: Address): BigInt {
     let result = super.call("fundingRate", "fundingRate(address):(int256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
 
     return result[0].toBigInt();
   }
 
-  try_fundingRate(feed: Address): ethereum.CallResult<BigInt> {
+  try_fundingRate(market: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall("fundingRate", "fundingRate(address):(int256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -396,12 +453,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  liquidatable(feed: Address, owner: Address, id: BigInt): boolean {
+  liquidatable(market: Address, owner: Address, id: BigInt): boolean {
     let result = super.call(
       "liquidatable",
       "liquidatable(address,address,uint256):(bool)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -411,7 +468,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_liquidatable(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<boolean> {
@@ -419,7 +476,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "liquidatable",
       "liquidatable(address,address,uint256):(bool)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -431,12 +488,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  liquidationFee(feed: Address, owner: Address, id: BigInt): BigInt {
+  liquidationFee(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call(
       "liquidationFee",
       "liquidationFee(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -446,7 +503,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_liquidationFee(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -454,7 +511,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "liquidationFee",
       "liquidationFee(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -466,12 +523,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  liquidationPrice(feed: Address, owner: Address, id: BigInt): BigInt {
+  liquidationPrice(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call(
       "liquidationPrice",
       "liquidationPrice(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -481,7 +538,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_liquidationPrice(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -489,7 +546,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "liquidationPrice",
       "liquidationPrice(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -501,12 +558,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  maintenanceMargin(feed: Address, owner: Address, id: BigInt): BigInt {
+  maintenanceMargin(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call(
       "maintenanceMargin",
       "maintenanceMargin(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -516,7 +573,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_maintenanceMargin(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -524,7 +581,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "maintenanceMargin",
       "maintenanceMargin(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -537,7 +594,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   marginExcessBeforeLiquidation(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): BigInt {
@@ -545,7 +602,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "marginExcessBeforeLiquidation",
       "marginExcessBeforeLiquidation(address,address,uint256):(int256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -555,7 +612,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_marginExcessBeforeLiquidation(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -563,7 +620,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "marginExcessBeforeLiquidation",
       "marginExcessBeforeLiquidation(address,address,uint256):(int256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -594,17 +651,48 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  mid(feed: Address): BigInt {
+  marketState(market: Address): OverlayV1State__marketStateResultState_Struct {
+    let result = super.call(
+      "marketState",
+      "marketState(address):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,int256))",
+      [ethereum.Value.fromAddress(market)]
+    );
+
+    return changetype<OverlayV1State__marketStateResultState_Struct>(
+      result[0].toTuple()
+    );
+  }
+
+  try_marketState(
+    market: Address
+  ): ethereum.CallResult<OverlayV1State__marketStateResultState_Struct> {
+    let result = super.tryCall(
+      "marketState",
+      "marketState(address):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,int256))",
+      [ethereum.Value.fromAddress(market)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<OverlayV1State__marketStateResultState_Struct>(
+        value[0].toTuple()
+      )
+    );
+  }
+
+  mid(market: Address): BigInt {
     let result = super.call("mid", "mid(address):(uint256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
 
     return result[0].toBigInt();
   }
 
-  try_mid(feed: Address): ethereum.CallResult<BigInt> {
+  try_mid(market: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall("mid", "mid(address):(uint256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -613,17 +701,17 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  minted(feed: Address): BigInt {
+  minted(market: Address): BigInt {
     let result = super.call("minted", "minted(address):(int256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
 
     return result[0].toBigInt();
   }
 
-  try_minted(feed: Address): ethereum.CallResult<BigInt> {
+  try_minted(market: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall("minted", "minted(address):(int256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -632,12 +720,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  notional(feed: Address, owner: Address, id: BigInt): BigInt {
+  notional(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call(
       "notional",
       "notional(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -647,7 +735,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_notional(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -655,7 +743,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "notional",
       "notional(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -667,9 +755,9 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  oi(feed: Address, owner: Address, id: BigInt): BigInt {
+  oi(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call("oi", "oi(address,address,uint256):(uint256)", [
-      ethereum.Value.fromAddress(feed),
+      ethereum.Value.fromAddress(market),
       ethereum.Value.fromAddress(owner),
       ethereum.Value.fromUnsignedBigInt(id)
     ]);
@@ -678,12 +766,12 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_oi(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall("oi", "oi(address,address,uint256):(uint256)", [
-      ethereum.Value.fromAddress(feed),
+      ethereum.Value.fromAddress(market),
       ethereum.Value.fromAddress(owner),
       ethereum.Value.fromUnsignedBigInt(id)
     ]);
@@ -694,9 +782,9 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  ois(feed: Address): OverlayV1State__oisResult {
+  ois(market: Address): OverlayV1State__oisResult {
     let result = super.call("ois", "ois(address):(uint256,uint256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
 
     return new OverlayV1State__oisResult(
@@ -705,9 +793,9 @@ export class OverlayV1State extends ethereum.SmartContract {
     );
   }
 
-  try_ois(feed: Address): ethereum.CallResult<OverlayV1State__oisResult> {
+  try_ois(market: Address): ethereum.CallResult<OverlayV1State__oisResult> {
     let result = super.tryCall("ois", "ois(address):(uint256,uint256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -719,7 +807,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   position(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): OverlayV1State__positionResultPosition_Struct {
@@ -727,7 +815,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "position",
       "position(address,address,uint256):((uint96,uint96,uint48,bool,bool,uint256))",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -739,7 +827,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_position(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<OverlayV1State__positionResultPosition_Struct> {
@@ -747,7 +835,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "position",
       "position(address,address,uint256):((uint96,uint96,uint48,bool,bool,uint256))",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -763,11 +851,11 @@ export class OverlayV1State extends ethereum.SmartContract {
     );
   }
 
-  prices(feed: Address): OverlayV1State__pricesResult {
+  prices(market: Address): OverlayV1State__pricesResult {
     let result = super.call(
       "prices",
       "prices(address):(uint256,uint256,uint256)",
-      [ethereum.Value.fromAddress(feed)]
+      [ethereum.Value.fromAddress(market)]
     );
 
     return new OverlayV1State__pricesResult(
@@ -777,11 +865,13 @@ export class OverlayV1State extends ethereum.SmartContract {
     );
   }
 
-  try_prices(feed: Address): ethereum.CallResult<OverlayV1State__pricesResult> {
+  try_prices(
+    market: Address
+  ): ethereum.CallResult<OverlayV1State__pricesResult> {
     let result = super.tryCall(
       "prices",
       "prices(address):(uint256,uint256,uint256)",
-      [ethereum.Value.fromAddress(feed)]
+      [ethereum.Value.fromAddress(market)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -796,12 +886,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     );
   }
 
-  tradingFee(feed: Address, owner: Address, id: BigInt): BigInt {
+  tradingFee(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call(
       "tradingFee",
       "tradingFee(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -811,7 +901,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_tradingFee(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -819,7 +909,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "tradingFee",
       "tradingFee(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -831,12 +921,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  value(feed: Address, owner: Address, id: BigInt): BigInt {
+  value(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call(
       "value",
       "value(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -846,7 +936,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_value(
-    feed: Address,
+    market: Address,
     owner: Address,
     id: BigInt
   ): ethereum.CallResult<BigInt> {
@@ -854,7 +944,7 @@ export class OverlayV1State extends ethereum.SmartContract {
       "value",
       "value(address,address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
       ]
@@ -866,12 +956,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  volumeAsk(feed: Address, fractionOfCapOi: BigInt): BigInt {
+  volumeAsk(market: Address, fractionOfCapOi: BigInt): BigInt {
     let result = super.call(
       "volumeAsk",
       "volumeAsk(address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromUnsignedBigInt(fractionOfCapOi)
       ]
     );
@@ -880,14 +970,14 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_volumeAsk(
-    feed: Address,
+    market: Address,
     fractionOfCapOi: BigInt
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "volumeAsk",
       "volumeAsk(address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromUnsignedBigInt(fractionOfCapOi)
       ]
     );
@@ -898,12 +988,12 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  volumeBid(feed: Address, fractionOfCapOi: BigInt): BigInt {
+  volumeBid(market: Address, fractionOfCapOi: BigInt): BigInt {
     let result = super.call(
       "volumeBid",
       "volumeBid(address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromUnsignedBigInt(fractionOfCapOi)
       ]
     );
@@ -912,14 +1002,14 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_volumeBid(
-    feed: Address,
+    market: Address,
     fractionOfCapOi: BigInt
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "volumeBid",
       "volumeBid(address,uint256):(uint256)",
       [
-        ethereum.Value.fromAddress(feed),
+        ethereum.Value.fromAddress(market),
         ethereum.Value.fromUnsignedBigInt(fractionOfCapOi)
       ]
     );
@@ -930,9 +1020,9 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  volumes(feed: Address): OverlayV1State__volumesResult {
+  volumes(market: Address): OverlayV1State__volumesResult {
     let result = super.call("volumes", "volumes(address):(uint256,uint256)", [
-      ethereum.Value.fromAddress(feed)
+      ethereum.Value.fromAddress(market)
     ]);
 
     return new OverlayV1State__volumesResult(
@@ -942,12 +1032,12 @@ export class OverlayV1State extends ethereum.SmartContract {
   }
 
   try_volumes(
-    feed: Address
+    market: Address
   ): ethereum.CallResult<OverlayV1State__volumesResult> {
     let result = super.tryCall(
       "volumes",
       "volumes(address):(uint256,uint256)",
-      [ethereum.Value.fromAddress(feed)]
+      [ethereum.Value.fromAddress(market)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
