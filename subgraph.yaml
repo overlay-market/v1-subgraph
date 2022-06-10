@@ -4,9 +4,9 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: kovan
+    network: rinkeby
     source:
-      address: "0x8cCD181113c7Ae40f31D5e8178a98A1A60B55c4C"
+      address: "0xE79BD387201EC0c33c9539294056652bC3b32B7D"
       abi: OverlayV1Factory
       startBlock: 31363554
     mapping:
@@ -45,7 +45,7 @@ dataSources:
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: kovan
+    network: rinkeby
     source:
       abi: OverlayV1Market
     mapping:
