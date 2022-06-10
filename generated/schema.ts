@@ -389,7 +389,7 @@ export class Position extends Entity {
     this.set("initialDebt", Value.fromBigInt(BigInt.zero()));
     this.set("initialCollateral", Value.fromBigInt(BigInt.zero()));
     this.set("initialNotional", Value.fromBigInt(BigInt.zero()));
-    this.set("leverage", Value.fromBigInt(BigInt.zero()));
+    this.set("leverage", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("isLong", Value.fromBoolean(false));
     this.set("entryPrice", Value.fromBigInt(BigInt.zero()));
     this.set("isLiquidated", Value.fromBoolean(false));
@@ -490,13 +490,13 @@ export class Position extends Entity {
     this.set("initialNotional", Value.fromBigInt(value));
   }
 
-  get leverage(): BigInt {
+  get leverage(): BigDecimal {
     let value = this.get("leverage");
-    return value!.toBigInt();
+    return value!.toBigDecimal();
   }
 
-  set leverage(value: BigInt) {
-    this.set("leverage", Value.fromBigInt(value));
+  set leverage(value: BigDecimal) {
+    this.set("leverage", Value.fromBigDecimal(value));
   }
 
   get isLong(): boolean {

@@ -91,11 +91,13 @@ export function handleBuild(event: BuildEvent): void {
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
 
-  let initialCollateral = stateContract.collateral(marketAddress, senderAddress, positionId)
-  let initialNotional = stateContract.collateral(marketAddress, senderAddress, positionId)
+  let initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
+  // let initialNotional = stateContract.notional(marketAddress, senderAddress, positionId)
+  let initialNotional = initialCollateral.plus(event.params.debt)
   position.initialCollateral = initialCollateral
   position.initialNotional = initialNotional
-  position.leverage = initialNotional.div(initialCollateral)
+  // position.leverage = (initialNotional.div(initialCollateral)).toBigDecimal()
+  position.leverage = (initialNotional.toBigDecimal()).div(initialCollateral.toBigDecimal())
   position.isLong = event.params.isLong
   position.entryPrice = event.params.price
   position.isLiquidated = false

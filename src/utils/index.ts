@@ -97,12 +97,14 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     // @TO-DO: check stateContract pulls proper position info
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
     position.initialDebt = stateContract.debt(marketAddress, sender, positionId)
-
-    let initialCollateral = stateContract.collateral(marketAddress, sender, positionId)
-    let initialNotional = stateContract.collateral(marketAddress, sender, positionId)
+    
+    let initialCollateral = stateContract.cost(marketAddress, sender, positionId)
+    let initialDebt = stateContract.debt(marketAddress, sender, positionId)
+    // let initialNotional = stateContract.notional(marketAddress, sender, positionId)
+    let initialNotional = initialCollateral.plus(initialDebt)
     position.initialCollateral = initialCollateral
     position.initialNotional = initialNotional
-    position.leverage = initialNotional.div(initialCollateral)
+    position.leverage = (initialNotional.div(initialCollateral)).toBigDecimal()
 
     // @TO-DO: pull position isLong value from periphery
     let isLong = stateContract.position(marketAddress, sender, positionId).isLong

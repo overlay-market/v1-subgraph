@@ -86,7 +86,7 @@ type Position @entity {
   # initial notional at time of building position
   initialNotional: BigInt!
   # leverage taken on position
-  leverage: BigInt!
+  leverage: BigDecimal!
   # long/short
   isLong: Boolean!
   # entry price when building position
