@@ -148,8 +148,6 @@ export class Market extends Entity {
     this.set("minCollateral", Value.fromBigInt(BigInt.zero()));
     this.set("priceDriftUpperLimit", Value.fromBigInt(BigInt.zero()));
     this.set("averageBlockTime", Value.fromBigInt(BigInt.zero()));
-    this.set("oiLong", Value.fromBigInt(BigInt.zero()));
-    this.set("oiShort", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -347,24 +345,6 @@ export class Market extends Entity {
 
   set averageBlockTime(value: BigInt) {
     this.set("averageBlockTime", Value.fromBigInt(value));
-  }
-
-  get oiLong(): BigInt {
-    let value = this.get("oiLong");
-    return value!.toBigInt();
-  }
-
-  set oiLong(value: BigInt) {
-    this.set("oiLong", Value.fromBigInt(value));
-  }
-
-  get oiShort(): BigInt {
-    let value = this.get("oiShort");
-    return value!.toBigInt();
-  }
-
-  set oiShort(value: BigInt) {
-    this.set("oiShort", Value.fromBigInt(value));
   }
 
   get positions(): Array<string> {

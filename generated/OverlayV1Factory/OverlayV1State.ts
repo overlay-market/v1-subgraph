@@ -104,28 +104,70 @@ export class OverlayV1State__oisResult {
 }
 
 export class OverlayV1State__positionResultPosition_Struct extends ethereum.Tuple {
-  get notional(): BigInt {
+  get notionalInitial(): BigInt {
     return this[0].toBigInt();
   }
 
-  get debt(): BigInt {
+  get debtInitial(): BigInt {
     return this[1].toBigInt();
   }
 
-  get entryToMidRatio(): BigInt {
-    return this[2].toBigInt();
+  get midTick(): i32 {
+    return this[2].toI32();
+  }
+
+  get entryTick(): i32 {
+    return this[3].toI32();
   }
 
   get isLong(): boolean {
-    return this[3].toBoolean();
-  }
-
-  get liquidated(): boolean {
     return this[4].toBoolean();
   }
 
+  get liquidated(): boolean {
+    return this[5].toBoolean();
+  }
+
   get oiShares(): BigInt {
-    return this[5].toBigInt();
+    return this[6].toBigInt();
+  }
+
+  get fractionRemaining(): i32 {
+    return this[7].toI32();
+  }
+}
+
+export class OverlayV1State__positionEstimateResultPosition_Struct extends ethereum.Tuple {
+  get notionalInitial(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get debtInitial(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get midTick(): i32 {
+    return this[2].toI32();
+  }
+
+  get entryTick(): i32 {
+    return this[3].toI32();
+  }
+
+  get isLong(): boolean {
+    return this[4].toBoolean();
+  }
+
+  get liquidated(): boolean {
+    return this[5].toBoolean();
+  }
+
+  get oiShares(): BigInt {
+    return this[6].toBigInt();
+  }
+
+  get fractionRemaining(): i32 {
+    return this[7].toI32();
   }
 }
 
@@ -327,6 +369,49 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  costEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): BigInt {
+    let result = super.call(
+      "costEstimate",
+      "costEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_costEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "costEstimate",
+      "costEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   data(feed: Address): OverlayV1State__dataResultData_Struct {
     let result = super.call(
       "data",
@@ -378,6 +463,49 @@ export class OverlayV1State extends ethereum.SmartContract {
         ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  debtEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): BigInt {
+    let result = super.call(
+      "debtEstimate",
+      "debtEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_debtEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "debtEstimate",
+      "debtEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
       ]
     );
     if (result.reverted) {
@@ -558,6 +686,49 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  liquidationPriceEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): BigInt {
+    let result = super.call(
+      "liquidationPriceEstimate",
+      "liquidationPriceEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_liquidationPriceEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "liquidationPriceEstimate",
+      "liquidationPriceEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   maintenanceMargin(market: Address, owner: Address, id: BigInt): BigInt {
     let result = super.call(
       "maintenanceMargin",
@@ -584,6 +755,49 @@ export class OverlayV1State extends ethereum.SmartContract {
         ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
         ethereum.Value.fromUnsignedBigInt(id)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  maintenanceMarginEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): BigInt {
+    let result = super.call(
+      "maintenanceMarginEstimate",
+      "maintenanceMarginEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_maintenanceMarginEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "maintenanceMarginEstimate",
+      "maintenanceMarginEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
       ]
     );
     if (result.reverted) {
@@ -782,6 +996,49 @@ export class OverlayV1State extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  oiEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): BigInt {
+    let result = super.call(
+      "oiEstimate",
+      "oiEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_oiEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "oiEstimate",
+      "oiEstimate(address,uint256,uint256,bool):(uint256)",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   ois(market: Address): OverlayV1State__oisResult {
     let result = super.call("ois", "ois(address):(uint256,uint256)", [
       ethereum.Value.fromAddress(market)
@@ -813,7 +1070,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   ): OverlayV1State__positionResultPosition_Struct {
     let result = super.call(
       "position",
-      "position(address,address,uint256):((uint96,uint96,uint48,bool,bool,uint256))",
+      "position(address,address,uint256):((uint96,uint96,int24,int24,bool,bool,uint240,uint16))",
       [
         ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
@@ -833,7 +1090,7 @@ export class OverlayV1State extends ethereum.SmartContract {
   ): ethereum.CallResult<OverlayV1State__positionResultPosition_Struct> {
     let result = super.tryCall(
       "position",
-      "position(address,address,uint256):((uint96,uint96,uint48,bool,bool,uint256))",
+      "position(address,address,uint256):((uint96,uint96,int24,int24,bool,bool,uint240,uint16))",
       [
         ethereum.Value.fromAddress(market),
         ethereum.Value.fromAddress(owner),
@@ -846,6 +1103,57 @@ export class OverlayV1State extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(
       changetype<OverlayV1State__positionResultPosition_Struct>(
+        value[0].toTuple()
+      )
+    );
+  }
+
+  positionEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): OverlayV1State__positionEstimateResultPosition_Struct {
+    let result = super.call(
+      "positionEstimate",
+      "positionEstimate(address,uint256,uint256,bool):((uint96,uint96,int24,int24,bool,bool,uint240,uint16))",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+
+    return changetype<OverlayV1State__positionEstimateResultPosition_Struct>(
+      result[0].toTuple()
+    );
+  }
+
+  try_positionEstimate(
+    market: Address,
+    collateral: BigInt,
+    leverage: BigInt,
+    isLong: boolean
+  ): ethereum.CallResult<
+    OverlayV1State__positionEstimateResultPosition_Struct
+  > {
+    let result = super.tryCall(
+      "positionEstimate",
+      "positionEstimate(address,uint256,uint256,bool):((uint96,uint96,int24,int24,bool,bool,uint240,uint16))",
+      [
+        ethereum.Value.fromAddress(market),
+        ethereum.Value.fromUnsignedBigInt(collateral),
+        ethereum.Value.fromUnsignedBigInt(leverage),
+        ethereum.Value.fromBoolean(isLong)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<OverlayV1State__positionEstimateResultPosition_Struct>(
         value[0].toTuple()
       )
     );

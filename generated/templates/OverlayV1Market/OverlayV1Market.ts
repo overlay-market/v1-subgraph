@@ -354,18 +354,22 @@ export class OverlayV1Market__oiAfterFundingResult {
 export class OverlayV1Market__positionsResult {
   value0: BigInt;
   value1: BigInt;
-  value2: BigInt;
-  value3: boolean;
+  value2: i32;
+  value3: i32;
   value4: boolean;
-  value5: BigInt;
+  value5: boolean;
+  value6: BigInt;
+  value7: i32;
 
   constructor(
     value0: BigInt,
     value1: BigInt,
-    value2: BigInt,
-    value3: boolean,
+    value2: i32,
+    value3: i32,
     value4: boolean,
-    value5: BigInt
+    value5: boolean,
+    value6: BigInt,
+    value7: i32
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -373,16 +377,23 @@ export class OverlayV1Market__positionsResult {
     this.value3 = value3;
     this.value4 = value4;
     this.value5 = value5;
+    this.value6 = value6;
+    this.value7 = value7;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
     let map = new TypedMap<string, ethereum.Value>();
     map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
-    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
-    map.set("value3", ethereum.Value.fromBoolean(this.value3));
+    map.set("value2", ethereum.Value.fromI32(this.value2));
+    map.set("value3", ethereum.Value.fromI32(this.value3));
     map.set("value4", ethereum.Value.fromBoolean(this.value4));
-    map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
+    map.set("value5", ethereum.Value.fromBoolean(this.value5));
+    map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
+    map.set(
+      "value7",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value7))
+    );
     return map;
   }
 }
@@ -982,17 +993,19 @@ export class OverlayV1Market extends ethereum.SmartContract {
   positions(param0: Bytes): OverlayV1Market__positionsResult {
     let result = super.call(
       "positions",
-      "positions(bytes32):(uint96,uint96,uint48,bool,bool,uint256)",
+      "positions(bytes32):(uint96,uint96,int24,int24,bool,bool,uint240,uint16)",
       [ethereum.Value.fromFixedBytes(param0)]
     );
 
     return new OverlayV1Market__positionsResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
-      result[2].toBigInt(),
-      result[3].toBoolean(),
+      result[2].toI32(),
+      result[3].toI32(),
       result[4].toBoolean(),
-      result[5].toBigInt()
+      result[5].toBoolean(),
+      result[6].toBigInt(),
+      result[7].toI32()
     );
   }
 
@@ -1001,7 +1014,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
   ): ethereum.CallResult<OverlayV1Market__positionsResult> {
     let result = super.tryCall(
       "positions",
-      "positions(bytes32):(uint96,uint96,uint48,bool,bool,uint256)",
+      "positions(bytes32):(uint96,uint96,int24,int24,bool,bool,uint240,uint16)",
       [ethereum.Value.fromFixedBytes(param0)]
     );
     if (result.reverted) {
@@ -1012,10 +1025,12 @@ export class OverlayV1Market extends ethereum.SmartContract {
       new OverlayV1Market__positionsResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
-        value[2].toBigInt(),
-        value[3].toBoolean(),
+        value[2].toI32(),
+        value[3].toI32(),
         value[4].toBoolean(),
-        value[5].toBigInt()
+        value[5].toBoolean(),
+        value[6].toBigInt(),
+        value[7].toI32()
       )
     );
   }

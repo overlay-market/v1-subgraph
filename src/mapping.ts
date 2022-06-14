@@ -91,6 +91,10 @@ export function handleBuild(event: BuildEvent): void {
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
 
+  // console.log(`marketAddress: ${marketAddress}`);
+  // console.log(`senderAddress: ${senderAddress}`);
+  // console.log(`positionId: ${positionId}`);
+
   let initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
   // let initialNotional = stateContract.notional(marketAddress, senderAddress, positionId)
   let initialNotional = initialCollateral.plus(event.params.debt)
@@ -111,8 +115,8 @@ export function handleBuild(event: BuildEvent): void {
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  market.oiLong = stateContract.ois(marketAddress).value0
-  market.oiShort = stateContract.ois(marketAddress).value1
+  // market.oiLong = stateContract.ois(marketAddress).value0
+  // market.oiShort = stateContract.ois(marketAddress).value1
 
 
   // @TO-DO: events to be grouped with position
@@ -155,8 +159,8 @@ export function handleUnwind(event: UnwindEvent): void {
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  market.oiLong = stateContract.ois(marketAddress).value0
-  market.oiShort = stateContract.ois(marketAddress).value1
+  // market.oiLong = stateContract.ois(marketAddress).value0
+  // market.oiShort = stateContract.ois(marketAddress).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
@@ -198,8 +202,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   // @TO-DO: pass in market contract to load market
   // @TO-DO: update oiLong, oiShort
-  market.oiLong = stateContract.ois(marketAddress).value0
-  market.oiShort = stateContract.ois(marketAddress).value1
+  // market.oiLong = stateContract.ois(marketAddress).value0
+  // market.oiShort = stateContract.ois(marketAddress).value1
 
   // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
