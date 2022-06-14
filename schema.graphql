@@ -61,9 +61,9 @@ type Market @entity {
   # average block time of the respective chain
   averageBlockTime: BigInt!
   # total current oi long
-  oiLong: BigInt!
+  # oiLong: BigInt!
   # total current oi short
-  oiShort: BigInt!
+  # oiShort: BigInt!
   # positions held in market
   positions: [Position!]! @derivedFrom(field: "market")
 }

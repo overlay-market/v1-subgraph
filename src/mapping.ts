@@ -44,7 +44,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   let marketContract = OverlayV1Market.bind(event.params.market)
   let market = new Market(marketAddress.toHexString()) as Market
 
-  market.feedAddress = feedAddress.toHexString();
+  market.feedAddress = feedAddress.toHexString()
   market.factory = factory.id
   market.createdAtTimestamp = event.block.timestamp
   market.createdAtBlockNumber = event.block.number
@@ -64,8 +64,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.minCollateral = marketContract.params(integer.fromNumber(12))
   market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
-  market.oiLong = stateContract.ois(marketAddress).value0
-  market.oiShort = stateContract.ois(marketAddress).value1
+  // market.oiLong = stateContract.ois(marketAddress).value0
+  // market.oiShort = stateContract.ois(marketAddress).value1
 
   market.save()
   // create tracked market contract based on template

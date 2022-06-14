@@ -73,8 +73,8 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
     // @TO-DO: calculate current total oi based on oiState
-    market.oiLong = stateContract.ois(marketAddress).value0
-    market.oiShort = stateContract.ois(marketAddress).value1
+    // market.oiLong = stateContract.ois(marketAddress).value0
+    // market.oiShort = stateContract.ois(marketAddress).value1
 
     MarketTemplate.create(marketAddress)
   }
