@@ -44,7 +44,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   let marketContract = OverlayV1Market.bind(event.params.market)
   let market = new Market(marketAddress.toHexString()) as Market
 
-  market.feedAddress = feedAddress.toHexString()
+  market.feedAddress = feedAddress.toHexString();
   market.factory = factory.id
   market.createdAtTimestamp = event.block.timestamp
   market.createdAtBlockNumber = event.block.number

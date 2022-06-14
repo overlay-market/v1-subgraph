@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0xE79BD387201EC0c33c9539294056652bC3b32B7D"
       abi: OverlayV1Factory
-      startBlock: 31363554
+      startBlock: 10817494
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
