@@ -19,7 +19,6 @@ export function loadTransaction(event: ethereum.Event): Transaction {
   return transaction as Transaction
 }
 
-// @TO-DO: loadFactory to load factory based on address
 export function loadFactory(factoryAddress: string): Factory {
   let factory = Factory.load(factoryAddress)
   if (factory === null) {
@@ -29,17 +28,13 @@ export function loadFactory(factoryAddress: string): Factory {
     factory.totalVolumeOVL = ZERO_BD
     factory.totalFeesOVL = ZERO_BD
     factory.totalValueLockedOVL = ZERO_BD
-    // @TO-DO: require event to pass in feeRecipient address
     factory.feeRecipient = factoryContract.feeRecipient().toHexString()
-    // @TO-DO: check if owner field is needed
     factory.owner = factoryContract.deployer().toHexString()
   }
 
   return factory
 }
 
-// @TO-DO: loadMarket util function to load market based on contract address
-// can we call multiple contract view functions in a single handler function?
 export function loadMarket(event: ethereum.Event, marketAddress: Address): Market {
   let marketId = marketAddress.toHexString()
   let market = Market.load(marketId)
@@ -50,9 +45,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market = new Market(marketId)
     let marketContract = OverlayV1Market.bind(marketAddress)
 
-    // @TO-DO: create feed entity
     market.feedAddress = marketContract.feed().toHexString()
-    // @TO-DO: load factory to pass in instead of using string
     market.factory = marketContract.factory().toHexString()
 
     market.createdAtTimestamp = event.block.timestamp
@@ -72,7 +65,6 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.minCollateral = marketContract.params(integer.fromNumber(12))
     market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
-    // @TO-DO: calculate current total oi based on oiState
     market.oiLong = stateContract.ois(marketAddress).value0
     market.oiShort = stateContract.ois(marketAddress).value1
 
@@ -82,11 +74,11 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
   return market;
 }
 
-// @TO-DO: create function to load position based on market address and position id
 export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
   let marketPositionId = market.id.concat('-').concat(positionId.toHexString())
   let marketAddress = Address.fromString(market.id)
   let position = Position.load(marketPositionId)
+
   // create new Position if null
   if (position === null) {
     position = new Position(marketPositionId)
@@ -94,19 +86,16 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.owner = sender.toHexString()
     position.market = market.id
 
-    // @TO-DO: check stateContract pulls proper position info
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
     position.initialDebt = stateContract.debt(marketAddress, sender, positionId)
     
     let initialCollateral = stateContract.cost(marketAddress, sender, positionId)
     let initialDebt = stateContract.debt(marketAddress, sender, positionId)
-    // let initialNotional = stateContract.notional(marketAddress, sender, positionId)
     let initialNotional = initialCollateral.plus(initialDebt)
     position.initialCollateral = initialCollateral
     position.initialNotional = initialNotional
     position.leverage = (initialNotional.div(initialCollateral)).toBigDecimal()
 
-    // @TO-DO: pull position isLong value from periphery
     let isLong = stateContract.position(marketAddress, sender, positionId).isLong
     position.isLong = isLong
 

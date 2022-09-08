@@ -26,14 +26,12 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   if (factory === null) {
     factory = new Factory(FACTORY_ADDRESS)
     factory.marketCount = ZERO_BI
-    // @TO-DO: calculate global factory values below
     factory.txCount = ZERO_BI
     factory.totalVolumeOVL = ZERO_BD
     factory.totalFeesOVL = ZERO_BD
     factory.totalValueLockedOVL = ZERO_BD
-    // @TO-DO: require event to pass in feeRecipient address
+
     factory.feeRecipient = factoryContract.feeRecipient().toHexString()
-    // @TO-DO: check if owner field is needed
     factory.owner = factoryContract.deployer().toHexString()
   }
 
@@ -48,7 +46,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.factory = factory.id
   market.createdAtTimestamp = event.block.timestamp
   market.createdAtBlockNumber = event.block.number
-  // @TO-DO: pass back market params
+
   market.k = marketContract.params(integer.fromNumber(0))
   market.lmbda = marketContract.params(integer.fromNumber(1))
   market.delta = marketContract.params(integer.fromNumber(2))
@@ -86,36 +84,28 @@ export function handleBuild(event: BuildEvent): void {
   
   position.owner = sender.id
   position.positionId = positionId.toHexString()
-  // @TO-DO: check if below passes in market contract address
   position.market = market.id
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
 
   let initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
-  // let initialNotional = stateContract.notional(marketAddress, senderAddress, positionId)
   let initialNotional = initialCollateral.plus(event.params.debt)
   position.initialCollateral = initialCollateral
   position.initialNotional = initialNotional
-  // position.leverage = (initialNotional.div(initialCollateral)).toBigDecimal()
   position.leverage = (initialNotional.toBigDecimal()).div(initialCollateral.toBigDecimal())
   position.isLong = event.params.isLong
   position.entryPrice = event.params.price
   position.isLiquidated = false
   position.currentOi = event.params.oi
   position.currentDebt = event.params.debt
-  // @TO-DO: pass in leverage position built with
   position.mint = ZERO_BI
   position.createdAtTimestamp = event.block.timestamp
   position.createdAtBlockNumber = event.block.number
   position.transaction = loadTransaction(event).id
 
-  // @TO-DO: pass in market contract to load market
-  // @TO-DO: update oiLong, oiShort
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
 
-
-  // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
   let build = new Build(sender.id) as Build
 
@@ -148,17 +138,13 @@ export function handleUnwind(event: UnwindEvent): void {
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
 
-  // @TO-DO: update position using periphery
   position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
 
-  // @TO-DO: pass in market contract to load market
-  // @TO-DO: update oiLong, oiShort
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
 
-  // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
   let unwind = new Unwind(sender.id) as Unwind
 
@@ -190,18 +176,14 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
 
-  // @TO-DO: update position using periphery
   position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
 
-  // @TO-DO: pass in market contract to load market
-  // @TO-DO: update oiLong, oiShort
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
 
-  // @TO-DO: events to be grouped with position
   let transaction = loadTransaction(event)
   let liquidate = new Liquidate(sender.id) as Liquidate
 

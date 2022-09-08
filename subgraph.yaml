@@ -6,9 +6,9 @@ dataSources:
     name: OverlayV1Factory
     network: kovan
     source:
-      address: "0x8cCD181113c7Ae40f31D5e8178a98A1A60B55c4C"
+      address: "0xc10e8E06b1b8DADB8E94120650414AFfedD17aF9"
       abi: OverlayV1Factory
-      startBlock: 31363554
+      startBlock: 32441161
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
