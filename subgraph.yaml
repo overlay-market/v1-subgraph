@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: kovan
+    network: goerli
     source:
-      address: "0xc10e8E06b1b8DADB8E94120650414AFfedD17aF9"
+      address: "0x3B251a69f290Bc09c36efc85f3c5C4166cF8594a"
       abi: OverlayV1Factory
-      startBlock: 32441161
+      startBlock: 7623923
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5

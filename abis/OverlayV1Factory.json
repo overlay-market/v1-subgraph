@@ -1,11 +1,38 @@
 [
   {
     "inputs": [
-      { "internalType": "address", "name": "_ovl", "type": "address" },
-      { "internalType": "address", "name": "_feeRecipient", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_ovl",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_feeRecipient",
+        "type": "address"
+      }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "market",
+        "type": "address"
+      }
+    ],
+    "name": "EmergencyShutdown",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -43,6 +70,25 @@
       }
     ],
     "name": "FeedFactoryAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "feedFactory",
+        "type": "address"
+      }
+    ],
+    "name": "FeedFactoryRemoved",
     "type": "event"
   },
   {
@@ -102,22 +148,50 @@
     "type": "event"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "PARAMS_MAX",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "PARAMS_MIN",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "feedFactory", "type": "address" }
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "PARAMS_MIN",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "feedFactory",
+        "type": "address"
+      }
     ],
     "name": "addFeedFactory",
     "outputs": [],
@@ -126,13 +200,29 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "feedFactory", "type": "address" },
-      { "internalType": "address", "name": "feed", "type": "address" },
-      { "internalType": "uint256[15]", "name": "params", "type": "uint256[15]" }
+      {
+        "internalType": "address",
+        "name": "feedFactory",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "feed",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[15]",
+        "name": "params",
+        "type": "uint256[15]"
+      }
     ],
     "name": "deployMarket",
     "outputs": [
-      { "internalType": "address", "name": "market_", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "market_",
+        "type": "address"
+      }
     ],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -153,28 +243,70 @@
   {
     "inputs": [],
     "name": "feeRecipient",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "getMarket",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "isFeedFactory",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "isMarket",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -193,7 +325,24 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_feeRecipient", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "feedFactory",
+        "type": "address"
+      }
+    ],
+    "name": "removeFeedFactory",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_feeRecipient",
+        "type": "address"
+      }
     ],
     "name": "setFeeRecipient",
     "outputs": [],
@@ -202,15 +351,36 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "feed", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "feed",
+        "type": "address"
+      },
       {
         "internalType": "enum Risk.Parameters",
         "name": "name",
         "type": "uint8"
       },
-      { "internalType": "uint256", "name": "value", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
     ],
     "name": "setRiskParam",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "feed",
+        "type": "address"
+      }
+    ],
+    "name": "shutdown",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
