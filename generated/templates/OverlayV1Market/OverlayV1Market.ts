@@ -48,6 +48,32 @@ export class Build__Params {
   }
 }
 
+export class EmergencyWithdraw extends ethereum.Event {
+  get params(): EmergencyWithdraw__Params {
+    return new EmergencyWithdraw__Params(this);
+  }
+}
+
+export class EmergencyWithdraw__Params {
+  _event: EmergencyWithdraw;
+
+  constructor(event: EmergencyWithdraw) {
+    this._event = event;
+  }
+
+  get sender(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get positionId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get collateral(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class Liquidate extends ethereum.Event {
   get params(): Liquidate__Params {
     return new Liquidate__Params(this);
@@ -354,18 +380,22 @@ export class OverlayV1Market__oiAfterFundingResult {
 export class OverlayV1Market__positionsResult {
   value0: BigInt;
   value1: BigInt;
-  value2: BigInt;
-  value3: boolean;
+  value2: i32;
+  value3: i32;
   value4: boolean;
-  value5: BigInt;
+  value5: boolean;
+  value6: BigInt;
+  value7: i32;
 
   constructor(
     value0: BigInt,
     value1: BigInt,
-    value2: BigInt,
-    value3: boolean,
+    value2: i32,
+    value3: i32,
     value4: boolean,
-    value5: BigInt
+    value5: boolean,
+    value6: BigInt,
+    value7: i32
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -373,16 +403,23 @@ export class OverlayV1Market__positionsResult {
     this.value3 = value3;
     this.value4 = value4;
     this.value5 = value5;
+    this.value6 = value6;
+    this.value7 = value7;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
     let map = new TypedMap<string, ethereum.Value>();
     map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
-    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
-    map.set("value3", ethereum.Value.fromBoolean(this.value3));
+    map.set("value2", ethereum.Value.fromI32(this.value2));
+    map.set("value3", ethereum.Value.fromI32(this.value3));
     map.set("value4", ethereum.Value.fromBoolean(this.value4));
-    map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
+    map.set("value5", ethereum.Value.fromBoolean(this.value5));
+    map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
+    map.set(
+      "value7",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value7))
+    );
     return map;
   }
 }
@@ -647,22 +684,20 @@ export class OverlayV1Market extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  capNotionalAdjustedForCircuitBreaker(cap: BigInt): BigInt {
+  capOiAdjustedForCircuitBreaker(cap: BigInt): BigInt {
     let result = super.call(
-      "capNotionalAdjustedForCircuitBreaker",
-      "capNotionalAdjustedForCircuitBreaker(uint256):(uint256)",
+      "capOiAdjustedForCircuitBreaker",
+      "capOiAdjustedForCircuitBreaker(uint256):(uint256)",
       [ethereum.Value.fromUnsignedBigInt(cap)]
     );
 
     return result[0].toBigInt();
   }
 
-  try_capNotionalAdjustedForCircuitBreaker(
-    cap: BigInt
-  ): ethereum.CallResult<BigInt> {
+  try_capOiAdjustedForCircuitBreaker(cap: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "capNotionalAdjustedForCircuitBreaker",
-      "capNotionalAdjustedForCircuitBreaker(uint256):(uint256)",
+      "capOiAdjustedForCircuitBreaker",
+      "capOiAdjustedForCircuitBreaker(uint256):(uint256)",
       [ethereum.Value.fromUnsignedBigInt(cap)]
     );
     if (result.reverted) {
@@ -800,6 +835,21 @@ export class OverlayV1Market extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  isShutdown(): boolean {
+    let result = super.call("isShutdown", "isShutdown():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_isShutdown(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("isShutdown", "isShutdown():(bool)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   oiAfterFunding(
@@ -982,17 +1032,19 @@ export class OverlayV1Market extends ethereum.SmartContract {
   positions(param0: Bytes): OverlayV1Market__positionsResult {
     let result = super.call(
       "positions",
-      "positions(bytes32):(uint96,uint96,uint48,bool,bool,uint256)",
+      "positions(bytes32):(uint96,uint96,int24,int24,bool,bool,uint240,uint16)",
       [ethereum.Value.fromFixedBytes(param0)]
     );
 
     return new OverlayV1Market__positionsResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
-      result[2].toBigInt(),
-      result[3].toBoolean(),
+      result[2].toI32(),
+      result[3].toI32(),
       result[4].toBoolean(),
-      result[5].toBigInt()
+      result[5].toBoolean(),
+      result[6].toBigInt(),
+      result[7].toI32()
     );
   }
 
@@ -1001,7 +1053,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
   ): ethereum.CallResult<OverlayV1Market__positionsResult> {
     let result = super.tryCall(
       "positions",
-      "positions(bytes32):(uint96,uint96,uint48,bool,bool,uint256)",
+      "positions(bytes32):(uint96,uint96,int24,int24,bool,bool,uint240,uint16)",
       [ethereum.Value.fromFixedBytes(param0)]
     );
     if (result.reverted) {
@@ -1012,10 +1064,12 @@ export class OverlayV1Market extends ethereum.SmartContract {
       new OverlayV1Market__positionsResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
-        value[2].toBigInt(),
-        value[3].toBoolean(),
+        value[2].toI32(),
+        value[3].toI32(),
         value[4].toBoolean(),
-        value[5].toBigInt()
+        value[5].toBoolean(),
+        value[6].toBigInt(),
+        value[7].toI32()
       )
     );
   }
@@ -1248,6 +1302,36 @@ export class BuildCall__Outputs {
   }
 }
 
+export class EmergencyWithdrawCall extends ethereum.Call {
+  get inputs(): EmergencyWithdrawCall__Inputs {
+    return new EmergencyWithdrawCall__Inputs(this);
+  }
+
+  get outputs(): EmergencyWithdrawCall__Outputs {
+    return new EmergencyWithdrawCall__Outputs(this);
+  }
+}
+
+export class EmergencyWithdrawCall__Inputs {
+  _call: EmergencyWithdrawCall;
+
+  constructor(call: EmergencyWithdrawCall) {
+    this._call = call;
+  }
+
+  get positionId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class EmergencyWithdrawCall__Outputs {
+  _call: EmergencyWithdrawCall;
+
+  constructor(call: EmergencyWithdrawCall) {
+    this._call = call;
+  }
+}
+
 export class InitializeCall extends ethereum.Call {
   get inputs(): InitializeCall__Inputs {
     return new InitializeCall__Inputs(this);
@@ -1342,6 +1426,32 @@ export class SetRiskParamCall__Outputs {
   _call: SetRiskParamCall;
 
   constructor(call: SetRiskParamCall) {
+    this._call = call;
+  }
+}
+
+export class ShutdownCall extends ethereum.Call {
+  get inputs(): ShutdownCall__Inputs {
+    return new ShutdownCall__Inputs(this);
+  }
+
+  get outputs(): ShutdownCall__Outputs {
+    return new ShutdownCall__Outputs(this);
+  }
+}
+
+export class ShutdownCall__Inputs {
+  _call: ShutdownCall;
+
+  constructor(call: ShutdownCall) {
+    this._call = call;
+  }
+}
+
+export class ShutdownCall__Outputs {
+  _call: ShutdownCall;
+
+  constructor(call: ShutdownCall) {
     this._call = call;
   }
 }

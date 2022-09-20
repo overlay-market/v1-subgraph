@@ -45,7 +45,7 @@ dataSources:
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: kovan
+    network: goerli
     source:
       abi: OverlayV1Market
     mapping:
