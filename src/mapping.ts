@@ -241,4 +241,6 @@ export function handleParamUpdated(event: ParamUpdated): void {
   market.save()
 }
 
-export function handleEmergencyShutdown(event: EmergencyShutdown): void {}
+export function handleEmergencyShutdown(event: EmergencyShutdown): void {
+  
+}

@@ -66,6 +66,8 @@ type Market @entity {
   oiShort: BigInt!
   # positions held in market
   positions: [Position!]! @derivedFrom(field: "market")
+  # if market is shut down
+  isShutdown: Boolean!
 }
 
 type Position @entity {
