@@ -243,5 +243,8 @@ export function handleParamUpdated(event: ParamUpdated): void {
 }
 
 export function handleEmergencyShutdown(event: EmergencyShutdown): void {
+  let market = loadMarket(event, event.params.market)
+  market.isShutdown = true
 
+  market.save()
 }
