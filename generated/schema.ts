@@ -150,6 +150,7 @@ export class Market extends Entity {
     this.set("averageBlockTime", Value.fromBigInt(BigInt.zero()));
     this.set("oiLong", Value.fromBigInt(BigInt.zero()));
     this.set("oiShort", Value.fromBigInt(BigInt.zero()));
+    this.set("isShutdown", Value.fromBoolean(false));
   }
 
   save(): void {
@@ -374,6 +375,15 @@ export class Market extends Entity {
 
   set positions(value: Array<string>) {
     this.set("positions", Value.fromStringArray(value));
+  }
+
+  get isShutdown(): boolean {
+    let value = this.get("isShutdown");
+    return value!.toBoolean();
+  }
+
+  set isShutdown(value: boolean) {
+    this.set("isShutdown", Value.fromBoolean(value));
   }
 }
 

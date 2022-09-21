@@ -65,6 +65,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
+  market.isShutdown = false
 
   market.save()
   // create tracked market contract based on template
@@ -242,5 +243,5 @@ export function handleParamUpdated(event: ParamUpdated): void {
 }
 
 export function handleEmergencyShutdown(event: EmergencyShutdown): void {
-  
+
 }
