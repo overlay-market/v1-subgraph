@@ -5,7 +5,8 @@ import {
   FeeRecipientUpdated,
   FeedFactoryAdded,
   MarketDeployed,
-  ParamUpdated
+  ParamUpdated,
+  EmergencyShutdown
 } from "../generated/OverlayV1Factory/OverlayV1Factory"
 import {
   OverlayV1Market,
@@ -239,3 +240,5 @@ export function handleParamUpdated(event: ParamUpdated): void {
 
   market.save()
 }
+
+export function handleEmergencyShutdown(event: EmergencyShutdown): void {}

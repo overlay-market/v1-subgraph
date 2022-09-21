@@ -40,7 +40,7 @@ dataSources:
           handler: handleMarketDeployed
         - event: ParamUpdated(indexed address,indexed address,uint8,uint256)
           handler: handleParamUpdated
-        - event: EmergencyShutdown
+        - event: EmergencyShutdown(indexed address,indexed address)
           handler: handleEmergencyShutdown
       file: ./src/mapping.ts
 
