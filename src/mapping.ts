@@ -5,7 +5,8 @@ import {
   FeeRecipientUpdated,
   FeedFactoryAdded,
   MarketDeployed,
-  ParamUpdated
+  ParamUpdated,
+  EmergencyShutdown
 } from "../generated/OverlayV1Factory/OverlayV1Factory"
 import {
   OverlayV1Market,
@@ -64,6 +65,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
+  market.isShutdown = false
 
   market.save()
   // create tracked market contract based on template
@@ -236,6 +238,13 @@ export function handleParamUpdated(event: ParamUpdated): void {
   if (riskParamIndex === RISK_PARAMS.minCollateral) market.minCollateral = updateValue
   if (riskParamIndex === RISK_PARAMS.priceDriftUpperLimit) market.priceDriftUpperLimit = updateValue
   if (riskParamIndex === RISK_PARAMS.averageBlockTime) market.averageBlockTime = updateValue
+
+  market.save()
+}
+
+export function handleEmergencyShutdown(event: EmergencyShutdown): void {
+  let market = loadMarket(event, event.params.market)
+  market.isShutdown = true
 
   market.save()
 }

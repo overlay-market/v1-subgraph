@@ -1,5 +1,9 @@
 [
-  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
   {
     "anonymous": false,
     "inputs": [
@@ -41,6 +45,31 @@
       }
     ],
     "name": "Build",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "positionId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "collateral",
+        "type": "uint256"
+      }
+    ],
+    "name": "EmergencyWithdraw",
     "type": "event"
   },
   {
@@ -121,7 +150,11 @@
     "inputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
           {
             "internalType": "uint256",
             "name": "microWindow",
@@ -152,17 +185,29 @@
             "name": "reserveOverMicroWindow",
             "type": "uint256"
           },
-          { "internalType": "bool", "name": "hasReserve", "type": "bool" }
+          {
+            "internalType": "bool",
+            "name": "hasReserve",
+            "type": "bool"
+          }
         ],
         "internalType": "struct Oracle.Data",
         "name": "data",
         "type": "tuple"
       },
-      { "internalType": "uint256", "name": "volume", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "volume",
+        "type": "uint256"
+      }
     ],
     "name": "ask",
     "outputs": [
-      { "internalType": "uint256", "name": "ask_", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "ask_",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -171,7 +216,11 @@
     "inputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
           {
             "internalType": "uint256",
             "name": "microWindow",
@@ -202,7 +251,11 @@
             "name": "reserveOverMicroWindow",
             "type": "uint256"
           },
-          { "internalType": "bool", "name": "hasReserve", "type": "bool" }
+          {
+            "internalType": "bool",
+            "name": "hasReserve",
+            "type": "bool"
+          }
         ],
         "internalType": "struct Oracle.Data",
         "name": "data",
@@ -210,7 +263,13 @@
       }
     ],
     "name": "backRunBound",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -218,7 +277,11 @@
     "inputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
           {
             "internalType": "uint256",
             "name": "microWindow",
@@ -249,31 +312,63 @@
             "name": "reserveOverMicroWindow",
             "type": "uint256"
           },
-          { "internalType": "bool", "name": "hasReserve", "type": "bool" }
+          {
+            "internalType": "bool",
+            "name": "hasReserve",
+            "type": "bool"
+          }
         ],
         "internalType": "struct Oracle.Data",
         "name": "data",
         "type": "tuple"
       },
-      { "internalType": "uint256", "name": "volume", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "volume",
+        "type": "uint256"
+      }
     ],
     "name": "bid",
     "outputs": [
-      { "internalType": "uint256", "name": "bid_", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "bid_",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "collateral", "type": "uint256" },
-      { "internalType": "uint256", "name": "leverage", "type": "uint256" },
-      { "internalType": "bool", "name": "isLong", "type": "bool" },
-      { "internalType": "uint256", "name": "priceLimit", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "collateral",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "leverage",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isLong",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "priceLimit",
+        "type": "uint256"
+      }
     ],
     "name": "build",
     "outputs": [
-      { "internalType": "uint256", "name": "positionId_", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "positionId_",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -282,7 +377,11 @@
     "inputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
           {
             "internalType": "uint256",
             "name": "microWindow",
@@ -313,23 +412,49 @@
             "name": "reserveOverMicroWindow",
             "type": "uint256"
           },
-          { "internalType": "bool", "name": "hasReserve", "type": "bool" }
+          {
+            "internalType": "bool",
+            "name": "hasReserve",
+            "type": "bool"
+          }
         ],
         "internalType": "struct Oracle.Data",
         "name": "data",
         "type": "tuple"
       },
-      { "internalType": "uint256", "name": "cap", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "cap",
+        "type": "uint256"
+      }
     ],
     "name": "capNotionalAdjustedForBounds",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "cap", "type": "uint256" }],
-    "name": "capNotionalAdjustedForCircuitBreaker",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "cap",
+        "type": "uint256"
+      }
+    ],
+    "name": "capOiAdjustedForCircuitBreaker",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -337,18 +462,40 @@
     "inputs": [
       {
         "components": [
-          { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
-          { "internalType": "uint32", "name": "window", "type": "uint32" },
-          { "internalType": "int192", "name": "accumulator", "type": "int192" }
+          {
+            "internalType": "uint32",
+            "name": "timestamp",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "window",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int192",
+            "name": "accumulator",
+            "type": "int192"
+          }
         ],
         "internalType": "struct Roller.Snapshot",
         "name": "snapshot",
         "type": "tuple"
       },
-      { "internalType": "uint256", "name": "cap", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "cap",
+        "type": "uint256"
+      }
     ],
     "name": "circuitBreaker",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -356,7 +503,11 @@
     "inputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
           {
             "internalType": "uint256",
             "name": "microWindow",
@@ -387,7 +538,11 @@
             "name": "reserveOverMicroWindow",
             "type": "uint256"
           },
-          { "internalType": "bool", "name": "hasReserve", "type": "bool" }
+          {
+            "internalType": "bool",
+            "name": "hasReserve",
+            "type": "bool"
+          }
         ],
         "internalType": "struct Oracle.Data",
         "name": "data",
@@ -395,28 +550,65 @@
       }
     ],
     "name": "dataIsValid",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "dpUpperLimit",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "positionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "emergencyWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "factory",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "feed",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -424,7 +616,11 @@
     "inputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
           {
             "internalType": "uint256",
             "name": "microWindow",
@@ -455,7 +651,11 @@
             "name": "reserveOverMicroWindow",
             "type": "uint256"
           },
-          { "internalType": "bool", "name": "hasReserve", "type": "bool" }
+          {
+            "internalType": "bool",
+            "name": "hasReserve",
+            "type": "bool"
+          }
         ],
         "internalType": "struct Oracle.Data",
         "name": "data",
@@ -463,7 +663,13 @@
       }
     ],
     "name": "frontRunBound",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -481,9 +687,30 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "isShutdown",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
-      { "internalType": "address", "name": "owner", "type": "address" },
-      { "internalType": "uint256", "name": "positionId", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "positionId",
+        "type": "uint256"
+      }
     ],
     "name": "liquidate",
     "outputs": [],
@@ -492,53 +719,111 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "oiOverweight", "type": "uint256" },
-      { "internalType": "uint256", "name": "oiUnderweight", "type": "uint256" },
-      { "internalType": "uint256", "name": "timeElapsed", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "oiOverweight",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "oiUnderweight",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timeElapsed",
+        "type": "uint256"
+      }
     ],
     "name": "oiAfterFunding",
     "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "uint256", "name": "", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "notional", "type": "uint256" },
-      { "internalType": "uint256", "name": "midPrice", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "notional",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "midPrice",
+        "type": "uint256"
+      }
     ],
     "name": "oiFromNotional",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "oiLong",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "oiLongShares",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "oiShort",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "oiShortShares",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -556,22 +841,74 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "params",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
     "name": "positions",
     "outputs": [
-      { "internalType": "uint96", "name": "notional", "type": "uint96" },
-      { "internalType": "uint96", "name": "debt", "type": "uint96" },
-      { "internalType": "uint48", "name": "entryToMidRatio", "type": "uint48" },
-      { "internalType": "bool", "name": "isLong", "type": "bool" },
-      { "internalType": "bool", "name": "liquidated", "type": "bool" },
-      { "internalType": "uint256", "name": "oiShares", "type": "uint256" }
+      {
+        "internalType": "uint96",
+        "name": "notionalInitial",
+        "type": "uint96"
+      },
+      {
+        "internalType": "uint96",
+        "name": "debtInitial",
+        "type": "uint96"
+      },
+      {
+        "internalType": "int24",
+        "name": "midTick",
+        "type": "int24"
+      },
+      {
+        "internalType": "int24",
+        "name": "entryTick",
+        "type": "int24"
+      },
+      {
+        "internalType": "bool",
+        "name": "isLong",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "liquidated",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint240",
+        "name": "oiShares",
+        "type": "uint240"
+      },
+      {
+        "internalType": "uint16",
+        "name": "fractionRemaining",
+        "type": "uint16"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -583,7 +920,11 @@
         "name": "name",
         "type": "uint8"
       },
-      { "internalType": "uint256", "name": "value", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
     ],
     "name": "setRiskParam",
     "outputs": [],
@@ -592,11 +933,30 @@
   },
   {
     "inputs": [],
+    "name": "shutdown",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "snapshotMinted",
     "outputs": [
-      { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
-      { "internalType": "uint32", "name": "window", "type": "uint32" },
-      { "internalType": "int192", "name": "accumulator", "type": "int192" }
+      {
+        "internalType": "uint32",
+        "name": "timestamp",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "window",
+        "type": "uint32"
+      },
+      {
+        "internalType": "int192",
+        "name": "accumulator",
+        "type": "int192"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -605,9 +965,21 @@
     "inputs": [],
     "name": "snapshotVolumeAsk",
     "outputs": [
-      { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
-      { "internalType": "uint32", "name": "window", "type": "uint32" },
-      { "internalType": "int192", "name": "accumulator", "type": "int192" }
+      {
+        "internalType": "uint32",
+        "name": "timestamp",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "window",
+        "type": "uint32"
+      },
+      {
+        "internalType": "int192",
+        "name": "accumulator",
+        "type": "int192"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -616,9 +988,21 @@
     "inputs": [],
     "name": "snapshotVolumeBid",
     "outputs": [
-      { "internalType": "uint32", "name": "timestamp", "type": "uint32" },
-      { "internalType": "uint32", "name": "window", "type": "uint32" },
-      { "internalType": "int192", "name": "accumulator", "type": "int192" }
+      {
+        "internalType": "uint32",
+        "name": "timestamp",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "window",
+        "type": "uint32"
+      },
+      {
+        "internalType": "int192",
+        "name": "accumulator",
+        "type": "int192"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -626,15 +1010,33 @@
   {
     "inputs": [],
     "name": "timestampUpdateLast",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "positionId", "type": "uint256" },
-      { "internalType": "uint256", "name": "fraction", "type": "uint256" },
-      { "internalType": "uint256", "name": "priceLimit", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "positionId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fraction",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "priceLimit",
+        "type": "uint256"
+      }
     ],
     "name": "unwind",
     "outputs": [],
@@ -647,7 +1049,11 @@
     "outputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
           {
             "internalType": "uint256",
             "name": "microWindow",
@@ -678,7 +1084,11 @@
             "name": "reserveOverMicroWindow",
             "type": "uint256"
           },
-          { "internalType": "bool", "name": "hasReserve", "type": "bool" }
+          {
+            "internalType": "bool",
+            "name": "hasReserve",
+            "type": "bool"
+          }
         ],
         "internalType": "struct Oracle.Data",
         "name": "",

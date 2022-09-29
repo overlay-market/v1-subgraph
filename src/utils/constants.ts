@@ -4,9 +4,9 @@ import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Fa
 import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factory/OverlayV1State'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-export const FACTORY_ADDRESS = '0xc10e8E06b1b8DADB8E94120650414AFfedD17aF9'
-export const PERIPHERY_ADDRESS = '0x06C76062730aD18aBdc3C9198b3EB283f7bb3627'
-// periphery deployed on kovan block 32456647
+export const FACTORY_ADDRESS = '0x1A13d26b5cf5904B25EAf4CedaD82533499e0450'
+export const PERIPHERY_ADDRESS = '0xC1a0426Ed3a68EfAdb702b28115b491f8a4f958d'
+// periphery deployed on Goerli block 7623923
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)

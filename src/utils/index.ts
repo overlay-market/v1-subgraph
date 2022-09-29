@@ -67,6 +67,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
     market.oiLong = stateContract.ois(marketAddress).value0
     market.oiShort = stateContract.ois(marketAddress).value1
+    market.isShutdown = false
 
     MarketTemplate.create(marketAddress)
   }

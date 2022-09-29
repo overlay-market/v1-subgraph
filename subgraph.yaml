@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: kovan
+    network: goerli
     source:
-      address: "0xc10e8E06b1b8DADB8E94120650414AFfedD17aF9"
+      address: "0x1A13d26b5cf5904B25EAf4CedaD82533499e0450"
       abi: OverlayV1Factory
-      startBlock: 32441161
+      startBlock: 7623923
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -40,12 +40,14 @@ dataSources:
           handler: handleMarketDeployed
         - event: ParamUpdated(indexed address,indexed address,uint8,uint256)
           handler: handleParamUpdated
+        - event: EmergencyShutdown(indexed address,indexed address)
+          handler: handleEmergencyShutdown
       file: ./src/mapping.ts
 
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: kovan
+    network: goerli
     source:
       abi: OverlayV1Market
     mapping:

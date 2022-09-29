@@ -10,6 +10,28 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
+export class EmergencyShutdown extends ethereum.Event {
+  get params(): EmergencyShutdown__Params {
+    return new EmergencyShutdown__Params(this);
+  }
+}
+
+export class EmergencyShutdown__Params {
+  _event: EmergencyShutdown;
+
+  constructor(event: EmergencyShutdown) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get market(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
 export class FeeRecipientUpdated extends ethereum.Event {
   get params(): FeeRecipientUpdated__Params {
     return new FeeRecipientUpdated__Params(this);
@@ -42,6 +64,28 @@ export class FeedFactoryAdded__Params {
   _event: FeedFactoryAdded;
 
   constructor(event: FeedFactoryAdded) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get feedFactory(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class FeedFactoryRemoved extends ethereum.Event {
+  get params(): FeedFactoryRemoved__Params {
+    return new FeedFactoryRemoved__Params(this);
+  }
+}
+
+export class FeedFactoryRemoved__Params {
+  _event: FeedFactoryRemoved;
+
+  constructor(event: FeedFactoryRemoved) {
     this._event = event;
   }
 
@@ -403,6 +447,36 @@ export class DeployMarketCall__Outputs {
   }
 }
 
+export class RemoveFeedFactoryCall extends ethereum.Call {
+  get inputs(): RemoveFeedFactoryCall__Inputs {
+    return new RemoveFeedFactoryCall__Inputs(this);
+  }
+
+  get outputs(): RemoveFeedFactoryCall__Outputs {
+    return new RemoveFeedFactoryCall__Outputs(this);
+  }
+}
+
+export class RemoveFeedFactoryCall__Inputs {
+  _call: RemoveFeedFactoryCall;
+
+  constructor(call: RemoveFeedFactoryCall) {
+    this._call = call;
+  }
+
+  get feedFactory(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class RemoveFeedFactoryCall__Outputs {
+  _call: RemoveFeedFactoryCall;
+
+  constructor(call: RemoveFeedFactoryCall) {
+    this._call = call;
+  }
+}
+
 export class SetFeeRecipientCall extends ethereum.Call {
   get inputs(): SetFeeRecipientCall__Inputs {
     return new SetFeeRecipientCall__Inputs(this);
@@ -467,6 +541,36 @@ export class SetRiskParamCall__Outputs {
   _call: SetRiskParamCall;
 
   constructor(call: SetRiskParamCall) {
+    this._call = call;
+  }
+}
+
+export class ShutdownCall extends ethereum.Call {
+  get inputs(): ShutdownCall__Inputs {
+    return new ShutdownCall__Inputs(this);
+  }
+
+  get outputs(): ShutdownCall__Outputs {
+    return new ShutdownCall__Outputs(this);
+  }
+}
+
+export class ShutdownCall__Inputs {
+  _call: ShutdownCall;
+
+  constructor(call: ShutdownCall) {
+    this._call = call;
+  }
+
+  get feed(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class ShutdownCall__Outputs {
+  _call: ShutdownCall;
+
+  constructor(call: ShutdownCall) {
     this._call = call;
   }
 }
