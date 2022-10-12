@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: goerli
+    network: mainnet
     source:
-      address: "0x1A13d26b5cf5904B25EAf4CedaD82533499e0450"
+      address: "0x9a74758c2A80fA1B1d899E0E1f24CF505a4Dea33"
       abi: OverlayV1Factory
-      startBlock: 7623923
+      startBlock: 15626703
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -47,7 +47,7 @@ dataSources:
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: goerli
+    network: mainnet
     source:
       abi: OverlayV1Market
     mapping:
