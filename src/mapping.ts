@@ -32,8 +32,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
     factory.totalFeesOVL = ZERO_BD
     factory.totalValueLockedOVL = ZERO_BD
 
-    factory.feeRecipient = factoryContract.feeRecipient().toHexString()
-    factory.owner = factoryContract.deployer().toHexString()
+    factory.feeRecipient = factoryContract.try_feeRecipient().reverted ? ADDRESS_ZERO : factoryContract.try_feeRecipient().value.toHexString()
+    factory.owner = factoryContract.try_deployer().reverted ? ADDRESS_ZERO : factoryContract.try_deployer().value.toHexString()
   }
 
   factory.marketCount = factory.marketCount.plus(ONE_BI)
@@ -103,15 +103,15 @@ export function handleBuild(event: BuildEvent): void {
   position.mint = ZERO_BI
   position.createdAtTimestamp = event.block.timestamp
   position.createdAtBlockNumber = event.block.number
-  position.transaction = loadTransaction(event).id
+  position.numberOfUniwnds = BigInt.fromI32(0)
 
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
 
   let transaction = loadTransaction(event)
-  let build = new Build(sender.id) as Build
+  let build = new Build(position.id) as Build
 
-  build.positionId = positionId.toHexString()
+  build.position = position.id
   build.owner = sender.id
   build.currentOi = event.params.oi
   build.currentDebt = event.params.debt
@@ -139,23 +139,28 @@ export function handleUnwind(event: UnwindEvent): void {
   
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
+  let unwindNumber = position.numberOfUniwnds
 
   position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
+  position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
 
   let transaction = loadTransaction(event)
-  let unwind = new Unwind(sender.id) as Unwind
+  let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
 
-  unwind.positionId = positionId.toHexString()
+  unwind.position = position.id
   unwind.owner = sender.id
   unwind.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   unwind.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   unwind.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
   unwind.price = event.params.price
+  unwind.fraction = event.params.fraction
+  unwind.mint = event.params.mint
+  unwind.unwindNumber = unwindNumber
   unwind.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
   unwind.value = stateContract.value(marketAddress, senderAddress, positionId)
   unwind.timestamp = transaction.timestamp
@@ -171,6 +176,7 @@ export function handleUnwind(event: UnwindEvent): void {
 export function handleLiquidate(event: LiquidateEvent): void {
   let market = loadMarket(event, event.address)
   let sender = loadAccount(event.params.sender)
+  let owner = loadAccount(event.params.owner)
 
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
@@ -187,14 +193,16 @@ export function handleLiquidate(event: LiquidateEvent): void {
   market.oiShort = stateContract.ois(marketAddress).value1
 
   let transaction = loadTransaction(event)
-  let liquidate = new Liquidate(sender.id) as Liquidate
+  let liquidate = new Liquidate(position.id) as Liquidate
 
-  liquidate.positionId = positionId.toHexString()
-  liquidate.owner = sender.id
+  liquidate.position = position.id
+  liquidate.owner = owner.id
+  liquidate.sender = sender.id
   liquidate.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   liquidate.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   liquidate.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
   liquidate.price = event.params.price
+  liquidate.mint = event.params.mint
   liquidate.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
   liquidate.value = stateContract.value(marketAddress, senderAddress, positionId)
   liquidate.timestamp = transaction.timestamp

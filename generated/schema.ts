@@ -408,7 +408,7 @@ export class Position extends Entity {
     this.set("mint", Value.fromBigInt(BigInt.zero()));
     this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
     this.set("createdAtBlockNumber", Value.fromBigInt(BigInt.zero()));
-    this.set("transaction", Value.fromString(""));
+    this.set("numberOfUniwnds", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -581,13 +581,40 @@ export class Position extends Entity {
     this.set("createdAtBlockNumber", Value.fromBigInt(value));
   }
 
-  get transaction(): string {
-    let value = this.get("transaction");
-    return value!.toString();
+  get numberOfUniwnds(): BigInt {
+    let value = this.get("numberOfUniwnds");
+    return value!.toBigInt();
   }
 
-  set transaction(value: string) {
-    this.set("transaction", Value.fromString(value));
+  set numberOfUniwnds(value: BigInt) {
+    this.set("numberOfUniwnds", Value.fromBigInt(value));
+  }
+
+  get builds(): Array<string> {
+    let value = this.get("builds");
+    return value!.toStringArray();
+  }
+
+  set builds(value: Array<string>) {
+    this.set("builds", Value.fromStringArray(value));
+  }
+
+  get liquidates(): Array<string> {
+    let value = this.get("liquidates");
+    return value!.toStringArray();
+  }
+
+  set liquidates(value: Array<string>) {
+    this.set("liquidates", Value.fromStringArray(value));
+  }
+
+  get unwinds(): Array<string> {
+    let value = this.get("unwinds");
+    return value!.toStringArray();
+  }
+
+  set unwinds(value: Array<string>) {
+    this.set("unwinds", Value.fromStringArray(value));
   }
 }
 
@@ -698,7 +725,7 @@ export class Build extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("owner", Value.fromString(""));
-    this.set("positionId", Value.fromString(""));
+    this.set("position", Value.fromString(""));
     this.set("currentOi", Value.fromBigInt(BigInt.zero()));
     this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
     this.set("isLong", Value.fromBoolean(false));
@@ -744,13 +771,13 @@ export class Build extends Entity {
     this.set("owner", Value.fromString(value));
   }
 
-  get positionId(): string {
-    let value = this.get("positionId");
+  get position(): string {
+    let value = this.get("position");
     return value!.toString();
   }
 
-  set positionId(value: string) {
-    this.set("positionId", Value.fromString(value));
+  set position(value: string) {
+    this.set("position", Value.fromString(value));
   }
 
   get currentOi(): BigInt {
@@ -832,11 +859,14 @@ export class Unwind extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("owner", Value.fromString(""));
-    this.set("positionId", Value.fromString(""));
+    this.set("position", Value.fromString(""));
+    this.set("unwindNumber", Value.fromBigInt(BigInt.zero()));
     this.set("currentOi", Value.fromBigInt(BigInt.zero()));
     this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
     this.set("isLong", Value.fromBoolean(false));
     this.set("price", Value.fromBigInt(BigInt.zero()));
+    this.set("fraction", Value.fromBigInt(BigInt.zero()));
+    this.set("mint", Value.fromBigInt(BigInt.zero()));
     this.set("collateral", Value.fromBigInt(BigInt.zero()));
     this.set("value", Value.fromBigInt(BigInt.zero()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
@@ -878,13 +908,22 @@ export class Unwind extends Entity {
     this.set("owner", Value.fromString(value));
   }
 
-  get positionId(): string {
-    let value = this.get("positionId");
+  get position(): string {
+    let value = this.get("position");
     return value!.toString();
   }
 
-  set positionId(value: string) {
-    this.set("positionId", Value.fromString(value));
+  set position(value: string) {
+    this.set("position", Value.fromString(value));
+  }
+
+  get unwindNumber(): BigInt {
+    let value = this.get("unwindNumber");
+    return value!.toBigInt();
+  }
+
+  set unwindNumber(value: BigInt) {
+    this.set("unwindNumber", Value.fromBigInt(value));
   }
 
   get currentOi(): BigInt {
@@ -921,6 +960,24 @@ export class Unwind extends Entity {
 
   set price(value: BigInt) {
     this.set("price", Value.fromBigInt(value));
+  }
+
+  get fraction(): BigInt {
+    let value = this.get("fraction");
+    return value!.toBigInt();
+  }
+
+  set fraction(value: BigInt) {
+    this.set("fraction", Value.fromBigInt(value));
+  }
+
+  get mint(): BigInt {
+    let value = this.get("mint");
+    return value!.toBigInt();
+  }
+
+  set mint(value: BigInt) {
+    this.set("mint", Value.fromBigInt(value));
   }
 
   get collateral(): BigInt {
@@ -966,11 +1023,13 @@ export class Liquidate extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("owner", Value.fromString(""));
-    this.set("positionId", Value.fromString(""));
+    this.set("sender", Value.fromString(""));
+    this.set("position", Value.fromString(""));
     this.set("currentOi", Value.fromBigInt(BigInt.zero()));
     this.set("currentDebt", Value.fromBigInt(BigInt.zero()));
     this.set("isLong", Value.fromBoolean(false));
     this.set("price", Value.fromBigInt(BigInt.zero()));
+    this.set("mint", Value.fromBigInt(BigInt.zero()));
     this.set("collateral", Value.fromBigInt(BigInt.zero()));
     this.set("value", Value.fromBigInt(BigInt.zero()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
@@ -1012,13 +1071,22 @@ export class Liquidate extends Entity {
     this.set("owner", Value.fromString(value));
   }
 
-  get positionId(): string {
-    let value = this.get("positionId");
+  get sender(): string {
+    let value = this.get("sender");
     return value!.toString();
   }
 
-  set positionId(value: string) {
-    this.set("positionId", Value.fromString(value));
+  set sender(value: string) {
+    this.set("sender", Value.fromString(value));
+  }
+
+  get position(): string {
+    let value = this.get("position");
+    return value!.toString();
+  }
+
+  set position(value: string) {
+    this.set("position", Value.fromString(value));
   }
 
   get currentOi(): BigInt {
@@ -1055,6 +1123,15 @@ export class Liquidate extends Entity {
 
   set price(value: BigInt) {
     this.set("price", Value.fromBigInt(value));
+  }
+
+  get mint(): BigInt {
+    let value = this.get("mint");
+    return value!.toBigInt();
+  }
+
+  set mint(value: BigInt) {
+    this.set("mint", Value.fromBigInt(value));
   }
 
   get collateral(): BigInt {

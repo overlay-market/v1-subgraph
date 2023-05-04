@@ -5,14 +5,15 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy-goerli": "graph deploy --product hosted-service bigboydiamonds/overlay-v1-subgraph-goerli",
-    "deploy": "graph deploy --product hosted-service bigboydiamonds/overlay-v1-subgraph",
+    "deploy-arb": "graph deploy --product hosted-service bigboydiamonds/overlay-v1-subgraph",
+    "deploy-eth": "graph deploy --studio overlay-subgraph-eth",
     "create-local": "graph create --node http://localhost:8020/ overlay/v1-subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ overlay/v1-subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 overlay/v1-subgraph"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.26.0",
-    "@graphprotocol/graph-ts": "0.24.1",
+    "@graphprotocol/graph-ts": "0.29.3",
     "@protofire/subgraph-toolkit": "0.1.2",
     "typescript": "^4.6.3"
   }

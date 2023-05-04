@@ -105,8 +105,13 @@ type Position @entity {
   createdAtTimestamp: BigInt!
   # block number of position creation
   createdAtBlockNumber: BigInt!
-  # transaction position was created
-  transaction: Transaction!
+  # number of unwinds
+  numberOfUniwnds: BigInt!
+
+   # derived fields
+  builds: [Build!]! @derivedFrom(field: "position")
+  liquidates: [Liquidate!]! @derivedFrom(field: "position")
+  unwinds: [Unwind!]! @derivedFrom(field: "position")
 }
 
 type Transaction @entity {
@@ -126,12 +131,12 @@ type Transaction @entity {
 }
 
 type Build @entity {
-  # caller address
+  # market contract concat'd with position id
   id: ID!
   # account performing action
   owner: Account!
-  # position id
-  positionId: String!
+  # position entitie
+  position: Position!
   # current position oi
   currentOi: BigInt!
   # current position debt
@@ -151,12 +156,14 @@ type Build @entity {
 }
 
 type Unwind @entity {
-  # caller address
+  # market contract concat'd with position id concat'd with unwind number
   id: ID!
   # account performing action
   owner: Account!
   # position id
-  positionId: String!
+  position: Position!
+  # unwind number
+  unwindNumber: BigInt!
   # current position oi
   currentOi: BigInt!
   # current position debt
@@ -165,6 +172,10 @@ type Unwind @entity {
   isLong: Boolean!
   # price at time of unwind
   price: BigInt!
+  # fraction of unwind
+  fraction: BigInt!
+  # total ovl minted/burned in this unwind
+  mint: BigInt!
   # current collateral backing position
   collateral: BigInt!
   # current value of position
@@ -176,12 +187,14 @@ type Unwind @entity {
 }
 
 type Liquidate @entity {
-  # caller address
+  # market contract concat'd with position id
   id: ID!
-  # account performing action
+  # owner of the position
   owner: Account!
+  # address performing the transaction
+  sender: Account!
   # position id
-  positionId: String!
+  position: Position!
   # current position oi
   currentOi: BigInt!
   # current position debt
@@ -190,6 +203,8 @@ type Liquidate @entity {
   isLong: Boolean!
   # price at time of liquidate
   price: BigInt!
+  # total ovl minted/burned in this transaction
+  mint: BigInt!
   # current collateral backing position
   collateral: BigInt!
   # current value of position
