@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
+import { ethereum, Bytes, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factory/OverlayV1State'
 
@@ -10,8 +10,12 @@ export const PERIPHERY_ADDRESS = '0x477122219aa1F76E190f480a85af97DE0A643320' //
 // export const PERIPHERY_ADDRESS = '0xC3cB99652111e7828f38544E3e94c714D8F9a51a' // arbitrum
 // periphery deployed on mainnet block 15626703
 
+// export const OVL_ADDRESS = '0x4305c4bc521b052f17d389c2fe9d37cabeb70d54' // arb
+export const OVL_ADDRESS = '0xdc77aCC82ccE1Cc095CbA197474Cc06824adE6F7' // eth
+
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)
+export let ONE_18DEC_BI = BigInt.fromString('1000000000000000000')
 export let ZERO_BD = BigDecimal.fromString('0')
 export let ONE_BD = BigDecimal.fromString('1')
 export let BI_18 = BigInt.fromI32(18)
@@ -36,3 +40,7 @@ export enum RISK_PARAMS {
   priceDriftUpperLimit = 13,
   averageBlockTime = 14
 }
+
+export const TRANSFER_SIG: Bytes = Bytes.fromHexString(
+    '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef' // This is identifier of the Transfer
+  )

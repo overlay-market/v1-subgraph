@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts"
+import { ethereum, Address, BigInt, log } from "@graphprotocol/graph-ts"
 import { integer } from "@protofire/subgraph-toolkit";
 import {
   OverlayV1Factory,
@@ -17,7 +17,7 @@ import {
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { FACTORY_ADDRESS, ZERO_BI, ONE_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from "./utils/constants"
+import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from "./utils/constants"
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
 
 export function handleMarketDeployed(event: MarketDeployed): void {
@@ -104,6 +104,7 @@ export function handleBuild(event: BuildEvent): void {
   position.createdAtTimestamp = event.block.timestamp
   position.createdAtBlockNumber = event.block.number
   position.numberOfUniwnds = BigInt.fromI32(0)
+  position.fractionUnwound = BigInt.fromI32(0)
 
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
@@ -117,11 +118,10 @@ export function handleBuild(event: BuildEvent): void {
   build.currentDebt = event.params.debt
   build.isLong = event.params.isLong
   build.price = event.params.price
-  build.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
+  build.collateral = initialCollateral
   build.value = stateContract.value(marketAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
-
 
   position.save()
   market.save()
@@ -152,8 +152,52 @@ export function handleUnwind(event: UnwindEvent): void {
   let transaction = loadTransaction(event)
   let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
 
+  let receipt = event.receipt
+  // initialize variables
+  let transferAmount = ZERO_BI
+  let pnl = ZERO_BI
+  // fraction of the position unwound BEFORE this transaction
+  const fractionUnwound = position.fractionUnwound
+  // this unwind size = intialCollateral * (1 - fractionUnwound) * unwindFraction
+  const unwindSize = position.initialCollateral
+    .times(
+      ONE_18DEC_BI.minus(fractionUnwound)
+    ).times(
+      event.params.fraction
+    ).div(
+      ONE_18DEC_BI
+    ).div(
+      ONE_18DEC_BI
+    )
+  if (receipt) {
+    for (let index = 0; index < receipt.logs.length; index++) {
+			const _topic0 = receipt.logs[index].topics[0]
+			const _address = receipt.logs[index].address
+      // find the log that matches the ERC20 transfer to the owner
+			if (
+				_topic0.equals(TRANSFER_SIG) &&
+				_address.toHexString() == OVL_ADDRESS &&
+        receipt.logs[index].topics.length > 1
+			) {
+        let topics2address = ethereum.decode('address', receipt.logs[index].topics[2])!.toAddress()
+        if (topics2address == event.params.sender) {
+          const _transferAmount = receipt.logs[index].data
+          // save transferAmount from the ERC20 Transfer event
+          transferAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+          // calculate pnl = tranferAmount - unwindSize
+          pnl = transferAmount.minus(
+            unwindSize
+          )
+        }
+			}
+		}
+  }
+
   unwind.position = position.id
   unwind.owner = sender.id
+  unwind.size = unwindSize
+  unwind.transferAmount =  transferAmount
+  unwind.pnl =  pnl
   unwind.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   unwind.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   unwind.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
@@ -165,6 +209,27 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.value = stateContract.value(marketAddress, senderAddress, positionId)
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
+
+  log.warning("fractionUnwound: {}, {}, {}", [
+    fractionUnwound.toString(), 
+    event.params.fraction.toString(), 
+    ONE_18DEC_BI
+      .minus(
+        (ONE_18DEC_BI.minus(fractionUnwound))
+        .times
+        (ONE_18DEC_BI.minus(event.params.fraction))
+        .div(ONE_18DEC_BI)
+      ).toString()
+  ])
+
+  position.fractionUnwound = 
+    ONE_18DEC_BI
+    .minus(
+      (ONE_18DEC_BI.minus(fractionUnwound))
+      .times
+      (ONE_18DEC_BI.minus(event.params.fraction))
+      .div(ONE_18DEC_BI)
+    )
 
   position.save()
   market.save()
@@ -188,6 +253,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
+  position.fractionUnwound = ONE_18DEC_BI
 
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1

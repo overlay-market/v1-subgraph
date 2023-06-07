@@ -375,6 +375,14 @@ export class OverlayV1Market__oiAfterFundingResult {
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
   }
+
+  getValue0(): BigInt {
+    return this.value0;
+  }
+
+  getValue1(): BigInt {
+    return this.value1;
+  }
 }
 
 export class OverlayV1Market__positionsResult {
@@ -422,6 +430,38 @@ export class OverlayV1Market__positionsResult {
     );
     return map;
   }
+
+  getNotionalInitial(): BigInt {
+    return this.value0;
+  }
+
+  getDebtInitial(): BigInt {
+    return this.value1;
+  }
+
+  getMidTick(): i32 {
+    return this.value2;
+  }
+
+  getEntryTick(): i32 {
+    return this.value3;
+  }
+
+  getIsLong(): boolean {
+    return this.value4;
+  }
+
+  getLiquidated(): boolean {
+    return this.value5;
+  }
+
+  getOiShares(): BigInt {
+    return this.value6;
+  }
+
+  getFractionRemaining(): i32 {
+    return this.value7;
+  }
 }
 
 export class OverlayV1Market__snapshotMintedResult {
@@ -441,6 +481,18 @@ export class OverlayV1Market__snapshotMintedResult {
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     map.set("value2", ethereum.Value.fromSignedBigInt(this.value2));
     return map;
+  }
+
+  getTimestamp(): BigInt {
+    return this.value0;
+  }
+
+  getWindow(): BigInt {
+    return this.value1;
+  }
+
+  getAccumulator(): BigInt {
+    return this.value2;
   }
 }
 
@@ -462,6 +514,18 @@ export class OverlayV1Market__snapshotVolumeAskResult {
     map.set("value2", ethereum.Value.fromSignedBigInt(this.value2));
     return map;
   }
+
+  getTimestamp(): BigInt {
+    return this.value0;
+  }
+
+  getWindow(): BigInt {
+    return this.value1;
+  }
+
+  getAccumulator(): BigInt {
+    return this.value2;
+  }
 }
 
 export class OverlayV1Market__snapshotVolumeBidResult {
@@ -481,6 +545,18 @@ export class OverlayV1Market__snapshotVolumeBidResult {
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     map.set("value2", ethereum.Value.fromSignedBigInt(this.value2));
     return map;
+  }
+
+  getTimestamp(): BigInt {
+    return this.value0;
+  }
+
+  getWindow(): BigInt {
+    return this.value1;
+  }
+
+  getAccumulator(): BigInt {
+    return this.value2;
   }
 }
 

@@ -89,6 +89,8 @@ type Position @entity {
   initialNotional: BigInt!
   # leverage taken on position
   leverage: BigDecimal!
+  # total fraction unwound from inception
+  fractionUnwound: BigInt!
   # long/short
   isLong: Boolean!
   # entry price when building position
@@ -174,6 +176,12 @@ type Unwind @entity {
   price: BigInt!
   # fraction of unwind
   fraction: BigInt!
+  # amount of OVL transferred to the owner
+  transferAmount: BigInt!
+  # PnL of this unwind
+  pnl: BigInt!
+  # fraction of initial collateral of this unwind
+  size: BigInt!
   # total ovl minted/burned in this unwind
   mint: BigInt!
   # current collateral backing position

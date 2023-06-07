@@ -101,6 +101,14 @@ export class OverlayV1State__oisResult {
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
   }
+
+  getOiLong_(): BigInt {
+    return this.value0;
+  }
+
+  getOiShort_(): BigInt {
+    return this.value1;
+  }
 }
 
 export class OverlayV1State__positionResultPosition_Struct extends ethereum.Tuple {
@@ -189,6 +197,18 @@ export class OverlayV1State__pricesResult {
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     return map;
   }
+
+  getBid_(): BigInt {
+    return this.value0;
+  }
+
+  getAsk_(): BigInt {
+    return this.value1;
+  }
+
+  getMid_(): BigInt {
+    return this.value2;
+  }
 }
 
 export class OverlayV1State__volumesResult {
@@ -205,6 +225,14 @@ export class OverlayV1State__volumesResult {
     map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
+  }
+
+  getVolumeBid_(): BigInt {
+    return this.value0;
+  }
+
+  getVolumeAsk_(): BigInt {
+    return this.value1;
   }
 }
 
