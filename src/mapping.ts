@@ -23,9 +23,9 @@ import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } f
 export function handleMarketDeployed(event: MarketDeployed): void {
   
   // load factory
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(FACTORY_ADDRESS.toLowerCase())
   if (factory === null) {
-    factory = new Factory(FACTORY_ADDRESS)
+    factory = new Factory(FACTORY_ADDRESS.toLowerCase())
     factory.marketCount = ZERO_BI
     factory.txCount = ZERO_BI
     factory.totalVolumeOVL = ZERO_BD
@@ -84,6 +84,84 @@ export function handleBuild(event: BuildEvent): void {
   let id = market.id.concat('-').concat(positionId.toHexString())
   let position = new Position(id) as Position
   
+  let transferFeeAmount = ZERO_BI
+  let receipt = event.receipt
+  let factory = Factory.load(market.factory.toLowerCase())
+
+  if (receipt && factory) {
+    const logLength = receipt.logs.length
+    log.warning("handleBuild: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
+      event.transaction.hash.toHexString(),
+      event.transactionLogIndex.toI32().toString(),
+      event.logIndex.toI32().toString(),
+      event.transaction.index.toI32().toString(),
+      logLength.toString(),
+      receipt.logs[0].logIndex.toI32().toString(),
+      receipt.logs[0].transactionIndex.toI32().toString(),
+      receipt.logs[0].transactionLogIndex.toI32().toString(),
+    ])
+    let buildIndex = 0
+    for (let i=0; i < receipt.logs.length; i++) {
+      if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
+        buildIndex = i
+        break
+      }
+    }
+    if (receipt.logs[buildIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
+      buildIndex += 1
+    }
+    let index = +buildIndex + 2
+    log.warning("handleBuild: indexes: tx {}, buildIndex: {}, index: {}", [
+      event.transaction.hash.toHexString(),
+      buildIndex.toString(),
+      index.toString()
+    ])
+    if (receipt.logs[buildIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
+      index += 1
+    }
+    const _topic0 = receipt.logs[index].topics[0]
+    const _address = receipt.logs[index].address
+    // find the log that matches the ERC20 transfer to the owner
+    if (
+      _topic0.equals(TRANSFER_SIG) &&
+      _address.toHexString() == OVL_ADDRESS &&
+      receipt.logs[index].topics.length > 1
+    ) {
+      let topics2address = ethereum.decode('address', receipt.logs[index].topics[2])!.toAddress()
+      log.warning("handleBuild: 1 stage receipt found: tx: {}, 2address: {}, feeRecipient: {}", [
+        event.transaction.hash.toHexString(),
+        topics2address.toHexString(),
+        factory.feeRecipient.toLowerCase()
+      ])
+      if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
+        const _transferAmount = receipt.logs[index].data
+        transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+        log.warning("handleBuild: 2 stage receipt found: tx{},  transferFeeAmount: {}", [
+          event.transaction.hash.toHexString(),
+          transferFeeAmount.toHexString()
+        ])
+      } else {
+        log.error("handleBuild: 2nd if: transaction: {}, buildIndex: {}, index {}", [
+          event.transaction.hash.toHexString(),
+          buildIndex.toString(),
+          index.toString()
+        ])
+      }
+		} else {
+      log.error("handleBuild: 1st if: transaction: {}, buildIndex: {}, index {}", [
+        event.transaction.hash.toHexString(),
+        buildIndex.toString(),
+        index.toString()
+      ])
+    }
+  } else {
+    log.error("handleBuild: receipt && factory: tx {}, {}, {}", [
+      event.transaction.hash.toHexString(),
+      !receipt ? "no receipt" : "receipt found", 
+      !factory ? "no factory" : factory.feeRecipient
+    ])
+  }
+  
   position.owner = sender.id
   position.positionId = positionId.toHexString()
   position.market = market.id
@@ -122,6 +200,7 @@ export function handleBuild(event: BuildEvent): void {
   build.value = stateContract.value(marketAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
+  build.feeAmount =  transferFeeAmount
 
   position.save()
   market.save()
@@ -155,6 +234,7 @@ export function handleUnwind(event: UnwindEvent): void {
   let receipt = event.receipt
   // initialize variables
   let transferAmount = ZERO_BI
+  let transferFeeAmount = ZERO_BI
   let pnl = ZERO_BI
   // fraction of the position unwound BEFORE this transaction
   const fractionUnwound = position.fractionUnwound
@@ -169,28 +249,89 @@ export function handleUnwind(event: UnwindEvent): void {
     ).div(
       ONE_18DEC_BI
     )
-  if (receipt) {
-    for (let index = 0; index < receipt.logs.length; index++) {
-			const _topic0 = receipt.logs[index].topics[0]
-			const _address = receipt.logs[index].address
-      // find the log that matches the ERC20 transfer to the owner
-			if (
-				_topic0.equals(TRANSFER_SIG) &&
-				_address.toHexString() == OVL_ADDRESS &&
-        receipt.logs[index].topics.length > 1
-			) {
-        let topics2address = ethereum.decode('address', receipt.logs[index].topics[2])!.toAddress()
-        if (topics2address == event.params.sender) {
-          const _transferAmount = receipt.logs[index].data
-          // save transferAmount from the ERC20 Transfer event
-          transferAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
-          // calculate pnl = tranferAmount - unwindSize
-          pnl = transferAmount.minus(
-            unwindSize
-          )
-        }
-			}
-		}
+  
+  let factory = Factory.load(market.factory.toLowerCase())
+  if (receipt && factory) {
+    const logLength = receipt.logs.length
+    log.warning("handleUnwind: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
+      event.transaction.hash.toHexString(),
+      event.transactionLogIndex.toI32().toString(),
+      event.logIndex.toI32().toString(),
+      event.transaction.index.toI32().toString(),
+      logLength.toString(),
+      receipt.logs[0].logIndex.toI32().toString(),
+      receipt.logs[0].transactionIndex.toI32().toString(),
+      receipt.logs[0].transactionLogIndex.toI32().toString(),
+    ])
+    let unwindIndex = 0
+    for (let i=0; i < receipt.logs.length; i++) {
+      if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
+        unwindIndex = i
+        break
+      }
+    }
+    if (receipt.logs[unwindIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
+      unwindIndex += 1
+    }
+    const userTransferIndex = +unwindIndex + 2
+    const feeIndex = +unwindIndex + 3
+    const _topic0user = receipt.logs[userTransferIndex].topics[0]
+    const _addressuser = receipt.logs[userTransferIndex].address
+    // find the log that matches the ERC20 transfer to the owner
+    if (
+      _topic0user.equals(TRANSFER_SIG) &&
+      _addressuser.toHexString() == OVL_ADDRESS &&
+      receipt.logs[userTransferIndex].topics.length > 1
+    ) {
+      let topics2address = ethereum.decode('address', receipt.logs[userTransferIndex].topics[2])!.toAddress()
+      if (topics2address == event.params.sender) {
+        const _transferAmount = receipt.logs[userTransferIndex].data
+        // save transferAmount from the ERC20 Transfer event
+        transferAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+        // calculate pnl = tranferAmount - unwindSize
+        pnl = transferAmount.minus(
+          unwindSize
+        )
+      } else {
+        log.error("handleUnwind: 2nd if: transaction: {}, unwindIndex: {}, userTransferIndex {}", [
+          event.transaction.hash.toHexString(),
+          unwindIndex.toString(),
+          userTransferIndex.toString()
+        ])
+      }
+		} else {
+      log.error("handleUnwind: 1st if: transaction: {}, unwindIndex: {}, userTransferIndex {}", [
+        event.transaction.hash.toHexString(),
+        unwindIndex.toString(),
+        userTransferIndex.toString()
+      ])
+    }
+    const _topic0 = receipt.logs[feeIndex].topics[0]
+    const _address = receipt.logs[feeIndex].address
+    // find the log that matches the ERC20 transfer to the owner
+    if (
+      _topic0.equals(TRANSFER_SIG) &&
+      _address.toHexString() == OVL_ADDRESS &&
+      receipt.logs[feeIndex].topics.length > 1
+    ) {
+      let topics2address = ethereum.decode('address', receipt.logs[feeIndex].topics[2])!.toAddress()
+      if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
+        const _transferAmount = receipt.logs[feeIndex].data
+        transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+      } else {
+        log.error("handleUnwind: 2nd if: transaction: {}, unwindIndex: {}, feeIndex {}", [
+          event.transaction.hash.toHexString(),
+          unwindIndex.toString(),
+          feeIndex.toString()
+        ])
+      }
+		} else {
+      log.error("handleUnwind: 1st if: transaction: {}, unwindIndex: {}, feeIndex {}", [
+        event.transaction.hash.toHexString(),
+        unwindIndex.toString(),
+        feeIndex.toString()
+      ])
+    }
   }
 
   unwind.position = position.id
@@ -198,6 +339,7 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.size = unwindSize
   unwind.transferAmount =  transferAmount
   unwind.pnl =  pnl
+  unwind.feeAmount =  transferFeeAmount
   unwind.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   unwind.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   unwind.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
@@ -284,7 +426,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
 export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
   let factoryAddress = event.address.toHexString()
-  let factory = loadFactory(factoryAddress)
+  let factory = loadFactory(factoryAddress.toLowerCase())
   factory.feeRecipient = event.params.recipient.toHexString()
 
   factory.save()

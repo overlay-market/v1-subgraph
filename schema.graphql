@@ -147,6 +147,8 @@ type Build @entity {
   isLong: Boolean!
   # price at time of build
   price: BigInt!
+  # Fee amount of this build
+  feeAmount: BigInt!
   # current collateral backing position
   collateral: BigInt!
   # current value of position
@@ -180,6 +182,8 @@ type Unwind @entity {
   transferAmount: BigInt!
   # PnL of this unwind
   pnl: BigInt!
+  # Fee amount of this unwind
+  feeAmount: BigInt!
   # fraction of initial collateral of this unwind
   size: BigInt!
   # total ovl minted/burned in this unwind
