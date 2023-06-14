@@ -68,6 +68,21 @@ type Market @entity {
   positions: [Position!]! @derivedFrom(field: "market")
   # if market is shut down
   isShutdown: Boolean!
+  # fees and tx count:
+  # number of builds/positions
+  numberOfBuilds: BigInt!
+  # sum of all build fees
+  totalBuildFees: BigInt!
+  # number of unwinds
+  numberOfUnwinds: BigInt!
+  # sum of all build fees
+  totalUnwindFees: BigInt!
+  # number of liquidates
+  numberOfLiquidates: BigInt!
+  # sum of all build fees
+  totalLiquidateFees: BigInt!
+  # sum of all fees
+  totalFees: BigInt!
 }
 
 type Position @entity {

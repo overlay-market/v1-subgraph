@@ -484,6 +484,97 @@ export class Market extends Entity {
   set isShutdown(value: boolean) {
     this.set("isShutdown", Value.fromBoolean(value));
   }
+
+  get numberOfBuilds(): BigInt {
+    let value = this.get("numberOfBuilds");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set numberOfBuilds(value: BigInt) {
+    this.set("numberOfBuilds", Value.fromBigInt(value));
+  }
+
+  get totalBuildFees(): BigInt {
+    let value = this.get("totalBuildFees");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalBuildFees(value: BigInt) {
+    this.set("totalBuildFees", Value.fromBigInt(value));
+  }
+
+  get numberOfUnwinds(): BigInt {
+    let value = this.get("numberOfUnwinds");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set numberOfUnwinds(value: BigInt) {
+    this.set("numberOfUnwinds", Value.fromBigInt(value));
+  }
+
+  get totalUnwindFees(): BigInt {
+    let value = this.get("totalUnwindFees");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalUnwindFees(value: BigInt) {
+    this.set("totalUnwindFees", Value.fromBigInt(value));
+  }
+
+  get numberOfLiquidates(): BigInt {
+    let value = this.get("numberOfLiquidates");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set numberOfLiquidates(value: BigInt) {
+    this.set("numberOfLiquidates", Value.fromBigInt(value));
+  }
+
+  get totalLiquidateFees(): BigInt {
+    let value = this.get("totalLiquidateFees");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalLiquidateFees(value: BigInt) {
+    this.set("totalLiquidateFees", Value.fromBigInt(value));
+  }
+
+  get totalFees(): BigInt {
+    let value = this.get("totalFees");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalFees(value: BigInt) {
+    this.set("totalFees", Value.fromBigInt(value));
+  }
 }
 
 export class Position extends Entity {

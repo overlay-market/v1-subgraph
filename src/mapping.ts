@@ -66,6 +66,13 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
   market.isShutdown = false
+  market.totalBuildFees = ZERO_BI
+  market.numberOfBuilds = ZERO_BI
+  market.totalUnwindFees = ZERO_BI
+  market.numberOfUnwinds = ZERO_BI
+  market.totalLiquidateFees = ZERO_BI
+  market.numberOfLiquidates = ZERO_BI
+  market.totalFees = ZERO_BI
 
   market.save()
   // create tracked market contract based on template
@@ -186,6 +193,9 @@ export function handleBuild(event: BuildEvent): void {
 
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
+  market.totalBuildFees = market.totalBuildFees.plus(transferFeeAmount)
+  market.numberOfBuilds = market.numberOfBuilds.plus(ONE_BI)
+  market.totalFees = market.totalFees.plus(transferFeeAmount)
 
   let transaction = loadTransaction(event)
   let build = new Build(position.id) as Build
@@ -352,6 +362,10 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
 
+  market.totalUnwindFees = market.totalUnwindFees.plus(transferFeeAmount)
+  market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
+  market.totalFees = market.totalFees.plus(transferFeeAmount)
+
   log.warning("fractionUnwound: {}, {}, {}", [
     fractionUnwound.toString(), 
     event.params.fraction.toString(), 
@@ -391,6 +405,61 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
 
+  let receipt = event.receipt
+  // initialize variables
+  let transferFeeAmount = ZERO_BI
+  let factory = Factory.load(market.factory.toLowerCase())
+  if (receipt && factory) {
+    const logLength = receipt.logs.length
+    log.warning("handleLiquidate: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
+      event.transaction.hash.toHexString(),
+      event.transactionLogIndex.toI32().toString(),
+      event.logIndex.toI32().toString(),
+      event.transaction.index.toI32().toString(),
+      logLength.toString(),
+      receipt.logs[0].logIndex.toI32().toString(),
+      receipt.logs[0].transactionIndex.toI32().toString(),
+      receipt.logs[0].transactionLogIndex.toI32().toString(),
+    ])
+    let liquidateIndex = 0
+    for (let i=0; i < receipt.logs.length; i++) {
+      if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
+        liquidateIndex = i
+        break
+      }
+    }
+    if (receipt.logs[liquidateIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
+      liquidateIndex += 1
+    }
+    const feeIndex = +liquidateIndex + 3
+    const _topic0 = receipt.logs[feeIndex].topics[0]
+    const _address = receipt.logs[feeIndex].address
+    // find the log that matches the ERC20 transfer to the owner
+    if (
+      _topic0.equals(TRANSFER_SIG) &&
+      _address.toHexString() == OVL_ADDRESS &&
+      receipt.logs[feeIndex].topics.length > 1
+    ) {
+      let topics2address = ethereum.decode('address', receipt.logs[feeIndex].topics[2])!.toAddress()
+      if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
+        const _transferAmount = receipt.logs[feeIndex].data
+        transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+      } else {
+        log.error("handleLiquidate: 2nd if: transaction: {}, liquidateIndex: {}, feeIndex {}", [
+          event.transaction.hash.toHexString(),
+          liquidateIndex.toString(),
+          feeIndex.toString()
+        ])
+      }
+		} else {
+      log.error("handleLiquidate: 1st if: transaction: {}, liquidateIndex: {}, feeIndex {}", [
+        event.transaction.hash.toHexString(),
+        liquidateIndex.toString(),
+        feeIndex.toString()
+      ])
+    }
+  }
+
   position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
@@ -399,6 +468,9 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   market.oiLong = stateContract.ois(marketAddress).value0
   market.oiShort = stateContract.ois(marketAddress).value1
+  market.totalLiquidateFees = market.totalLiquidateFees.plus(transferFeeAmount)
+  market.numberOfLiquidates = market.numberOfLiquidates.plus(ONE_BI)
+  market.totalFees = market.totalFees.plus(transferFeeAmount)
 
   let transaction = loadTransaction(event)
   let liquidate = new Liquidate(position.id) as Liquidate
