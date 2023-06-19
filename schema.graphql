@@ -245,6 +245,14 @@ type Liquidate @entity {
 type Account @entity {
   # account address
   id: ID!
+  # totalRealizedPnl
+  realizedPnl:  BigInt!
+  # numberOfUnwinds of the account
+  numberOfUnwinds: BigInt!
+  # numberOfLiquidatedPositions
+  numberOfLiquidatedPositions: BigInt!
+  # numberOfOpenPositions
+  numberOfOpenPositions: BigInt!
   # derived account info
   positions: [Position!]! @derivedFrom(field: "owner")
   builds: [Build!]! @derivedFrom(field: "owner")

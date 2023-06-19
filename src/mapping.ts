@@ -212,6 +212,8 @@ export function handleBuild(event: BuildEvent): void {
   build.transaction = transaction.id
   build.feeAmount =  transferFeeAmount
 
+  sender.numberOfOpenPositions = sender.numberOfOpenPositions.plus(ONE_BI)
+
   position.save()
   market.save()
   build.save()
@@ -387,6 +389,12 @@ export function handleUnwind(event: UnwindEvent): void {
       .div(ONE_18DEC_BI)
     )
 
+  sender.numberOfUnwinds = sender.numberOfUnwinds.plus(ONE_BI)
+  sender.realizedPnl = sender.realizedPnl.plus(pnl)
+  if (event.params.fraction == ONE_18DEC_BI) {
+    sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
+  }
+  
   position.save()
   market.save()
   unwind.save()
@@ -488,10 +496,14 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.timestamp = transaction.timestamp
   liquidate.transaction = transaction.id
 
+  owner.numberOfLiquidatedPositions = owner.numberOfLiquidatedPositions.plus(ONE_BI)
+  owner.numberOfOpenPositions = owner.numberOfOpenPositions.minus(ONE_BI)
+
   position.save()
   market.save()
   liquidate.save()
   sender.save()
+  owner.save()
   transaction.save()
 }
 

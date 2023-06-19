@@ -1678,6 +1678,58 @@ export class Account extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get realizedPnl(): BigInt {
+    let value = this.get("realizedPnl");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set realizedPnl(value: BigInt) {
+    this.set("realizedPnl", Value.fromBigInt(value));
+  }
+
+  get numberOfUnwinds(): BigInt {
+    let value = this.get("numberOfUnwinds");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set numberOfUnwinds(value: BigInt) {
+    this.set("numberOfUnwinds", Value.fromBigInt(value));
+  }
+
+  get numberOfLiquidatedPositions(): BigInt {
+    let value = this.get("numberOfLiquidatedPositions");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set numberOfLiquidatedPositions(value: BigInt) {
+    this.set("numberOfLiquidatedPositions", Value.fromBigInt(value));
+  }
+
+  get numberOfOpenPositions(): BigInt {
+    let value = this.get("numberOfOpenPositions");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set numberOfOpenPositions(value: BigInt) {
+    this.set("numberOfOpenPositions", Value.fromBigInt(value));
+  }
+
   get positions(): Array<string> {
     let value = this.get("positions");
     if (!value || value.kind == ValueKind.NULL) {
