@@ -232,8 +232,6 @@ export function handleUnwind(event: UnwindEvent): void {
   let position = loadPosition(event, senderAddress, market, positionId)
   let unwindNumber = position.numberOfUniwnds
 
-  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
-  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
@@ -349,8 +347,8 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.transferAmount =  transferAmount
   unwind.pnl =  pnl
   unwind.feeAmount =  transferFeeAmount
-  unwind.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
-  unwind.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
+  unwind.currentOi = position.currentOi
+  unwind.currentDebt = position.currentDebt
   unwind.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
   unwind.price = event.params.price
   unwind.fraction = event.params.fraction
@@ -362,6 +360,9 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.value = stateContract.value(marketAddress, senderAddress, positionId)
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
+
+  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
+  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
 
   market.totalUnwindFees = market.totalUnwindFees.plus(transferFeeAmount)
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
@@ -469,8 +470,6 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   owner.realizedPnl = sender.realizedPnl.minus(position.initialCollateral.times(ONE_18DEC_BI.minus(position.fractionUnwound)).div(ONE_18DEC_BI))
 
-  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
-  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
   position.fractionUnwound = ONE_18DEC_BI
@@ -487,8 +486,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.position = position.id
   liquidate.owner = owner.id
   liquidate.sender = sender.id
-  liquidate.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
-  liquidate.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
+  liquidate.currentOi = position.currentOi
+  liquidate.currentDebt = position.currentDebt
   liquidate.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
   liquidate.price = event.params.price
   liquidate.mint = event.params.mint
@@ -496,6 +495,9 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.value = stateContract.value(marketAddress, senderAddress, positionId)
   liquidate.timestamp = transaction.timestamp
   liquidate.transaction = transaction.id
+
+  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
+  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
 
   owner.numberOfLiquidatedPositions = owner.numberOfLiquidatedPositions.plus(ONE_BI)
   owner.numberOfOpenPositions = owner.numberOfOpenPositions.minus(ONE_BI)
