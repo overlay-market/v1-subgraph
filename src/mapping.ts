@@ -467,6 +467,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
     }
   }
 
+  owner.realizedPnl = sender.realizedPnl.minus(position.initialCollateral.times(ONE_18DEC_BI.minus(position.fractionUnwound)).div(ONE_18DEC_BI))
+
   position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
   position.mint = position.mint.plus(event.params.mint)
