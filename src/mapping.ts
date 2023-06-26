@@ -251,13 +251,10 @@ export function handleUnwind(event: UnwindEvent): void {
   // fraction of the position unwound BEFORE this transaction
   const fractionUnwound = position.fractionUnwound
   // this unwind size = intialCollateral * (1 - fractionUnwound) * unwindFraction
+  const fractionOfPosition = (ONE_18DEC_BI.minus(fractionUnwound)).times(event.params.fraction).div(ONE_18DEC_BI)
   const unwindSize = position.initialCollateral
     .times(
-      ONE_18DEC_BI.minus(fractionUnwound)
-    ).times(
-      event.params.fraction
-    ).div(
-      ONE_18DEC_BI
+      fractionOfPosition
     ).div(
       ONE_18DEC_BI
     )
@@ -357,6 +354,8 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
   unwind.price = event.params.price
   unwind.fraction = event.params.fraction
+  unwind.fractionOfPosition = fractionOfPosition
+  unwind.volume = transferAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI)) 
   unwind.mint = event.params.mint
   unwind.unwindNumber = unwindNumber
   unwind.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)

@@ -1325,6 +1325,19 @@ export class Unwind extends Entity {
     this.set("fraction", Value.fromBigInt(value));
   }
 
+  get fractionOfPosition(): BigInt {
+    let value = this.get("fractionOfPosition");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set fractionOfPosition(value: BigInt) {
+    this.set("fractionOfPosition", Value.fromBigInt(value));
+  }
+
   get transferAmount(): BigInt {
     let value = this.get("transferAmount");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1375,6 +1388,19 @@ export class Unwind extends Entity {
 
   set size(value: BigInt) {
     this.set("size", Value.fromBigInt(value));
+  }
+
+  get volume(): BigInt {
+    let value = this.get("volume");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set volume(value: BigInt) {
+    this.set("volume", Value.fromBigInt(value));
   }
 
   get mint(): BigInt {

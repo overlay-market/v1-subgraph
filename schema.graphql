@@ -193,6 +193,8 @@ type Unwind @entity {
   price: BigInt!
   # fraction of unwind
   fraction: BigInt!
+  # fraction of the original position
+  fractionOfPosition: BigInt!
   # amount of OVL transferred to the owner
   transferAmount: BigInt!
   # PnL of this unwind
@@ -201,6 +203,8 @@ type Unwind @entity {
   feeAmount: BigInt!
   # fraction of initial collateral of this unwind
   size: BigInt!
+  # volume = transferAmount + (initialDebt * fractionOfPosition) 
+  volume: BigInt!
   # total ovl minted/burned in this unwind
   mint: BigInt!
   # current collateral backing position
