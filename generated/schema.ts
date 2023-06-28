@@ -1547,6 +1547,32 @@ export class Liquidate extends Entity {
     this.set("position", Value.fromString(value));
   }
 
+  get fractionOfPosition(): BigInt {
+    let value = this.get("fractionOfPosition");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set fractionOfPosition(value: BigInt) {
+    this.set("fractionOfPosition", Value.fromBigInt(value));
+  }
+
+  get size(): BigInt {
+    let value = this.get("size");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set size(value: BigInt) {
+    this.set("size", Value.fromBigInt(value));
+  }
+
   get currentOi(): BigInt {
     let value = this.get("currentOi");
     if (!value || value.kind == ValueKind.NULL) {

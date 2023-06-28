@@ -467,8 +467,10 @@ export function handleLiquidate(event: LiquidateEvent): void {
       ])
     }
   }
+  const fractionOfPosition = ONE_18DEC_BI.minus(position.fractionUnwound)
+  const liquidateSize = position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI)
 
-  owner.realizedPnl = sender.realizedPnl.minus(position.initialCollateral.times(ONE_18DEC_BI.minus(position.fractionUnwound)).div(ONE_18DEC_BI))
+  owner.realizedPnl = owner.realizedPnl.minus(liquidateSize)
 
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
@@ -495,6 +497,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.value = stateContract.value(marketAddress, senderAddress, positionId)
   liquidate.timestamp = transaction.timestamp
   liquidate.transaction = transaction.id
+  liquidate.fractionOfPosition = fractionOfPosition
+  liquidate.size = liquidateSize
 
   position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)

@@ -226,6 +226,10 @@ type Liquidate @entity {
   sender: Account!
   # position id
   position: Position!
+  # fraction of the original position
+  fractionOfPosition: BigInt!
+  # liquidate size = initialCollateral * fractionOfPosition
+  size: BigInt!
   # current position oi
   currentOi: BigInt!
   # current position debt
