@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: mainnet
+    network: arbitrum-one
     source:
-      address: "0x9a74758c2A80fA1B1d899E0E1f24CF505a4Dea33"
+      address: "0xfa39cde07ff63b4329a70784c0600da38cf4777c"
       abi: OverlayV1Factory
-      startBlock: 15626703
+      startBlock: 54163540
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -47,7 +47,7 @@ dataSources:
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: mainnet
+    network: arbitrum-one
     source:
       abi: OverlayV1Market
     mapping:
@@ -70,8 +70,10 @@ templates:
       eventHandlers:
         - event: Build(indexed address,uint256,uint256,uint256,bool,uint256)
           handler: handleBuild
+          receipt: true
         - event: Liquidate(indexed address,indexed address,uint256,int256,uint256)
           handler: handleLiquidate
+          receipt: true
         - event: Unwind(indexed address,uint256,uint256,int256,uint256)
           handler: handleUnwind
           receipt: true
