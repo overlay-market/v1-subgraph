@@ -1771,6 +1771,19 @@ export class Account extends Entity {
     this.set("ovlBalance", Value.fromBigInt(value));
   }
 
+  get nipBalance(): BigInt {
+    let value = this.get("nipBalance");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set nipBalance(value: BigInt) {
+    this.set("nipBalance", Value.fromBigInt(value));
+  }
+
   get positions(): PositionLoader {
     return new PositionLoader(
       "Account",
