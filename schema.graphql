@@ -261,6 +261,7 @@ type Account @entity {
   numberOfLiquidatedPositions: BigInt!
   # numberOfOpenPositions
   numberOfOpenPositions: BigInt!
+  ovlBalance: BigInt!
   # derived account info
   positions: [Position!]! @derivedFrom(field: "owner")
   builds: [Build!]! @derivedFrom(field: "owner")

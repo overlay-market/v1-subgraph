@@ -1758,6 +1758,19 @@ export class Account extends Entity {
     this.set("numberOfOpenPositions", Value.fromBigInt(value));
   }
 
+  get ovlBalance(): BigInt {
+    let value = this.get("ovlBalance");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set ovlBalance(value: BigInt) {
+    this.set("ovlBalance", Value.fromBigInt(value));
+  }
+
   get positions(): PositionLoader {
     return new PositionLoader(
       "Account",

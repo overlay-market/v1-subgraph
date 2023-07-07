@@ -76,6 +76,25 @@ dataSources:
         - event: UpdatedTimeUnit(uint256,uint256)
           handler: handleUpdatedTimeUnit
       file: ./src/token-stake.ts
+  - kind: ethereum
+    name: OverlayV1Token
+    network: arbitrum-one
+    source:
+      address: "0x4305C4Bc521B052F17d389c2Fe9d37caBeB70d54"
+      abi: OverlayV1Token
+      startBlock: 53958817
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities: []
+      abis:
+        - name: OverlayV1Token
+          file: ./abis/OverlayV1Token.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/overlay-v1-token.ts
 
 templates:
   - kind: ethereum
