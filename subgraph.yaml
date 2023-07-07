@@ -43,6 +43,39 @@ dataSources:
         - event: EmergencyShutdown(indexed address,indexed address)
           handler: handleEmergencyShutdown
       file: ./src/mapping.ts
+  - kind: ethereum
+    name: TokenStake
+    network: arbitrum-one
+    source:
+      address: "0x1921054a4f8817F9783628F0694744F91Dd9d34e"
+      abi: TokenStake
+      startBlock: 107498003
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - StakingPosition
+        - TokenStake
+      abis:
+        - name: TokenStake
+          file: ./abis/TokenStake.json
+      eventHandlers:
+        - event: RewardTokensDepositedByAdmin(uint256)
+          handler: handleRewardTokensDepositedByAdmin
+        - event: RewardTokensWithdrawnByAdmin(uint256)
+          handler: handleRewardTokensWithdrawnByAdmin
+        - event: RewardsClaimed(indexed address,uint256)
+          handler: handleRewardsClaimed
+        - event: TokensStaked(indexed address,uint256)
+          handler: handleTokensStaked
+        - event: TokensWithdrawn(indexed address,uint256)
+          handler: handleTokensWithdrawn
+        - event: UpdatedRewardRatio(uint256,uint256,uint256,uint256)
+          handler: handleUpdatedRewardRatio
+        - event: UpdatedTimeUnit(uint256,uint256)
+          handler: handleUpdatedTimeUnit
+      file: ./src/token-stake.ts
 
 templates:
   - kind: ethereum

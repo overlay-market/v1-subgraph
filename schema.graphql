@@ -266,4 +266,26 @@ type Account @entity {
   builds: [Build!]! @derivedFrom(field: "owner")
   unwinds: [Unwind!]! @derivedFrom(field: "owner")
   liquidates: [Liquidate!]! @derivedFrom(field: "owner")
+  stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
+}
+
+type StakingPosition @entity {
+  id: Bytes! # pool + owner addresses
+  pool: TokenStake!
+  owner: Account! # address
+  stakedBalance: BigInt! # amount currently staked
+  rewardsEarned: BigInt! # total rewards earned
+}
+
+type TokenStake @entity {
+  id: Bytes! # address
+  rewardToken: Bytes! # address
+  stakingToken: Bytes! # address
+  timeUnit: BigInt!
+  rewardsBalance: BigInt!
+  stakedBalance: BigInt!
+  totalRewardsClaimed: BigInt!
+  totalStaked: BigInt!
+  rewardRatioNumerator: BigInt!
+  rewardRatioDenominator: BigInt!
 }
