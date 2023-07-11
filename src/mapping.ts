@@ -20,6 +20,8 @@ import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from "./utils/constants"
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
 
+// TODO: rename or separate this file into multiple files
+
 export function handleMarketDeployed(event: MarketDeployed): void {
   
   // load factory

@@ -262,6 +262,7 @@ type Account @entity {
   numberOfLiquidatedPositions: BigInt!
   # numberOfOpenPositions
   numberOfOpenPositions: BigInt!
+  planckCatBalance: BigInt! # number of PlanckCat NFTs owned
   # derived account info
   positions: [Position!]! @derivedFrom(field: "owner")
   builds: [Build!]! @derivedFrom(field: "owner")
@@ -269,6 +270,7 @@ type Account @entity {
   liquidates: [Liquidate!]! @derivedFrom(field: "owner")
   stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
   tokens: [TokenPosition!]! @derivedFrom(field: "owner")
+  nfts: [ERC721NFT!]! @derivedFrom(field: "owner")
 }
 
 type TokenTransfer @entity(immutable: true) {
@@ -349,4 +351,26 @@ type Staking @entity {
   rewardRatioNumerator: BigInt!
   rewardRatioDenominator: BigInt!
   stakingPositions: [StakingPosition!]! @derivedFrom(field: "pool")
+}
+
+type ERC721Transfer @entity(immutable: true) {
+  id: Bytes! # tx hash + log index
+  nft: ERC721NFT!
+  from: Account!
+  to: Account!
+  transaction: Transaction!
+}
+
+type ERC721NFT @entity {
+  id: Bytes! # contract address + tokenId
+  contract: ERC721Token! # address
+  tokenId: BigInt!
+  owner: Account! # address
+}
+
+type ERC721Token @entity {
+  id: Bytes! # address
+  name: String!
+  symbol: String!
+  totalSupply: BigInt!
 }

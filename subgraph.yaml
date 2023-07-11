@@ -123,6 +123,28 @@ dataSources:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
       file: ./src/erc20.ts
+  - kind: ethereum
+    name: PlanckCat
+    network: arbitrum-one
+    source:
+      address: "0xc9B28946144E3A0e02fcC119a622E30565916784"
+      abi: PlanckCat
+      startBlock: 4746070
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ERC721Transfer
+        - ERC721NFT
+        - ERC721Token
+      abis:
+        - name: PlanckCat
+          file: ./abis/PlanckCat.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/planck-cat.ts
 
 templates:
   - kind: ethereum
