@@ -145,6 +145,7 @@ type Transaction @entity {
   builds: [Build!]! @derivedFrom(field: "transaction")
   unwinds: [Unwind!]! @derivedFrom(field: "transaction")
   liquidates: [Liquidate!]! @derivedFrom(field: "transaction")
+  tokenTransfers: [TokenTransfer!]! @derivedFrom(field: "transaction")
 }
 
 type Build @entity {
@@ -261,25 +262,82 @@ type Account @entity {
   numberOfLiquidatedPositions: BigInt!
   # numberOfOpenPositions
   numberOfOpenPositions: BigInt!
-  ovlBalance: BigInt!
-  nipBalance: BigInt!
   # derived account info
   positions: [Position!]! @derivedFrom(field: "owner")
   builds: [Build!]! @derivedFrom(field: "owner")
   unwinds: [Unwind!]! @derivedFrom(field: "owner")
   liquidates: [Liquidate!]! @derivedFrom(field: "owner")
   stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
+  tokens: [TokenPosition!]! @derivedFrom(field: "owner")
+}
+
+type TokenTransfer @entity(immutable: true) {
+  # The `transactionIndex` is the index of the transaction in the block.
+  # The `logIndex` is the index of the log in the block logs.
+  id: Bytes! # tx hash + log index
+  token: ERC20Token!
+  from: Account!
+  to: Account!
+  amount: BigInt!
+  transaction: Transaction!
+}
+
+type TokenPosition @entity {
+  id: Bytes! # token + owner addresses
+  token: ERC20Token!
+  owner: Account! # address
+  balance: BigInt!
+}
+
+type ERC20Token @entity {
+  id: Bytes! # address
+  totalSupply: BigInt!
+  name: String!
+  symbol: String!
+}
+
+type RewardsClaimed @entity(immutable: true) {
+  id: Bytes!
+  staker: Bytes! # address
+  stakingPosition: StakingPosition!
+  rewardAmount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TokensStaked @entity(immutable: true) {
+  id: Bytes!
+  staker: Bytes! # address
+  stakingPosition: StakingPosition!
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TokensWithdrawn @entity(immutable: true) {
+  id: Bytes!
+  staker: Bytes! # address
+  stakingPosition: StakingPosition!
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
 }
 
 type StakingPosition @entity {
   id: Bytes! # pool + owner addresses
-  pool: TokenStake!
+  pool: Staking!
   owner: Account! # address
   stakedBalance: BigInt! # amount currently staked
-  rewardsEarned: BigInt! # total rewards earned
+  totalRewardsClaimed: BigInt! # historical rewards claimed
+  tokensStaked: [TokensStaked!]! @derivedFrom(field: "stakingPosition")
+  tokensWithdrawn: [TokensWithdrawn!]! @derivedFrom(field: "stakingPosition")
+  rewardsClaimed: [RewardsClaimed!]! @derivedFrom(field: "stakingPosition")
 }
 
-type TokenStake @entity {
+type Staking @entity {
   id: Bytes! # address
   rewardToken: Bytes! # address
   stakingToken: Bytes! # address
@@ -290,4 +348,5 @@ type TokenStake @entity {
   totalStaked: BigInt!
   rewardRatioNumerator: BigInt!
   rewardRatioDenominator: BigInt!
+  stakingPositions: [StakingPosition!]! @derivedFrom(field: "pool")
 }

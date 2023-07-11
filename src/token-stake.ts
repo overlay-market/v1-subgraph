@@ -8,98 +8,133 @@ import {
     TokensWithdrawn as TokensWithdrawnEvent,
     UpdatedRewardRatio as UpdatedRewardRatioEvent,
     UpdatedTimeUnit as UpdatedTimeUnitEvent,
-    TokenStake as TokenStakeContract
+    TokenStake as StakingContract
 } from '../generated/TokenStake/TokenStake'
 import {
-    TokenStake,
+    RewardsClaimed,
+    TokensStaked,
+    TokensWithdrawn,
+    Staking,
     StakingPosition,
 } from "../generated/schema"
 import { loadAccount } from './utils'
 
 export function handleRewardTokensDepositedByAdmin(event: RewardTokensDepositedByAdminEvent): void {
-    const tokenStake = loadTokenStake(event.address)
-    tokenStake.rewardsBalance = tokenStake.rewardsBalance.plus(event.params._amount)
-    tokenStake.save()
+    const staking = loadStakingContract(event.address)
+    staking.rewardsBalance = staking.rewardsBalance.plus(event.params._amount)
+    staking.save()
 }
 
 export function handleRewardTokensWithdrawnByAdmin(event: RewardTokensWithdrawnByAdminEvent): void {
-    const tokenStake = loadTokenStake(event.address)
-    tokenStake.rewardsBalance = tokenStake.rewardsBalance.minus(event.params._amount)
-    tokenStake.save()
+    const staking = loadStakingContract(event.address)
+    staking.rewardsBalance = staking.rewardsBalance.minus(event.params._amount)
+    staking.save()
 }
 
 export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
-    const tokenStake = loadTokenStake(event.address)
+    const staking = loadStakingContract(event.address)
     const stakingPosition = loadStakingPosition(event.address, event.params.staker)
     const amount = event.params.rewardAmount
 
-    tokenStake.rewardsBalance = tokenStake.rewardsBalance.minus(amount)
-    tokenStake.totalRewardsClaimed = tokenStake.totalRewardsClaimed.plus(amount)
+    staking.rewardsBalance = staking.rewardsBalance.minus(amount)
+    staking.totalRewardsClaimed = staking.totalRewardsClaimed.plus(amount)
 
-    stakingPosition.rewardsEarned = stakingPosition.rewardsEarned.plus(amount)
+    stakingPosition.totalRewardsClaimed = stakingPosition.totalRewardsClaimed.plus(amount)
 
-    tokenStake.save()
+    const entity = new RewardsClaimed(
+        event.transaction.hash.concatI32(event.logIndex.toI32())
+    )
+    entity.staker = event.params.staker
+    entity.stakingPosition = stakingPosition.id
+    entity.rewardAmount = event.params.rewardAmount
+    entity.blockNumber = event.block.number
+    entity.blockTimestamp = event.block.timestamp
+    entity.transactionHash = event.transaction.hash
+
+    staking.save()
     stakingPosition.save()
+    entity.save()
 }
 
 export function handleTokensStaked(event: TokensStakedEvent): void {
-    const tokenStake = loadTokenStake(event.address)
+    const staking = loadStakingContract(event.address)
     const stakingPosition = loadStakingPosition(event.address, event.params.staker)
     const amount = event.params.amount
 
-    tokenStake.stakedBalance = tokenStake.stakedBalance.plus(amount)
-    tokenStake.totalStaked = tokenStake.totalStaked.plus(amount)
+    staking.stakedBalance = staking.stakedBalance.plus(amount)
+    staking.totalStaked = staking.totalStaked.plus(amount)
 
     stakingPosition.stakedBalance = stakingPosition.stakedBalance.plus(amount)
 
-    tokenStake.save()
+    const entity = new TokensStaked(
+        event.transaction.hash.concatI32(event.logIndex.toI32())
+    )
+    entity.staker = event.params.staker
+    entity.stakingPosition = stakingPosition.id
+    entity.amount = event.params.amount
+    entity.blockNumber = event.block.number
+    entity.blockTimestamp = event.block.timestamp
+    entity.transactionHash = event.transaction.hash
+
+    staking.save()
     stakingPosition.save()
+    entity.save()
 }
 
 export function handleTokensWithdrawn(event: TokensWithdrawnEvent): void {
-    const tokenStake = loadTokenStake(event.address)
+    const staking = loadStakingContract(event.address)
     const stakingPosition = loadStakingPosition(event.address, event.params.staker)
     const amount = event.params.amount
 
-    tokenStake.stakedBalance = tokenStake.stakedBalance.minus(amount)
+    staking.stakedBalance = staking.stakedBalance.minus(amount)
     stakingPosition.stakedBalance = stakingPosition.stakedBalance.minus(amount)
 
-    tokenStake.save()
+    const entity = new TokensWithdrawn(
+        event.transaction.hash.concatI32(event.logIndex.toI32())
+    )
+    entity.staker = event.params.staker
+    entity.amount = event.params.amount
+    entity.blockNumber = event.block.number
+    entity.blockTimestamp = event.block.timestamp
+    entity.transactionHash = event.transaction.hash
+
+    staking.save()
     stakingPosition.save()
+    entity.save()
 }
 
 export function handleUpdatedRewardRatio(event: UpdatedRewardRatioEvent): void {
-    const tokenStake = loadTokenStake(event.address)
-    tokenStake.rewardRatioNumerator = event.params.newNumerator
-    tokenStake.rewardRatioDenominator = event.params.newDenominator
-    tokenStake.save()
+    const staking = loadStakingContract(event.address)
+    staking.rewardRatioNumerator = event.params.newNumerator
+    staking.rewardRatioDenominator = event.params.newDenominator
+    staking.save()
 }
 
 export function handleUpdatedTimeUnit(event: UpdatedTimeUnitEvent): void {
-    const tokenStake = loadTokenStake(event.address)
-    tokenStake.timeUnit = event.params.newTimeUnit
-    tokenStake.save()
+    const staking = loadStakingContract(event.address)
+    staking.timeUnit = event.params.newTimeUnit
+    staking.save()
 }
 
 // Helpers
 
-function loadTokenStake(address: Address): TokenStake {
-    let tokenStake = TokenStake.load(address)
-    if (tokenStake == null) {
-        const tokenStakeContract = TokenStakeContract.bind(address)
-        tokenStake = new TokenStake(address)
-        tokenStake.rewardToken = tokenStakeContract.rewardToken()
-        tokenStake.stakingToken = tokenStakeContract.stakingToken()
+function loadStakingContract(address: Address): Staking {
+    let staking = Staking.load(address)
+    if (staking == null) {
+        const tokenStakeContract = StakingContract.bind(address)
+        staking = new Staking(address)
+        staking.rewardToken = tokenStakeContract.rewardToken()
+        staking.stakingToken = tokenStakeContract.stakingToken()
         const rewardRatio = tokenStakeContract.getRewardRatio()
-        tokenStake.rewardRatioNumerator = rewardRatio.get_numerator()
-        tokenStake.rewardRatioDenominator = rewardRatio.get_denominator()
-        tokenStake.timeUnit = tokenStakeContract.getTimeUnit()
-        tokenStake.stakedBalance = tokenStakeContract.stakingTokenBalance()
-        tokenStake.rewardsBalance = tokenStakeContract.getRewardTokenBalance()
-        tokenStake.totalStaked = tokenStakeContract.stakingTokenBalance()
-        tokenStake.totalRewardsClaimed = BigInt.fromI32(0)
+        staking.rewardRatioNumerator = rewardRatio.get_numerator()
+        staking.rewardRatioDenominator = rewardRatio.get_denominator()
+        staking.timeUnit = tokenStakeContract.getTimeUnit()
+        staking.stakedBalance = tokenStakeContract.stakingTokenBalance()
+        staking.rewardsBalance = tokenStakeContract.getRewardTokenBalance()
+        staking.totalStaked = tokenStakeContract.stakingTokenBalance()
+        staking.totalRewardsClaimed = BigInt.fromI32(0)
     }
-    return tokenStake
+    return staking
 }
   
 function loadStakingPosition(pool: Address, owner: Address): StakingPosition {
@@ -109,7 +144,7 @@ function loadStakingPosition(pool: Address, owner: Address): StakingPosition {
         stakingPosition.pool = pool
         stakingPosition.owner = loadAccount(owner).id
         stakingPosition.stakedBalance = BigInt.fromI32(0)
-        stakingPosition.rewardsEarned = BigInt.fromI32(0)
+        stakingPosition.totalRewardsClaimed = BigInt.fromI32(0)
     }
     return stakingPosition
 }

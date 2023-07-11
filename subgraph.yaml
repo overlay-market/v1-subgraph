@@ -55,8 +55,11 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
+        - RewardsClaimed
+        - TokensStaked
+        - TokensWithdrawn
         - StakingPosition
-        - TokenStake
+        - Staking
       abis:
         - name: TokenStake
           file: ./abis/TokenStake.json
@@ -87,14 +90,17 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
-      entities: []
+      entities:
+        - TokenTransfer
+        - TokenPosition
+        - ERC20Token
       abis:
         - name: OverlayV1Token
           file: ./abis/OverlayV1Token.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-      file: ./src/overlay-v1-token.ts
+      file: ./src/erc20.ts
   - kind: ethereum
     name: NIP
     network: arbitrum-one
@@ -106,14 +112,17 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
-      entities: []
+      entities:
+        - TokenTransfer
+        - TokenPosition
+        - ERC20Token
       abis:
         - name: NIP
           file: ./abis/NIP.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-      file: ./src/nip.ts
+      file: ./src/erc20.ts
 
 templates:
   - kind: ethereum
