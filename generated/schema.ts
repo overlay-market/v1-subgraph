@@ -2917,6 +2917,19 @@ export class ERC721NFT extends Entity {
     this.set("tokenId", Value.fromBigInt(value));
   }
 
+  get tokenUri(): string {
+    let value = this.get("tokenUri");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set tokenUri(value: string) {
+    this.set("tokenUri", Value.fromString(value));
+  }
+
   get owner(): string {
     let value = this.get("owner");
     if (!value || value.kind == ValueKind.NULL) {

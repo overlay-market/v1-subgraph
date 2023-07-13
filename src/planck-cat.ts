@@ -64,8 +64,10 @@ function loadNft(contract: Address, tokenId: BigInt): ERC721NFT {
     let nft = ERC721NFT.load(contract.concatI32(tokenId.toI32()))
     if (nft == null) {
         nft = new ERC721NFT(contract.concatI32(tokenId.toI32()))
+        const nftContract = PlanckCatContract.bind(contract)
         nft.contract = contract
         nft.tokenId = tokenId
+        nft.tokenUri = nftContract.tokenURI(tokenId)
         nft.owner = ADDRESS_ZERO
     }
     return nft

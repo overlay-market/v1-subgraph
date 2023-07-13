@@ -365,6 +365,7 @@ type ERC721NFT @entity {
   id: Bytes! # contract address + tokenId
   contract: ERC721Token! # address
   tokenId: BigInt!
+  tokenUri: String!
   owner: Account! # address
 }
 
