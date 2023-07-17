@@ -278,8 +278,8 @@ type TokenTransfer @entity(immutable: true) {
   # The `logIndex` is the index of the log in the block logs.
   id: Bytes! # tx hash + log index
   token: ERC20Token!
-  from: Account!
-  to: Account!
+  from: Bytes!
+  to: Bytes!
   amount: BigInt!
   transaction: Transaction!
 }

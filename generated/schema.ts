@@ -1880,30 +1880,30 @@ export class TokenTransfer extends Entity {
     this.set("token", Value.fromBytes(value));
   }
 
-  get from(): string {
+  get from(): Bytes {
     let value = this.get("from");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set from(value: string) {
-    this.set("from", Value.fromString(value));
+  set from(value: Bytes) {
+    this.set("from", Value.fromBytes(value));
   }
 
-  get to(): string {
+  get to(): Bytes {
     let value = this.get("to");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set to(value: string) {
-    this.set("to", Value.fromString(value));
+  set to(value: Bytes) {
+    this.set("to", Value.fromBytes(value));
   }
 
   get amount(): BigInt {
