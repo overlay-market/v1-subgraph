@@ -5,7 +5,7 @@ import {
     OverlayV1Token as OverlayV1TokenContract
 } from "../generated/OverlayV1Token/OverlayV1Token"
 import { ERC20Token, TokenPosition, TokenTransfer } from "../generated/schema"
-import { loadTransaction } from "./utils"
+import { loadTransaction, loadAccount } from "./utils"
 import { ZERO_BI, ADDRESS_ZERO } from "./utils/constants"
 
 export function handleTransfer(event: TransferEvent): void {
@@ -63,12 +63,16 @@ function loadErc20Token(address: Address): ERC20Token {
 }
 
 function loadTokenPosition(token: Address, owner: Address): TokenPosition {
+    const account = loadAccount(owner)
+    account.save() // ensure account exists
+
     let tokenPosition = TokenPosition.load(token.concat(owner))
     if (tokenPosition == null) {
         tokenPosition = new TokenPosition(token.concat(owner))
         tokenPosition.token = token
-        tokenPosition.owner = owner.toHexString()
+        tokenPosition.owner = account.id
         tokenPosition.balance = ZERO_BI
     }
+
     return tokenPosition
 }
