@@ -99,7 +99,7 @@ dataSources:
           file: ./abis/OverlayV1Token.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
+          handler: handleTransferOVL
       file: ./src/erc20.ts
   - kind: ethereum
     name: NIP
@@ -121,7 +121,7 @@ dataSources:
           file: ./abis/NIP.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
+          handler: handleTransferNIP
       file: ./src/erc20.ts
   - kind: ethereum
     name: PlanckCat

@@ -4,12 +4,12 @@ import {
     Transfer as TransferEvent,
     OverlayV1Token as OverlayV1TokenContract
 } from "../generated/OverlayV1Token/OverlayV1Token"
+import { NIP as NIPContract } from "../generated/NIP/NIP"
 import { ERC20Token, TokenPosition, TokenTransfer } from "../generated/schema"
 import { loadTransaction, loadAccount } from "./utils"
 import { ZERO_BI, ADDRESS_ZERO } from "./utils/constants"
 
-export function handleTransfer(event: TransferEvent): void {
-    const token = loadErc20Token(event.address)
+export function handleTransfer(event: TransferEvent, token: ERC20Token): void {
     const from = event.params.from.toHexString()
     const to = event.params.to.toHexString()
     const amount = event.params.value
@@ -50,16 +50,28 @@ export function handleTransfer(event: TransferEvent): void {
     tx.save()
 }
 
-function loadErc20Token(address: Address): ERC20Token {
-    let token = ERC20Token.load(address)
+export function handleTransferOVL(event: TransferEvent): void {
+    let token = ERC20Token.load(event.address)
     if (token == null) {
-        const contract = OverlayV1TokenContract.bind(address)
-        token = new ERC20Token(address)
+        const contract = OverlayV1TokenContract.bind(event.address)
+        token = new ERC20Token(event.address)
         token.totalSupply = ZERO_BI
         token.name = contract.name()
         token.symbol = contract.symbol()
     }
-    return token
+    handleTransfer(event, token)
+}
+
+export function handleTransferNIP(event: TransferEvent): void {
+    let token = ERC20Token.load(event.address)
+    if (token == null) {
+        const contract = NIPContract.bind(event.address)
+        token = new ERC20Token(event.address)
+        token.totalSupply = ZERO_BI
+        token.name = contract.name()
+        token.symbol = contract.symbol()
+    }
+    handleTransfer(event, token)
 }
 
 function loadTokenPosition(token: Address, owner: Address): TokenPosition {
