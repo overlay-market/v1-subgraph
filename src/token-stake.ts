@@ -93,6 +93,7 @@ export function handleTokensWithdrawn(event: TokensWithdrawnEvent): void {
         event.transaction.hash.concatI32(event.logIndex.toI32())
     )
     entity.staker = event.params.staker
+    entity.stakingPosition = stakingPosition.id
     entity.amount = event.params.amount
     entity.blockNumber = event.block.number
     entity.blockTimestamp = event.block.timestamp
