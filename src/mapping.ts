@@ -12,12 +12,13 @@ import {
   OverlayV1Market,
   Build as BuildEvent,
   Liquidate as LiquidateEvent,
-  Unwind as UnwindEvent
+  Unwind as UnwindEvent,
+  EmergencyWithdraw as EmergencyWithdrawEvent
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from "./utils/constants"
+import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from './utils/constants';
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
 
 // TODO: rename or separate this file into multiple files
@@ -396,6 +397,67 @@ export function handleUnwind(event: UnwindEvent): void {
   if (event.params.fraction == ONE_18DEC_BI) {
     sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
   }
+  
+  position.save()
+  market.save()
+  unwind.save()
+  sender.save()
+  transaction.save()
+}
+
+export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
+  let market = loadMarket(event, event.address)
+  let sender = loadAccount(event.params.sender)
+  
+  let marketAddress = Address.fromString(market.id)
+  let senderAddress = Address.fromString(sender.id)
+  
+  let positionId = event.params.positionId
+  let position = loadPosition(event, senderAddress, market, positionId)
+  let unwindNumber = position.numberOfUniwnds
+
+  position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
+
+  market.oiLong = stateContract.ois(marketAddress).value0
+  market.oiShort = stateContract.ois(marketAddress).value1
+
+  let transaction = loadTransaction(event)
+  let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
+
+  // fraction of the position unwound BEFORE this transaction
+  const fractionUnwound = position.fractionUnwound
+  // this unwind size = intialCollateral * (1 - fractionUnwound) * unwindFraction
+  const fractionOfPosition = (ONE_18DEC_BI.minus(fractionUnwound)).times(ONE_18DEC_BI).div(ONE_18DEC_BI)
+
+  unwind.position = position.id
+  unwind.owner = sender.id
+  unwind.size = event.params.collateral
+  unwind.transferAmount = event.params.collateral
+  unwind.pnl = ZERO_BI
+  unwind.feeAmount = ZERO_BI
+  unwind.currentOi = position.currentOi
+  unwind.currentDebt = position.currentDebt
+  unwind.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
+  unwind.price = ZERO_BI
+  unwind.fraction = ONE_18DEC_BI
+  unwind.fractionOfPosition = fractionOfPosition
+  unwind.volume = ZERO_BI
+  unwind.mint = ZERO_BI
+  unwind.unwindNumber = unwindNumber
+  unwind.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
+  unwind.value = stateContract.value(marketAddress, senderAddress, positionId)
+  unwind.timestamp = transaction.timestamp
+  unwind.transaction = transaction.id
+
+  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
+  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
+
+  market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
+
+  position.fractionUnwound = ONE_18DEC_BI
+
+  sender.numberOfUnwinds = sender.numberOfUnwinds.plus(ONE_BI)
+  sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
   
   position.save()
   market.save()

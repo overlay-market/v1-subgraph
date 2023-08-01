@@ -179,4 +179,7 @@ templates:
         - event: Unwind(indexed address,uint256,uint256,int256,uint256)
           handler: handleUnwind
           receipt: true
+        - event: EmergencyWithdraw(indexed address,uint256,uint256)
+          handler: handleEmergencyWithdraw
+          receipt: true
       file: ./src/mapping.ts
