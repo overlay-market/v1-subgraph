@@ -4,3 +4,5 @@ src/types/
 .DS_STORE
 yarn-error.log
 config/
+
+.bin/

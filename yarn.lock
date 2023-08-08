@@ -3887,6 +3887,13 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
+matchstick-as@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/matchstick-as/-/matchstick-as-0.5.2.tgz#6a6dde02d1d939c32458bd67bac688891a07a34c"
+  integrity sha512-fb1OVphDKEvJY06Ue02Eh1CNncuW95vp6b8tNAP7UIqplICSLoU/zgN6U7ge7R0upsoO78C7CRi4EyK/7Jxz7g==
+  dependencies:
+    wabt "1.0.24"
+
 md5.js@^1.3.4:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/md5.js/-/md5.js-1.3.5.tgz#b5d07b8e3216e3e27cd728d72f70d1e6a342005f"
@@ -5264,6 +5271,11 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+wabt@1.0.24:
+  version "1.0.24"
+  resolved "https://registry.yarnpkg.com/wabt/-/wabt-1.0.24.tgz#c02e0b5b4503b94feaf4a30a426ef01c1bea7c6c"
+  integrity sha512-8l7sIOd3i5GWfTWciPL0+ff/FK/deVK2Q6FN+MPz4vfUcD78i2M/49XJTwF6aml91uIiuXJEsLKWMB2cw/mtKg==
 
 walker@^1.0.8:
   version "1.0.8"
