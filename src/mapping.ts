@@ -449,7 +449,7 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
 
-  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
+  position.currentOi = ZERO_BI
   position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
 
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
