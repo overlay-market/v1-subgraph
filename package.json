@@ -12,7 +12,7 @@
     "create-local": "graph create --node http://localhost:8020/ overlay/v1-subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ overlay/v1-subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 overlay/v1-subgraph",
-    "test:compat": "jest --testPathPattern=compatibility",
+    "test:compat": "jest --testPathPattern=compatibility --testTimeout=60000",
     "test:build": "docker build -t matchstick .",
     "test:unit": "docker run -it --rm --mount type=bind,source=$PWD,target=/matchstick matchstick",
     "test:unit-win": "docker run -it --rm --mount type=bind,source=%PWD%,target=/matchstick matchstick"

@@ -1,5 +1,5 @@
-export const ACCOUNT_QUERY = `
-    query account{
+export const QUERIES = [
+    `query account{
         unwinds(where: {owner: "0xc070dc5ef504970982570ee0072e235f21a47029"}) {
             id
             transaction {
@@ -29,5 +29,5 @@ export const ACCOUNT_QUERY = `
                 }
             }
         }
-    }
-`
+    }`,
+]
