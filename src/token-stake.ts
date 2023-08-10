@@ -139,11 +139,14 @@ function loadStakingContract(address: Address): Staking {
 }
   
 function loadStakingPosition(pool: Address, owner: Address): StakingPosition {
+    const account = loadAccount(owner)
+    account.save() // ensure account exists
+
     let stakingPosition = StakingPosition.load(pool.concat(owner))
     if (stakingPosition == null) {
         stakingPosition = new StakingPosition(pool.concat(owner))
         stakingPosition.pool = pool
-        stakingPosition.owner = loadAccount(owner).id
+        stakingPosition.owner = account.id
         stakingPosition.stakedBalance = BigInt.fromI32(0)
         stakingPosition.totalRewardsClaimed = BigInt.fromI32(0)
     }
