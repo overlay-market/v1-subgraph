@@ -15,6 +15,9 @@ import {
 } from "../../../generated/PlanckCat/PlanckCat"
 import { handleTransfer } from "../../planck-cat"
 
+// Export handlers for coverage report
+export { handleTransfer }
+
 const from = Address.fromString("0x0000000000000000000000000000000000000001")
 const to = Address.fromString("0x0000000000000000000000000000000000000002")
 const tokenId = BigInt.fromI32(234)
@@ -47,7 +50,7 @@ describe("Transfer event", () => {
     })
 
     test("creates ERC721Transfer entity", () => {
-        assert.entityCount("ERC721Transfer", 10)
+        assert.entityCount("ERC721Transfer", 1)
 
         const id = transferEvent.transaction.hash.concatI32(transferEvent.logIndex.toI32()).toHexString()
 

@@ -16,6 +16,9 @@ import {
 import { ERC20Token } from "../../../generated/schema"
 import { handleTransfer, handleTransferOVL, handleTransferNIP } from "../../erc20"
 
+// Export handlers for coverage report
+export { handleTransfer, handleTransferOVL, handleTransferNIP }
+
 const from = Address.fromString("0x0000000000000000000000000000000000000001")
 const to = Address.fromString("0x0000000000000000000000000000000000000002")
 const value = BigInt.fromI32(234)

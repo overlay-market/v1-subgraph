@@ -29,6 +29,17 @@ import {
     handleUpdatedTimeUnit,
 } from "../../token-stake"
 
+// Export handlers for coverage report
+export {
+    handleRewardTokensDepositedByAdmin,
+    handleRewardTokensWithdrawnByAdmin,
+    handleRewardsClaimed,
+    handleTokensStaked,
+    handleTokensWithdrawn,
+    handleUpdatedRewardRatio,
+    handleUpdatedTimeUnit,
+}
+
 const address = Address.fromString("0x0000000000000000000000000000000000000001")
 const rewardToken = Address.fromString("0x0000000000000000000000000000000000000002")
 const stakingToken = Address.fromString("0x0000000000000000000000000000000000000003")
