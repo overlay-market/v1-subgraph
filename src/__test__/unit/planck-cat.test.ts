@@ -47,7 +47,7 @@ describe("Transfer event", () => {
     })
 
     test("creates ERC721Transfer entity", () => {
-        assert.entityCount("ERC721Transfer", 1)
+        assert.entityCount("ERC721Transfer", 10)
 
         const id = transferEvent.transaction.hash.concatI32(transferEvent.logIndex.toI32()).toHexString()
 
