@@ -437,20 +437,20 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   unwind.feeAmount = ZERO_BI
   unwind.currentOi = position.currentOi
   unwind.currentDebt = position.currentDebt
-  unwind.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
+  unwind.isLong = position.isLong
   unwind.price = ZERO_BI
   unwind.fraction = ONE_18DEC_BI
   unwind.fractionOfPosition = fractionOfPosition
   unwind.volume = ZERO_BI
   unwind.mint = ZERO_BI
   unwind.unwindNumber = unwindNumber
-  unwind.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
-  unwind.value = stateContract.value(marketAddress, senderAddress, positionId)
+  unwind.collateral = ZERO_BI
+  unwind.value = ZERO_BI
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
 
   position.currentOi = ZERO_BI
-  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
+  position.currentDebt = ZERO_BI
 
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
 

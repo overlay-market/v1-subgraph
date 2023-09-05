@@ -5,7 +5,7 @@ import axios from "axios"
 import { QUERIES } from "./queries"
 
 const OLD_SUBGRAPH_URL = "https://api.studio.thegraph.com/query/46086/overlay-v2-subgraph-arbitrum/version/latest"
-const NEW_SUBGRAPH_URL = "https://api.studio.thegraph.com/query/49419/overlay-contracts/v0.0.7"
+const NEW_SUBGRAPH_URL = "https://api.studio.thegraph.com/query/49419/overlay-contracts/version/latest"
 
 describe("Compatibility tests with previous subgraph", () => {
     test("All queries match", async () => {
