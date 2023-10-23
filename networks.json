@@ -20,5 +20,15 @@
       "address": "0xc9B28946144E3A0e02fcC119a622E30565916784",
       "startBlock": 4746070
     }
+  },
+  "arbitrum-goerli": {
+    "OverlayV1Factory": {
+      "address": "0x733A47039C02bB3B5950F1c6DAaC5E24f3821AB2",
+      "startBlock": 4822894
+    },
+    "OverlayV1Token": {
+      "address": "0x1023b1BC47b9b449eAD9329EE0eFD4fDAcA3D767",
+      "startBlock": 4822879
+    }
   }
 }
