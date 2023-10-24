@@ -4,7 +4,7 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: arbitrum-one
+    network: arbitrum-goerli
     source:
       address: "0x733A47039C02bB3B5950F1c6DAaC5E24f3821AB2"
       abi: OverlayV1Factory
@@ -81,7 +81,7 @@ dataSources:
   #     file: ./src/token-stake.ts
   - kind: ethereum
     name: OverlayV1Token
-    network: arbitrum-one
+    network: arbitrum-goerli
     source:
       address: "0x1023b1BC47b9b449eAD9329EE0eFD4fDAcA3D767"
       abi: OverlayV1Token
@@ -149,7 +149,7 @@ dataSources:
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: arbitrum-one
+    network: arbitrum-goerli
     source:
       abi: OverlayV1Market
     mapping:
