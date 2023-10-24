@@ -66,8 +66,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.minCollateral = marketContract.params(integer.fromNumber(12))
   market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
-  market.oiLong = stateContract.ois(marketAddress).value0
-  market.oiShort = stateContract.ois(marketAddress).value1
+  market.oiLong = ZERO_BI
+  market.oiShort = ZERO_BI
   market.isShutdown = false
   market.totalBuildFees = ZERO_BI
   market.numberOfBuilds = ZERO_BI
