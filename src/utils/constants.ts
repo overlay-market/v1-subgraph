@@ -5,12 +5,12 @@ import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factor
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 // export const FACTORY_ADDRESS = '0x9a74758c2A80fA1B1d899E0E1f24CF505a4Dea33' // ethereum
-export const FACTORY_ADDRESS = '0x733A47039C02bB3B5950F1c6DAaC5E24f3821AB2' // arbitrum goerli
+export const FACTORY_ADDRESS = '0x21a84b9a5b746Fe85e13f11E745960DBEdB247B1' // arbitrum goerli
 // export const PERIPHERY_ADDRESS = '0x477122219aa1F76E190f480a85af97DE0A643320' // ethereum
-export const PERIPHERY_ADDRESS = '0x68eb0F1Fbbb35b98526F53c01B18507f95F02119' // arbitrum goerli
+export const PERIPHERY_ADDRESS = '0xA9d9981974f0f6FB192275489053299B1b2502F6' // arbitrum goerli
 // periphery deployed on mainnet block 15626703
 
-export const OVL_ADDRESS = '0x1023b1BC47b9b449eAD9329EE0eFD4fDAcA3D767' // arbitrum goerli
+export const OVL_ADDRESS = '0x738C250ef3e490acC17A8552A0BF11BabB29613c' // arbitrum goerli
 // export const OVL_ADDRESS = '0xdc77aCC82ccE1Cc095CbA197474Cc06824adE6F7' // eth
 
 export let ZERO_BI = BigInt.fromI32(0)

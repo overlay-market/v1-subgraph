@@ -6,9 +6,9 @@ dataSources:
     name: OverlayV1Factory
     network: arbitrum-goerli
     source:
-      address: "0x733A47039C02bB3B5950F1c6DAaC5E24f3821AB2"
+      address: "0x21a84b9a5b746Fe85e13f11E745960DBEdB247B1"
       abi: OverlayV1Factory
-      startBlock: 4822894
+      startBlock: 50881382
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -83,9 +83,9 @@ dataSources:
     name: OverlayV1Token
     network: arbitrum-goerli
     source:
-      address: "0x1023b1BC47b9b449eAD9329EE0eFD4fDAcA3D767"
+      address: "0x738C250ef3e490acC17A8552A0BF11BabB29613c"
       abi: OverlayV1Token
-      startBlock: 4822879
+      startBlock: 50881201
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
