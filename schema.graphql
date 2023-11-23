@@ -375,3 +375,16 @@ type ERC721Token @entity {
   symbol: String!
   totalSupply: BigInt!
 }
+
+type ReferralProgram @entity {
+  id: Bytes! # address
+  rewardToken: Bytes! # address
+  affiliateComission: BigInt! # bps
+  traderDiscount: BigInt! # bps
+  # creation timestamp
+  createdAtTimestamp: BigInt!
+  # creation block number
+  createdAtBlockNumber: BigInt!
+  # last modification transaction
+  latestUpdateTransaction: Transaction!
+}
