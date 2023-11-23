@@ -141,8 +141,13 @@ export class Factory extends Entity {
     this.set("owner", Value.fromString(value));
   }
 
-  get markets(): MarketLoader {
-    return new MarketLoader("Factory", this.get("id")!.toString(), "markets");
+  get markets(): Array<string> {
+    let value = this.get("markets");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 }
 
@@ -458,12 +463,13 @@ export class Market extends Entity {
     this.set("oiShort", Value.fromBigInt(value));
   }
 
-  get positions(): PositionLoader {
-    return new PositionLoader(
-      "Market",
-      this.get("id")!.toString(),
-      "positions"
-    );
+  get positions(): Array<string> {
+    let value = this.get("positions");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
   get isShutdown(): boolean {
@@ -844,20 +850,31 @@ export class Position extends Entity {
     this.set("numberOfUniwnds", Value.fromBigInt(value));
   }
 
-  get builds(): BuildLoader {
-    return new BuildLoader("Position", this.get("id")!.toString(), "builds");
+  get builds(): Array<string> {
+    let value = this.get("builds");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  get liquidates(): LiquidateLoader {
-    return new LiquidateLoader(
-      "Position",
-      this.get("id")!.toString(),
-      "liquidates"
-    );
+  get liquidates(): Array<string> {
+    let value = this.get("liquidates");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  get unwinds(): UnwindLoader {
-    return new UnwindLoader("Position", this.get("id")!.toString(), "unwinds");
+  get unwinds(): Array<string> {
+    let value = this.get("unwinds");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 }
 
@@ -954,32 +971,40 @@ export class Transaction extends Entity {
     this.set("gasPrice", Value.fromBigInt(value));
   }
 
-  get builds(): BuildLoader {
-    return new BuildLoader("Transaction", this.get("id")!.toString(), "builds");
+  get builds(): Array<string> {
+    let value = this.get("builds");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  get unwinds(): UnwindLoader {
-    return new UnwindLoader(
-      "Transaction",
-      this.get("id")!.toString(),
-      "unwinds"
-    );
+  get unwinds(): Array<string> {
+    let value = this.get("unwinds");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  get liquidates(): LiquidateLoader {
-    return new LiquidateLoader(
-      "Transaction",
-      this.get("id")!.toString(),
-      "liquidates"
-    );
+  get liquidates(): Array<string> {
+    let value = this.get("liquidates");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  get tokenTransfers(): TokenTransferLoader {
-    return new TokenTransferLoader(
-      "Transaction",
-      this.get("id")!.toString(),
-      "tokenTransfers"
-    );
+  get tokenTransfers(): Array<Bytes> {
+    let value = this.get("tokenTransfers");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 }
 
@@ -1779,48 +1804,67 @@ export class Account extends Entity {
     this.set("planckCatBalance", Value.fromBigInt(value));
   }
 
-  get positions(): PositionLoader {
-    return new PositionLoader(
-      "Account",
-      this.get("id")!.toString(),
-      "positions"
-    );
+  get positions(): Array<string> {
+    let value = this.get("positions");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  get builds(): BuildLoader {
-    return new BuildLoader("Account", this.get("id")!.toString(), "builds");
+  get builds(): Array<string> {
+    let value = this.get("builds");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  get unwinds(): UnwindLoader {
-    return new UnwindLoader("Account", this.get("id")!.toString(), "unwinds");
+  get unwinds(): Array<string> {
+    let value = this.get("unwinds");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  get liquidates(): LiquidateLoader {
-    return new LiquidateLoader(
-      "Account",
-      this.get("id")!.toString(),
-      "liquidates"
-    );
+  get liquidates(): Array<string> {
+    let value = this.get("liquidates");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  get stakingPositions(): StakingPositionLoader {
-    return new StakingPositionLoader(
-      "Account",
-      this.get("id")!.toString(),
-      "stakingPositions"
-    );
+  get stakingPositions(): Array<Bytes> {
+    let value = this.get("stakingPositions");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 
-  get tokens(): TokenPositionLoader {
-    return new TokenPositionLoader(
-      "Account",
-      this.get("id")!.toString(),
-      "tokens"
-    );
+  get tokens(): Array<Bytes> {
+    let value = this.get("tokens");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 
-  get nfts(): ERC721NFTLoader {
-    return new ERC721NFTLoader("Account", this.get("id")!.toString(), "nfts");
+  get nfts(): Array<Bytes> {
+    let value = this.get("nfts");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 }
 
@@ -2560,28 +2604,31 @@ export class StakingPosition extends Entity {
     this.set("totalRewardsClaimed", Value.fromBigInt(value));
   }
 
-  get tokensStaked(): TokensStakedLoader {
-    return new TokensStakedLoader(
-      "StakingPosition",
-      this.get("id")!.toString(),
-      "tokensStaked"
-    );
+  get tokensStaked(): Array<Bytes> {
+    let value = this.get("tokensStaked");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 
-  get tokensWithdrawn(): TokensWithdrawnLoader {
-    return new TokensWithdrawnLoader(
-      "StakingPosition",
-      this.get("id")!.toString(),
-      "tokensWithdrawn"
-    );
+  get tokensWithdrawn(): Array<Bytes> {
+    let value = this.get("tokensWithdrawn");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 
-  get rewardsClaimed(): RewardsClaimedLoader {
-    return new RewardsClaimedLoader(
-      "StakingPosition",
-      this.get("id")!.toString(),
-      "rewardsClaimed"
-    );
+  get rewardsClaimed(): Array<Bytes> {
+    let value = this.get("rewardsClaimed");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 }
 
@@ -2743,12 +2790,13 @@ export class Staking extends Entity {
     this.set("rewardRatioDenominator", Value.fromBigInt(value));
   }
 
-  get stakingPositions(): StakingPositionLoader {
-    return new StakingPositionLoader(
-      "Staking",
-      this.get("id")!.toString(),
-      "stakingPositions"
-    );
+  get stakingPositions(): Array<Bytes> {
+    let value = this.get("stakingPositions");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 }
 
@@ -3027,218 +3075,122 @@ export class ERC721Token extends Entity {
   }
 }
 
-export class MarketLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
+export class ReferralProgram extends Entity {
+  constructor(id: string) {
     super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+    this.set("id", Value.fromString(id));
   }
 
-  load(): Market[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<Market[]>(value);
-  }
-}
-
-export class PositionLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ReferralProgram entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type ReferralProgram must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("ReferralProgram", id.toString(), this);
+    }
   }
 
-  load(): Position[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<Position[]>(value);
-  }
-}
-
-export class BuildLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  static loadInBlock(id: string): ReferralProgram | null {
+    return changetype<ReferralProgram | null>(
+      store.get_in_block("ReferralProgram", id)
+    );
   }
 
-  load(): Build[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<Build[]>(value);
-  }
-}
-
-export class LiquidateLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  static load(id: string): ReferralProgram | null {
+    return changetype<ReferralProgram | null>(store.get("ReferralProgram", id));
   }
 
-  load(): Liquidate[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<Liquidate[]>(value);
-  }
-}
-
-export class UnwindLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
-  load(): Unwind[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<Unwind[]>(value);
-  }
-}
-
-export class TokenTransferLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
-  load(): TokenTransfer[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<TokenTransfer[]>(value);
-  }
-}
-
-export class StakingPositionLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  get rewardToken(): Bytes {
+    let value = this.get("rewardToken");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
   }
 
-  load(): StakingPosition[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<StakingPosition[]>(value);
-  }
-}
-
-export class TokenPositionLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  set rewardToken(value: Bytes) {
+    this.set("rewardToken", Value.fromBytes(value));
   }
 
-  load(): TokenPosition[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<TokenPosition[]>(value);
-  }
-}
-
-export class ERC721NFTLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  get affiliateComission(): BigInt {
+    let value = this.get("affiliateComission");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  load(): ERC721NFT[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<ERC721NFT[]>(value);
-  }
-}
-
-export class TokensStakedLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  set affiliateComission(value: BigInt) {
+    this.set("affiliateComission", Value.fromBigInt(value));
   }
 
-  load(): TokensStaked[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<TokensStaked[]>(value);
-  }
-}
-
-export class TokensWithdrawnLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  get traderDiscount(): BigInt {
+    let value = this.get("traderDiscount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  load(): TokensWithdrawn[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<TokensWithdrawn[]>(value);
-  }
-}
-
-export class RewardsClaimedLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
+  set traderDiscount(value: BigInt) {
+    this.set("traderDiscount", Value.fromBigInt(value));
   }
 
-  load(): RewardsClaimed[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<RewardsClaimed[]>(value);
+  get createdAtTimestamp(): BigInt {
+    let value = this.get("createdAtTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set createdAtTimestamp(value: BigInt) {
+    this.set("createdAtTimestamp", Value.fromBigInt(value));
+  }
+
+  get createdAtBlockNumber(): BigInt {
+    let value = this.get("createdAtBlockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set createdAtBlockNumber(value: BigInt) {
+    this.set("createdAtBlockNumber", Value.fromBigInt(value));
+  }
+
+  get latestUpdateTransaction(): string {
+    let value = this.get("latestUpdateTransaction");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set latestUpdateTransaction(value: string) {
+    this.set("latestUpdateTransaction", Value.fromString(value));
   }
 }
