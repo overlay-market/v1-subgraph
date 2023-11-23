@@ -269,6 +269,7 @@ type Account @entity {
   unwinds: [Unwind!]! @derivedFrom(field: "owner")
   liquidates: [Liquidate!]! @derivedFrom(field: "owner")
   stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
+  referralPositions: [ReferralPosition!]! @derivedFrom(field: "owner")
   tokens: [TokenPosition!]! @derivedFrom(field: "owner")
   nfts: [ERC721NFT!]! @derivedFrom(field: "owner")
 }
@@ -387,6 +388,10 @@ type ReferralProgram @entity {
   createdAtBlockNumber: BigInt!
   # last modification transaction
   latestUpdateTransaction: Transaction!
+  # totalRewards
+  totalRewards: BigInt!
+  totalAirdropped: BigInt!
+  referralPositions: [ReferralPosition!]! @derivedFrom(field: "referralProgram")
 }
 
 type ReferralPosition @entity {
@@ -397,6 +402,6 @@ type ReferralPosition @entity {
   affiliatedTo: Account
   totalAffiliateComission: BigInt!
   totalTraderDiscount: BigInt!
-  totalAirdropedAmount: BigInt!
+  totalAirdroppedAmount: BigInt!
   totalRewardsPending: BigInt!
 }
