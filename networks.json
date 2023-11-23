@@ -1,0 +1,24 @@
+{
+  "arbitrum-one": {
+    "OverlayV1Factory": {
+      "address": "0xfa39cde07ff63b4329a70784c0600da38cf4777c",
+      "startBlock": 54163540
+    },
+    "TokenStake": {
+      "address": "0x1921054a4f8817F9783628F0694744F91Dd9d34e",
+      "startBlock": 107498003
+    },
+    "NIP": {
+      "address": "0x088feB3063d118c037ecAc999AD53Ec532780614",
+      "startBlock": 107495349
+    },
+    "OverlayV1Token": {
+      "address": "0x4305C4Bc521B052F17d389c2Fe9d37caBeB70d54",
+      "startBlock": 53958817
+    },
+    "PlanckCat": {
+      "address": "0xc9B28946144E3A0e02fcC119a622E30565916784",
+      "startBlock": 4746070
+    }
+  }
+}

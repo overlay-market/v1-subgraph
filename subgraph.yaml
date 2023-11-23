@@ -1,17 +1,17 @@
-specVersion: 0.0.2
+specVersion: 0.0.5
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: mainnet
+    network: arbitrum-one
     source:
-      address: "0x9a74758c2A80fA1B1d899E0E1f24CF505a4Dea33"
+      address: "0xfa39cde07ff63b4329a70784c0600da38cf4777c"
       abi: OverlayV1Factory
-      startBlock: 15626703
+      startBlock: 54163540
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - FeeRecipientUpdated
@@ -43,16 +43,118 @@ dataSources:
         - event: EmergencyShutdown(indexed address,indexed address)
           handler: handleEmergencyShutdown
       file: ./src/mapping.ts
+  - kind: ethereum
+    name: TokenStake
+    network: arbitrum-one
+    source:
+      address: "0x1921054a4f8817F9783628F0694744F91Dd9d34e"
+      abi: TokenStake
+      startBlock: 107498003
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - RewardsClaimed
+        - TokensStaked
+        - TokensWithdrawn
+        - StakingPosition
+        - Staking
+      abis:
+        - name: TokenStake
+          file: ./abis/TokenStake.json
+      eventHandlers:
+        - event: RewardTokensDepositedByAdmin(uint256)
+          handler: handleRewardTokensDepositedByAdmin
+        - event: RewardTokensWithdrawnByAdmin(uint256)
+          handler: handleRewardTokensWithdrawnByAdmin
+        - event: RewardsClaimed(indexed address,uint256)
+          handler: handleRewardsClaimed
+        - event: TokensStaked(indexed address,uint256)
+          handler: handleTokensStaked
+        - event: TokensWithdrawn(indexed address,uint256)
+          handler: handleTokensWithdrawn
+        - event: UpdatedRewardRatio(uint256,uint256,uint256,uint256)
+          handler: handleUpdatedRewardRatio
+        - event: UpdatedTimeUnit(uint256,uint256)
+          handler: handleUpdatedTimeUnit
+      file: ./src/token-stake.ts
+  - kind: ethereum
+    name: OverlayV1Token
+    network: arbitrum-one
+    source:
+      address: "0x4305C4Bc521B052F17d389c2Fe9d37caBeB70d54"
+      abi: OverlayV1Token
+      startBlock: 53958817
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - TokenTransfer
+        - TokenPosition
+        - ERC20Token
+      abis:
+        - name: OverlayV1Token
+          file: ./abis/OverlayV1Token.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransferOVL
+      file: ./src/erc20.ts
+  - kind: ethereum
+    name: NIP
+    network: arbitrum-one
+    source:
+      address: "0x088feB3063d118c037ecAc999AD53Ec532780614"
+      abi: NIP
+      startBlock: 107495349
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - TokenTransfer
+        - TokenPosition
+        - ERC20Token
+      abis:
+        - name: NIP
+          file: ./abis/NIP.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransferNIP
+      file: ./src/erc20.ts
+  - kind: ethereum
+    name: PlanckCat
+    network: arbitrum-one
+    source:
+      address: "0xc9B28946144E3A0e02fcC119a622E30565916784"
+      abi: PlanckCat
+      startBlock: 4746070
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ERC721Transfer
+        - ERC721NFT
+        - ERC721Token
+      abis:
+        - name: PlanckCat
+          file: ./abis/PlanckCat.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/planck-cat.ts
 
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: mainnet
+    network: arbitrum-one
     source:
       abi: OverlayV1Market
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Build
@@ -70,8 +172,14 @@ templates:
       eventHandlers:
         - event: Build(indexed address,uint256,uint256,uint256,bool,uint256)
           handler: handleBuild
+          receipt: true
         - event: Liquidate(indexed address,indexed address,uint256,int256,uint256)
           handler: handleLiquidate
+          receipt: true
         - event: Unwind(indexed address,uint256,uint256,int256,uint256)
           handler: handleUnwind
+          receipt: true
+        - event: EmergencyWithdraw(indexed address,uint256,uint256)
+          handler: handleEmergencyWithdraw
+          receipt: true
       file: ./src/mapping.ts

@@ -126,6 +126,12 @@ export function loadAccount(accountAddress: Address): Account {
 
   if (account === null) {
     account = new Account(accountId)
+
+    account.realizedPnl = ZERO_BI
+    account.numberOfUnwinds = ZERO_BI
+    account.numberOfOpenPositions = ZERO_BI
+    account.numberOfLiquidatedPositions = ZERO_BI
+    account.planckCatBalance = ZERO_BI
   }
 
   return account

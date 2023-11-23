@@ -68,6 +68,21 @@ type Market @entity {
   positions: [Position!]! @derivedFrom(field: "market")
   # if market is shut down
   isShutdown: Boolean!
+  # fees and tx count:
+  # number of builds/positions
+  numberOfBuilds: BigInt!
+  # sum of all build fees
+  totalBuildFees: BigInt!
+  # number of unwinds
+  numberOfUnwinds: BigInt!
+  # sum of all build fees
+  totalUnwindFees: BigInt!
+  # number of liquidates
+  numberOfLiquidates: BigInt!
+  # sum of all build fees
+  totalLiquidateFees: BigInt!
+  # sum of all fees
+  totalFees: BigInt!
 }
 
 type Position @entity {
@@ -89,6 +104,8 @@ type Position @entity {
   initialNotional: BigInt!
   # leverage taken on position
   leverage: BigDecimal!
+  # total fraction unwound from inception
+  fractionUnwound: BigInt!
   # long/short
   isLong: Boolean!
   # entry price when building position
@@ -105,8 +122,13 @@ type Position @entity {
   createdAtTimestamp: BigInt!
   # block number of position creation
   createdAtBlockNumber: BigInt!
-  # transaction position was created
-  transaction: Transaction!
+  # number of unwinds
+  numberOfUniwnds: BigInt!
+
+   # derived fields
+  builds: [Build!]! @derivedFrom(field: "position")
+  liquidates: [Liquidate!]! @derivedFrom(field: "position")
+  unwinds: [Unwind!]! @derivedFrom(field: "position")
 }
 
 type Transaction @entity {
@@ -123,15 +145,16 @@ type Transaction @entity {
   builds: [Build!]! @derivedFrom(field: "transaction")
   unwinds: [Unwind!]! @derivedFrom(field: "transaction")
   liquidates: [Liquidate!]! @derivedFrom(field: "transaction")
+  tokenTransfers: [TokenTransfer!]! @derivedFrom(field: "transaction")
 }
 
 type Build @entity {
-  # caller address
+  # market contract concat'd with position id
   id: ID!
   # account performing action
   owner: Account!
-  # position id
-  positionId: String!
+  # position entitie
+  position: Position!
   # current position oi
   currentOi: BigInt!
   # current position debt
@@ -140,6 +163,8 @@ type Build @entity {
   isLong: Boolean!
   # price at time of build
   price: BigInt!
+  # Fee amount of this build
+  feeAmount: BigInt!
   # current collateral backing position
   collateral: BigInt!
   # current value of position
@@ -151,12 +176,14 @@ type Build @entity {
 }
 
 type Unwind @entity {
-  # caller address
+  # market contract concat'd with position id concat'd with unwind number
   id: ID!
   # account performing action
   owner: Account!
   # position id
-  positionId: String!
+  position: Position!
+  # unwind number
+  unwindNumber: BigInt!
   # current position oi
   currentOi: BigInt!
   # current position debt
@@ -165,6 +192,22 @@ type Unwind @entity {
   isLong: Boolean!
   # price at time of unwind
   price: BigInt!
+  # fraction of unwind
+  fraction: BigInt!
+  # fraction of the original position
+  fractionOfPosition: BigInt!
+  # amount of OVL transferred to the owner
+  transferAmount: BigInt!
+  # PnL of this unwind
+  pnl: BigInt!
+  # Fee amount of this unwind
+  feeAmount: BigInt!
+  # fraction of initial collateral of this unwind
+  size: BigInt!
+  # volume = transferAmount + (initialDebt * fractionOfPosition) 
+  volume: BigInt!
+  # total ovl minted/burned in this unwind
+  mint: BigInt!
   # current collateral backing position
   collateral: BigInt!
   # current value of position
@@ -176,12 +219,18 @@ type Unwind @entity {
 }
 
 type Liquidate @entity {
-  # caller address
+  # market contract concat'd with position id
   id: ID!
-  # account performing action
+  # owner of the position
   owner: Account!
+  # address performing the transaction
+  sender: Account!
   # position id
-  positionId: String!
+  position: Position!
+  # fraction of the original position
+  fractionOfPosition: BigInt!
+  # liquidate size = initialCollateral * fractionOfPosition
+  size: BigInt!
   # current position oi
   currentOi: BigInt!
   # current position debt
@@ -190,6 +239,8 @@ type Liquidate @entity {
   isLong: Boolean!
   # price at time of liquidate
   price: BigInt!
+  # total ovl minted/burned in this transaction
+  mint: BigInt!
   # current collateral backing position
   collateral: BigInt!
   # current value of position
@@ -203,9 +254,124 @@ type Liquidate @entity {
 type Account @entity {
   # account address
   id: ID!
+  # totalRealizedPnl
+  realizedPnl:  BigInt!
+  # numberOfUnwinds of the account
+  numberOfUnwinds: BigInt!
+  # numberOfLiquidatedPositions
+  numberOfLiquidatedPositions: BigInt!
+  # numberOfOpenPositions
+  numberOfOpenPositions: BigInt!
+  planckCatBalance: BigInt! # number of PlanckCat NFTs owned
   # derived account info
   positions: [Position!]! @derivedFrom(field: "owner")
   builds: [Build!]! @derivedFrom(field: "owner")
   unwinds: [Unwind!]! @derivedFrom(field: "owner")
   liquidates: [Liquidate!]! @derivedFrom(field: "owner")
+  stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
+  tokens: [TokenPosition!]! @derivedFrom(field: "owner")
+  nfts: [ERC721NFT!]! @derivedFrom(field: "owner")
+}
+
+type TokenTransfer @entity(immutable: true) {
+  # The `transactionIndex` is the index of the transaction in the block.
+  # The `logIndex` is the index of the log in the block logs.
+  id: Bytes! # tx hash + log index
+  token: ERC20Token!
+  from: Bytes!
+  to: Bytes!
+  amount: BigInt!
+  transaction: Transaction!
+}
+
+type TokenPosition @entity {
+  id: Bytes! # token + owner addresses
+  token: ERC20Token!
+  owner: Account! # address
+  balance: BigInt!
+}
+
+type ERC20Token @entity {
+  id: Bytes! # address
+  totalSupply: BigInt!
+  name: String!
+  symbol: String!
+}
+
+type RewardsClaimed @entity(immutable: true) {
+  id: Bytes!
+  staker: Bytes! # address
+  stakingPosition: StakingPosition!
+  rewardAmount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TokensStaked @entity(immutable: true) {
+  id: Bytes!
+  staker: Bytes! # address
+  stakingPosition: StakingPosition!
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TokensWithdrawn @entity(immutable: true) {
+  id: Bytes!
+  staker: Bytes! # address
+  stakingPosition: StakingPosition!
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type StakingPosition @entity {
+  id: Bytes! # pool + owner addresses
+  pool: Staking!
+  owner: Account! # address
+  stakedBalance: BigInt! # amount currently staked
+  totalRewardsClaimed: BigInt! # historical rewards claimed
+  tokensStaked: [TokensStaked!]! @derivedFrom(field: "stakingPosition")
+  tokensWithdrawn: [TokensWithdrawn!]! @derivedFrom(field: "stakingPosition")
+  rewardsClaimed: [RewardsClaimed!]! @derivedFrom(field: "stakingPosition")
+}
+
+type Staking @entity {
+  id: Bytes! # address
+  rewardToken: Bytes! # address
+  stakingToken: Bytes! # address
+  timeUnit: BigInt!
+  rewardsBalance: BigInt!
+  stakedBalance: BigInt!
+  totalRewardsClaimed: BigInt!
+  totalStaked: BigInt!
+  rewardRatioNumerator: BigInt!
+  rewardRatioDenominator: BigInt!
+  stakingPositions: [StakingPosition!]! @derivedFrom(field: "pool")
+}
+
+type ERC721Transfer @entity(immutable: true) {
+  id: Bytes! # tx hash + log index
+  nft: ERC721NFT!
+  from: Account!
+  to: Account!
+  transaction: Transaction!
+}
+
+type ERC721NFT @entity {
+  id: Bytes! # contract address + tokenId
+  contract: ERC721Token! # address
+  tokenId: BigInt!
+  tokenUri: String!
+  owner: Account! # address
+}
+
+type ERC721Token @entity {
+  id: Bytes! # address
+  name: String!
+  symbol: String!
+  totalSupply: BigInt!
 }
