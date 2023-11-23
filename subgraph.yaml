@@ -163,7 +163,7 @@ dataSources:
           file: ./abis/ReferralList.json
       eventHandlers:
         - event: AllowAffiliates(address[])
-          handler: handleAllowAffiliate
+          handler: handleAllowAffiliates
         - event: AddAffiliate(address,address)
           handler: handleAddAffiliate
         - event: Airdrop()
