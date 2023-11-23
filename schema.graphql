@@ -377,7 +377,7 @@ type ERC721Token @entity {
 }
 
 type ReferralProgram @entity {
-  id: Bytes! # address
+  id: ID! # address
   rewardToken: Bytes! # address
   affiliateComission: BigInt! # bps
   traderDiscount: BigInt! # bps
