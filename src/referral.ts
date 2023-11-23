@@ -4,6 +4,14 @@ import { ReferralList, AllowAffiliates } from '../generated/ReferralList/Referra
 import { ZERO_BI } from './utils/constants'
 import { loadAccount } from './utils'
 
+export function handleAllowAffiliates(event: AllowAffiliates): void {
+    const newAffiliates = event.params.affiliates
+    for (let i=0; i < newAffiliates.length; i++) {
+        const referralPosition = loadReferralPosition(event.address, newAffiliates[i])
+        referralPosition.isAffiliate = true
+        referralPosition.save()
+    }
+}
 
 export function loadReferralProgram(event: ethereum.Event, referralAddress: Address): ReferralProgram {
     let referralProgram = ReferralProgram.load(referralAddress)
