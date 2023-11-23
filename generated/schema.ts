@@ -1849,6 +1849,15 @@ export class Account extends Entity {
     }
   }
 
+  get referralPositions(): Array<Bytes> {
+    let value = this.get("referralPositions");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
+  }
+
   get tokens(): Array<Bytes> {
     let value = this.get("tokens");
     if (!value || value.kind == ValueKind.NULL) {
@@ -3076,9 +3085,9 @@ export class ERC721Token extends Entity {
 }
 
 export class ReferralProgram extends Entity {
-  constructor(id: string) {
+  constructor(id: Bytes) {
     super();
-    this.set("id", Value.fromString(id));
+    this.set("id", Value.fromBytes(id));
   }
 
   save(): void {
@@ -3086,34 +3095,36 @@ export class ReferralProgram extends Entity {
     assert(id != null, "Cannot save ReferralProgram entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type ReferralProgram must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        id.kind == ValueKind.BYTES,
+        `Entities of type ReferralProgram must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("ReferralProgram", id.toString(), this);
+      store.set("ReferralProgram", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: string): ReferralProgram | null {
+  static loadInBlock(id: Bytes): ReferralProgram | null {
     return changetype<ReferralProgram | null>(
-      store.get_in_block("ReferralProgram", id)
+      store.get_in_block("ReferralProgram", id.toHexString())
     );
   }
 
-  static load(id: string): ReferralProgram | null {
-    return changetype<ReferralProgram | null>(store.get("ReferralProgram", id));
+  static load(id: Bytes): ReferralProgram | null {
+    return changetype<ReferralProgram | null>(
+      store.get("ReferralProgram", id.toHexString())
+    );
   }
 
-  get id(): string {
+  get id(): Bytes {
     let value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
   }
 
   get rewardToken(): Bytes {
@@ -3192,5 +3203,192 @@ export class ReferralProgram extends Entity {
 
   set latestUpdateTransaction(value: string) {
     this.set("latestUpdateTransaction", Value.fromString(value));
+  }
+
+  get totalRewards(): BigInt {
+    let value = this.get("totalRewards");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalRewards(value: BigInt) {
+    this.set("totalRewards", Value.fromBigInt(value));
+  }
+
+  get totalAirdropped(): BigInt {
+    let value = this.get("totalAirdropped");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalAirdropped(value: BigInt) {
+    this.set("totalAirdropped", Value.fromBigInt(value));
+  }
+
+  get referralPositions(): Array<Bytes> {
+    let value = this.get("referralPositions");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
+  }
+}
+
+export class ReferralPosition extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ReferralPosition entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type ReferralPosition must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("ReferralPosition", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): ReferralPosition | null {
+    return changetype<ReferralPosition | null>(
+      store.get_in_block("ReferralPosition", id.toHexString())
+    );
+  }
+
+  static load(id: Bytes): ReferralPosition | null {
+    return changetype<ReferralPosition | null>(
+      store.get("ReferralPosition", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get referralProgram(): Bytes {
+    let value = this.get("referralProgram");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set referralProgram(value: Bytes) {
+    this.set("referralProgram", Value.fromBytes(value));
+  }
+
+  get owner(): string {
+    let value = this.get("owner");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set owner(value: string) {
+    this.set("owner", Value.fromString(value));
+  }
+
+  get isAffiliate(): boolean {
+    let value = this.get("isAffiliate");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set isAffiliate(value: boolean) {
+    this.set("isAffiliate", Value.fromBoolean(value));
+  }
+
+  get affiliatedTo(): string | null {
+    let value = this.get("affiliatedTo");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set affiliatedTo(value: string | null) {
+    if (!value) {
+      this.unset("affiliatedTo");
+    } else {
+      this.set("affiliatedTo", Value.fromString(<string>value));
+    }
+  }
+
+  get totalAffiliateComission(): BigInt {
+    let value = this.get("totalAffiliateComission");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalAffiliateComission(value: BigInt) {
+    this.set("totalAffiliateComission", Value.fromBigInt(value));
+  }
+
+  get totalTraderDiscount(): BigInt {
+    let value = this.get("totalTraderDiscount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalTraderDiscount(value: BigInt) {
+    this.set("totalTraderDiscount", Value.fromBigInt(value));
+  }
+
+  get totalAirdroppedAmount(): BigInt {
+    let value = this.get("totalAirdroppedAmount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalAirdroppedAmount(value: BigInt) {
+    this.set("totalAirdroppedAmount", Value.fromBigInt(value));
+  }
+
+  get totalRewardsPending(): BigInt {
+    let value = this.get("totalRewardsPending");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalRewardsPending(value: BigInt) {
+    this.set("totalRewardsPending", Value.fromBigInt(value));
   }
 }
