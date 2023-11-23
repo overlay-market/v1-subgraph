@@ -113,6 +113,12 @@
   },
   {
     "anonymous": false,
+    "inputs": [],
+    "name": "Airdrop",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       {
         "indexed": false,
