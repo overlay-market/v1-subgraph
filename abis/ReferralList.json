@@ -58,6 +58,11 @@
   },
   {
     "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NewOwnerIsZeroAddress",
     "type": "error"
   },
@@ -205,6 +210,45 @@
       }
     ],
     "name": "RolesUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint48",
+        "name": "affiliateComission",
+        "type": "uint48"
+      }
+    ],
+    "name": "SetAffiliateComission",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "rewardToken",
+        "type": "address"
+      }
+    ],
+    "name": "SetRewardToken",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint48",
+        "name": "traderDiscount",
+        "type": "uint48"
+      }
+    ],
+    "name": "SetTraderDiscount",
     "type": "event"
   },
   {
@@ -424,6 +468,16 @@
         "internalType": "address",
         "name": "_rewardToken",
         "type": "address"
+      },
+      {
+        "internalType": "uint48",
+        "name": "_affiliateComission",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint48",
+        "name": "_traderDiscount",
+        "type": "uint48"
       }
     ],
     "name": "initialize",
@@ -570,6 +624,45 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint48",
+        "name": "_affiliateComission",
+        "type": "uint48"
+      }
+    ],
+    "name": "setAffiliateComission",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_rewardToken",
+        "type": "address"
+      }
+    ],
+    "name": "setRewardToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint48",
+        "name": "_traderDiscount",
+        "type": "uint48"
+      }
+    ],
+    "name": "setTraderDiscount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
