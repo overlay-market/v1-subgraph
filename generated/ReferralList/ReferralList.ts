@@ -162,6 +162,60 @@ export class RolesUpdated__Params {
   }
 }
 
+export class SetAffiliateComission extends ethereum.Event {
+  get params(): SetAffiliateComission__Params {
+    return new SetAffiliateComission__Params(this);
+  }
+}
+
+export class SetAffiliateComission__Params {
+  _event: SetAffiliateComission;
+
+  constructor(event: SetAffiliateComission) {
+    this._event = event;
+  }
+
+  get affiliateComission(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
+export class SetRewardToken extends ethereum.Event {
+  get params(): SetRewardToken__Params {
+    return new SetRewardToken__Params(this);
+  }
+}
+
+export class SetRewardToken__Params {
+  _event: SetRewardToken;
+
+  constructor(event: SetRewardToken) {
+    this._event = event;
+  }
+
+  get rewardToken(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class SetTraderDiscount extends ethereum.Event {
+  get params(): SetTraderDiscount__Params {
+    return new SetTraderDiscount__Params(this);
+  }
+}
+
+export class SetTraderDiscount__Params {
+  _event: SetTraderDiscount;
+
+  constructor(event: SetTraderDiscount) {
+    this._event = event;
+  }
+
+  get traderDiscount(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
 export class Upgraded extends ethereum.Event {
   get params(): Upgraded__Params {
     return new Upgraded__Params(this);
@@ -705,6 +759,14 @@ export class InitializeCall__Inputs {
   get _rewardToken(): Address {
     return this._call.inputValues[1].value.toAddress();
   }
+
+  get _affiliateComission(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get _traderDiscount(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
 }
 
 export class InitializeCall__Outputs {
@@ -827,6 +889,96 @@ export class RevokeRolesCall__Outputs {
   _call: RevokeRolesCall;
 
   constructor(call: RevokeRolesCall) {
+    this._call = call;
+  }
+}
+
+export class SetAffiliateComissionCall extends ethereum.Call {
+  get inputs(): SetAffiliateComissionCall__Inputs {
+    return new SetAffiliateComissionCall__Inputs(this);
+  }
+
+  get outputs(): SetAffiliateComissionCall__Outputs {
+    return new SetAffiliateComissionCall__Outputs(this);
+  }
+}
+
+export class SetAffiliateComissionCall__Inputs {
+  _call: SetAffiliateComissionCall;
+
+  constructor(call: SetAffiliateComissionCall) {
+    this._call = call;
+  }
+
+  get _affiliateComission(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class SetAffiliateComissionCall__Outputs {
+  _call: SetAffiliateComissionCall;
+
+  constructor(call: SetAffiliateComissionCall) {
+    this._call = call;
+  }
+}
+
+export class SetRewardTokenCall extends ethereum.Call {
+  get inputs(): SetRewardTokenCall__Inputs {
+    return new SetRewardTokenCall__Inputs(this);
+  }
+
+  get outputs(): SetRewardTokenCall__Outputs {
+    return new SetRewardTokenCall__Outputs(this);
+  }
+}
+
+export class SetRewardTokenCall__Inputs {
+  _call: SetRewardTokenCall;
+
+  constructor(call: SetRewardTokenCall) {
+    this._call = call;
+  }
+
+  get _rewardToken(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetRewardTokenCall__Outputs {
+  _call: SetRewardTokenCall;
+
+  constructor(call: SetRewardTokenCall) {
+    this._call = call;
+  }
+}
+
+export class SetTraderDiscountCall extends ethereum.Call {
+  get inputs(): SetTraderDiscountCall__Inputs {
+    return new SetTraderDiscountCall__Inputs(this);
+  }
+
+  get outputs(): SetTraderDiscountCall__Outputs {
+    return new SetTraderDiscountCall__Outputs(this);
+  }
+}
+
+export class SetTraderDiscountCall__Inputs {
+  _call: SetTraderDiscountCall;
+
+  constructor(call: SetTraderDiscountCall) {
+    this._call = call;
+  }
+
+  get _traderDiscount(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class SetTraderDiscountCall__Outputs {
+  _call: SetTraderDiscountCall;
+
+  constructor(call: SetTraderDiscountCall) {
     this._call = call;
   }
 }
