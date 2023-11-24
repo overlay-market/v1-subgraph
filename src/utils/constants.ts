@@ -13,6 +13,8 @@ export const PERIPHERY_ADDRESS = '0xc3cb99652111e7828f38544e3e94c714d8f9a51a' //
 export const OVL_ADDRESS = '0x4305c4bc521b052f17d389c2fe9d37cabeb70d54' // arb
 // export const OVL_ADDRESS = '0xdc77aCC82ccE1Cc095CbA197474Cc06824adE6F7' // eth
 
+export const REFERRAL_ADDRESS = '0x0000000000000000000000000000000000000000'
+
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)
 export let ONE_18DEC_BI = BigInt.fromString('1000000000000000000')
