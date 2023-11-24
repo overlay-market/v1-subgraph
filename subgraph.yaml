@@ -166,8 +166,12 @@ dataSources:
           handler: handleAllowAffiliates
         - event: AddAffiliate(address,address)
           handler: handleAddAffiliate
-        - event: Airdrop()
-          handler: handleAirdrop
+        - event: SetRewardToken(address)
+          handler: handleSetRewardToken
+        - event: SetAffiliateComission(uint48)
+          handler: handleSetAffiliateComission
+        - event: SetTraderDiscount(uint48)
+          handler: handleSetTraderDiscount
       file: ./src/referral.ts
 
 templates:
