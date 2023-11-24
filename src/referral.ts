@@ -1,6 +1,6 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { ReferralProgram, ReferralPosition } from '../generated/schema'
-import { ReferralList, AllowAffiliates, AddAffiliate, SetRewardToken } from '../generated/ReferralList/ReferralList'
+import { ReferralList, AllowAffiliates, AddAffiliate, SetRewardToken, SetAffiliateComission } from '../generated/ReferralList/ReferralList'
 import { ZERO_BI } from './utils/constants'
 import { loadAccount } from './utils'
 
@@ -22,6 +22,12 @@ export function handleAddAffiliate(event: AddAffiliate): void {
 export function handleSetRewardToken(event: SetRewardToken): void {
     const referralProgram = loadReferralProgram(event, event.address)
     referralProgram.rewardToken = event.params.rewardToken
+    referralProgram.save()
+}
+
+export function handleSetAffiliateComission(event: SetAffiliateComission): void {
+    const referralProgram = loadReferralProgram(event, event.address)
+    referralProgram.affiliateComission = event.params.affiliateComission
     referralProgram.save()
 }
 
