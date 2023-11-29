@@ -80,7 +80,9 @@ export function updateAirdrop(event: ethereum.Event, toAddress: Address, amount:
     const referralPosition = loadReferralPosition(Address.fromString(REFERRAL_ADDRESS), toAddress)
     referralPosition.totalAirdroppedAmount = referralPosition.totalAirdroppedAmount.plus(amount)
     referralPosition.totalRewardsPending = referralPosition.totalRewardsPending.minus(amount)
-    referralPosition.airdrops.push(transferId)
+    let airdrops = referralPosition.airdrops
+    airdrops.push(transferId)
+    referralPosition.airdrops = airdrops
     referralPosition.save()
 }
 
