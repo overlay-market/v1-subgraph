@@ -8,7 +8,7 @@ import { NIP as NIPContract } from "../generated/NIP/NIP"
 import { ERC20Token, TokenPosition, TokenTransfer } from "../generated/schema"
 import { loadTransaction, loadAccount } from "./utils"
 import { ZERO_BI, ADDRESS_ZERO, REFERRAL_ADDRESS } from "./utils/constants"
-import { loadReferralProgram, loadReferralPosition } from './referral'
+import { loadReferralProgram, loadReferralPosition, updateAirdrop } from './referral'
 
 export function handleTransfer(event: TransferEvent, token: ERC20Token): void {
     const from = event.params.from.toHexString()
@@ -49,14 +49,7 @@ export function handleTransfer(event: TransferEvent, token: ERC20Token): void {
 
     // Update airdropped amounts for the referral program
     if (from == REFERRAL_ADDRESS) {
-        const referralProgram = loadReferralProgram(event, Address.fromString(REFERRAL_ADDRESS))
-        referralProgram.totalAirdropped = referralProgram.totalAirdropped.plus(amount)
-        referralProgram.save()
-
-        const referralPosition = loadReferralPosition(Address.fromString(REFERRAL_ADDRESS), event.params.to)
-        referralPosition.totalAirdroppedAmount = referralPosition.totalAirdroppedAmount.plus(amount)
-        referralPosition.totalRewardsPending = referralPosition.totalRewardsPending.minus(amount)
-        referralPosition.save()
+        updateAirdrop(event, event.params.to, amount, transfer.id)
     }
 
     transfer.save()

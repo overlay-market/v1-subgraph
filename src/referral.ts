@@ -1,4 +1,4 @@
-import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, ethereum, Bytes } from '@graphprotocol/graph-ts'
 import { ReferralProgram, ReferralPosition } from '../generated/schema'
 import { ReferralList, AllowAffiliates, AddAffiliate, SetRewardToken, SetAffiliateComission, SetTraderDiscount } from '../generated/ReferralList/ReferralList'
 import { ZERO_BI, REFERRAL_ADDRESS, BPS_BASE_BI } from './utils/constants'
@@ -72,6 +72,18 @@ export function updateReferralRewards(event: ethereum.Event, owner: Address, tra
     }
 }
 
+export function updateAirdrop(event: ethereum.Event, toAddress: Address, amount: BigInt, transferId: Bytes): void {
+    const referralProgram = loadReferralProgram(event, Address.fromString(REFERRAL_ADDRESS))
+    referralProgram.totalAirdropped = referralProgram.totalAirdropped.plus(amount)
+    referralProgram.save()
+
+    const referralPosition = loadReferralPosition(Address.fromString(REFERRAL_ADDRESS), toAddress)
+    referralPosition.totalAirdroppedAmount = referralPosition.totalAirdroppedAmount.plus(amount)
+    referralPosition.totalRewardsPending = referralPosition.totalRewardsPending.minus(amount)
+    referralPosition.airdrops.push(transferId)
+    referralPosition.save()
+}
+
 export function loadReferralProgram(event: ethereum.Event, referralAddress: Address): ReferralProgram {
     let referralProgram = ReferralProgram.load(referralAddress)
   
@@ -111,6 +123,7 @@ export function loadReferralPosition(referralProgram: Address, owner: Address): 
         referralPosition.totalTraderDiscount = ZERO_BI;
         referralPosition.totalAirdroppedAmount = ZERO_BI;
         referralPosition.totalRewardsPending = ZERO_BI;
+        referralPosition.airdrops = [];
     }
     return referralPosition
 }
