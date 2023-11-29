@@ -5,8 +5,8 @@ import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factor
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const FACTORY_ADDRESS = '0xa2dbe262d27647243ac3187d05dbf6c3c6ecc14d' // arbitrum-sepolia
-export const PERIPHERY_ADDRESS = '0x2878837EA173e8BD40Db7CEE360b15c1C27dEB5A' // arbitrum-sepolia
-export const OVL_ADDRESS = '0x3E27fAe625f25291bFda517f74bf41DC40721dA2' // arb
+export const PERIPHERY_ADDRESS = '0x2878837ea173e8bd40db7cee360b15c1c27deb5a' // arbitrum-sepolia
+export const OVL_ADDRESS = '0x3e27fae625f25291bfda517f74bf41dc40721da2' // arb-sep
 export const REFERRAL_ADDRESS = '0x426cB483cad253aa7E514c6C2B76a3c215d9065b'
 
 export let ZERO_BI = BigInt.fromI32(0)
