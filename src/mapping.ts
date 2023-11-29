@@ -20,6 +20,7 @@ import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generate
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from './utils/constants';
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
+import { updateReferralRewards } from "./referral";
 
 // TODO: rename or separate this file into multiple files
 
@@ -217,6 +218,8 @@ export function handleBuild(event: BuildEvent): void {
 
   sender.numberOfOpenPositions = sender.numberOfOpenPositions.plus(ONE_BI)
 
+  updateReferralRewards(event, event.params.sender, transferFeeAmount)
+
   position.save()
   market.save()
   build.save()
@@ -397,6 +400,8 @@ export function handleUnwind(event: UnwindEvent): void {
   if (event.params.fraction == ONE_18DEC_BI) {
     sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
   }
+  
+  updateReferralRewards(event, event.params.sender, transferFeeAmount)
   
   position.save()
   market.save()

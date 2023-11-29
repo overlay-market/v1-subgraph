@@ -269,6 +269,7 @@ type Account @entity {
   unwinds: [Unwind!]! @derivedFrom(field: "owner")
   liquidates: [Liquidate!]! @derivedFrom(field: "owner")
   stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
+  referralPositions: [ReferralPosition!]! @derivedFrom(field: "owner")
   tokens: [TokenPosition!]! @derivedFrom(field: "owner")
   nfts: [ERC721NFT!]! @derivedFrom(field: "owner")
 }
@@ -374,4 +375,34 @@ type ERC721Token @entity {
   name: String!
   symbol: String!
   totalSupply: BigInt!
+}
+
+type ReferralProgram @entity {
+  id: Bytes! # address
+  rewardToken: Bytes! # address
+  affiliateComission: BigInt! # bps
+  traderDiscount: BigInt! # bps
+  # creation timestamp
+  createdAtTimestamp: BigInt!
+  # creation block number
+  createdAtBlockNumber: BigInt!
+  # last modification transaction
+  latestUpdateTransaction: Transaction!
+  # totalRewards
+  totalRewards: BigInt!
+  totalAirdropped: BigInt!
+  referralPositions: [ReferralPosition!]! @derivedFrom(field: "referralProgram")
+}
+
+type ReferralPosition @entity {
+  id: Bytes! # referral address + owner addresses
+  referralProgram: ReferralProgram!
+  owner: Account! # address
+  isAffiliate: Boolean!
+  affiliatedTo: Account
+  totalAffiliateComission: BigInt!
+  totalTraderDiscount: BigInt!
+  totalAirdroppedAmount: BigInt!
+  totalRewardsPending: BigInt!
+  airdrops: [TokenTransfer!]!
 }
