@@ -173,6 +173,28 @@ dataSources:
         - event: SetTraderDiscount(uint48)
           handler: handleSetTraderDiscount
       file: ./src/referral.ts
+  - kind: ethereum
+    name: TradingMining
+    network: arbitrum-sepolia
+    source:
+      # TODO: update address
+      address: "0x0000000000000000000000000000000000000000"
+      abi: TradingMining
+      # TODO: update start block
+      startBlock: 0000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - addEvents
+      abis:
+        - name: TradingMining
+          file: ./abis/TradingMining.json
+      eventHandlers:
+        - event: RewardTokensUpdated(indexed address,uint8)
+          handler: handleRewardTokensUpdated
+      file: ./src/trading-mining.ts
 
 templates:
   - kind: ethereum

@@ -1819,6 +1819,14 @@ export class Account extends Entity {
     );
   }
 
+  get tradingMiningEpochVolumes(): TradingMiningEpochVolumeLoader {
+    return new TradingMiningEpochVolumeLoader(
+      "Account",
+      this.get("id")!.toString(),
+      "tradingMiningEpochVolumes"
+    );
+  }
+
   get tokens(): TokenPositionLoader {
     return new TokenPositionLoader(
       "Account",
@@ -2571,9 +2579,7 @@ export class StakingPosition extends Entity {
   get tokensStaked(): TokensStakedLoader {
     return new TokensStakedLoader(
       "StakingPosition",
-      this.get("id")!
-        .toBytes()
-        .toHexString(),
+      this.get("id")!.toString(),
       "tokensStaked"
     );
   }
@@ -2581,9 +2587,7 @@ export class StakingPosition extends Entity {
   get tokensWithdrawn(): TokensWithdrawnLoader {
     return new TokensWithdrawnLoader(
       "StakingPosition",
-      this.get("id")!
-        .toBytes()
-        .toHexString(),
+      this.get("id")!.toString(),
       "tokensWithdrawn"
     );
   }
@@ -2591,9 +2595,7 @@ export class StakingPosition extends Entity {
   get rewardsClaimed(): RewardsClaimedLoader {
     return new RewardsClaimedLoader(
       "StakingPosition",
-      this.get("id")!
-        .toBytes()
-        .toHexString(),
+      this.get("id")!.toString(),
       "rewardsClaimed"
     );
   }
@@ -2760,9 +2762,7 @@ export class Staking extends Entity {
   get stakingPositions(): StakingPositionLoader {
     return new StakingPositionLoader(
       "Staking",
-      this.get("id")!
-        .toBytes()
-        .toHexString(),
+      this.get("id")!.toString(),
       "stakingPositions"
     );
   }
@@ -3193,9 +3193,7 @@ export class ReferralProgram extends Entity {
   get referralPositions(): ReferralPositionLoader {
     return new ReferralPositionLoader(
       "ReferralProgram",
-      this.get("id")!
-        .toBytes()
-        .toHexString(),
+      this.get("id")!.toString(),
       "referralPositions"
     );
   }
@@ -3366,6 +3364,240 @@ export class ReferralPosition extends Entity {
   }
 }
 
+export class TradingMining extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save TradingMining entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type TradingMining must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("TradingMining", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): TradingMining | null {
+    return changetype<TradingMining | null>(
+      store.get_in_block("TradingMining", id.toHexString())
+    );
+  }
+
+  static load(id: Bytes): TradingMining | null {
+    return changetype<TradingMining | null>(
+      store.get("TradingMining", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get rewardToken1(): Bytes {
+    let value = this.get("rewardToken1");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set rewardToken1(value: Bytes) {
+    this.set("rewardToken1", Value.fromBytes(value));
+  }
+
+  get rewardToken2(): Bytes {
+    let value = this.get("rewardToken2");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set rewardToken2(value: Bytes) {
+    this.set("rewardToken2", Value.fromBytes(value));
+  }
+
+  get token1Percentage(): i32 {
+    let value = this.get("token1Percentage");
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
+  }
+
+  set token1Percentage(value: i32) {
+    this.set("token1Percentage", Value.fromI32(value));
+  }
+
+  get startTime(): BigInt {
+    let value = this.get("startTime");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set startTime(value: BigInt) {
+    this.set("startTime", Value.fromBigInt(value));
+  }
+
+  get epochDuration(): BigInt {
+    let value = this.get("epochDuration");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set epochDuration(value: BigInt) {
+    this.set("epochDuration", Value.fromBigInt(value));
+  }
+
+  get pcdHolderBonusPercentage(): i32 {
+    let value = this.get("pcdHolderBonusPercentage");
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
+  }
+
+  set pcdHolderBonusPercentage(value: i32) {
+    this.set("pcdHolderBonusPercentage", Value.fromI32(value));
+  }
+
+  get maxRewardPerEpochPerAddress(): BigInt {
+    let value = this.get("maxRewardPerEpochPerAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set maxRewardPerEpochPerAddress(value: BigInt) {
+    this.set("maxRewardPerEpochPerAddress", Value.fromBigInt(value));
+  }
+
+  get totalAirdropped(): BigInt {
+    let value = this.get("totalAirdropped");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalAirdropped(value: BigInt) {
+    this.set("totalAirdropped", Value.fromBigInt(value));
+  }
+}
+
+export class TradingMiningEpochVolume extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save TradingMiningEpochVolume entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type TradingMiningEpochVolume must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("TradingMiningEpochVolume", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): TradingMiningEpochVolume | null {
+    return changetype<TradingMiningEpochVolume | null>(
+      store.get_in_block("TradingMiningEpochVolume", id.toHexString())
+    );
+  }
+
+  static load(id: Bytes): TradingMiningEpochVolume | null {
+    return changetype<TradingMiningEpochVolume | null>(
+      store.get("TradingMiningEpochVolume", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get epoch(): BigInt {
+    let value = this.get("epoch");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set epoch(value: BigInt) {
+    this.set("epoch", Value.fromBigInt(value));
+  }
+
+  get volume(): BigInt {
+    let value = this.get("volume");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set volume(value: BigInt) {
+    this.set("volume", Value.fromBigInt(value));
+  }
+
+  get trader(): string {
+    let value = this.get("trader");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set trader(value: string) {
+    this.set("trader", Value.fromString(value));
+  }
+}
+
 export class MarketLoader extends Entity {
   _entity: string;
   _field: string;
@@ -3507,6 +3739,24 @@ export class ReferralPositionLoader extends Entity {
   load(): ReferralPosition[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<ReferralPosition[]>(value);
+  }
+}
+
+export class TradingMiningEpochVolumeLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): TradingMiningEpochVolume[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<TradingMiningEpochVolume[]>(value);
   }
 }
 

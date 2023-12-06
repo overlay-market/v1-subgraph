@@ -1,7 +1,6 @@
 import { ethereum, Address, BigInt, log } from "@graphprotocol/graph-ts"
 import { integer } from "@protofire/subgraph-toolkit";
 import {
-  OverlayV1Factory,
   FeeRecipientUpdated,
   FeedFactoryAdded,
   MarketDeployed,
@@ -21,6 +20,7 @@ import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS, PERIPHERY_ADDRESS } from './utils/constants';
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
 import { updateReferralRewards } from "./referral";
+import { updateTraderEpochVolume } from "./trading-mining";
 
 // TODO: rename or separate this file into multiple files
 
@@ -219,6 +219,7 @@ export function handleBuild(event: BuildEvent): void {
   sender.numberOfOpenPositions = sender.numberOfOpenPositions.plus(ONE_BI)
 
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
+  updateTraderEpochVolume(event.params.sender, initialNotional)
 
   position.save()
   market.save()
@@ -402,6 +403,7 @@ export function handleUnwind(event: UnwindEvent): void {
   }
   
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
+  updateTraderEpochVolume(event.params.sender, unwind.volume)
   
   position.save()
   market.save()

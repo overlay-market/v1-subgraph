@@ -270,6 +270,7 @@ type Account @entity {
   liquidates: [Liquidate!]! @derivedFrom(field: "owner")
   stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
   referralPositions: [ReferralPosition!]! @derivedFrom(field: "owner")
+  tradingMiningEpochVolumes: [TradingMiningEpochVolume!]! @derivedFrom(field: "trader")
   tokens: [TokenPosition!]! @derivedFrom(field: "owner")
   nfts: [ERC721NFT!]! @derivedFrom(field: "owner")
 }
@@ -405,4 +406,23 @@ type ReferralPosition @entity {
   totalAirdroppedAmount: BigInt!
   totalRewardsPending: BigInt!
   airdrops: [TokenTransfer!]!
+}
+
+type TradingMining @entity {
+  id: Bytes! # address
+  rewardToken1: Bytes! # address
+  rewardToken2: Bytes! # address
+  token1Percentage: Int!
+  startTime: BigInt!
+  epochDuration: BigInt!
+  pcdHolderBonusPercentage: Int!
+  maxRewardPerEpochPerAddress: BigInt!
+  totalAirdropped: BigInt!
+}
+
+type TradingMiningEpochVolume @entity {
+  id: Bytes! # address + epoch
+  epoch: BigInt!
+  volume: BigInt!
+  trader: Account!  
 }

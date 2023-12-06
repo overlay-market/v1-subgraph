@@ -8,7 +8,7 @@ import { NIP as NIPContract } from "../generated/NIP/NIP"
 import { ERC20Token, TokenPosition, TokenTransfer } from "../generated/schema"
 import { loadTransaction, loadAccount } from "./utils"
 import { ZERO_BI, ADDRESS_ZERO, REFERRAL_ADDRESS } from "./utils/constants"
-import { loadReferralProgram, loadReferralPosition, updateAirdrop } from './referral'
+import { updateAirdrop } from './referral'
 
 export function handleTransfer(event: TransferEvent, token: ERC20Token): void {
     const from = event.params.from.toHexString()

@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { ethereum, Bytes, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
+import { Bytes, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factory/OverlayV1State'
 
@@ -8,6 +8,8 @@ export const FACTORY_ADDRESS = '0xa2dbe262d27647243ac3187d05dbf6c3c6ecc14d' // a
 export const PERIPHERY_ADDRESS = '0x2878837ea173e8bd40db7cee360b15c1c27deb5a' // arbitrum-sepolia
 export const OVL_ADDRESS = '0x3e27fae625f25291bfda517f74bf41dc40721da2' // arb-sep
 export const REFERRAL_ADDRESS = '0x426cb483cad253aa7e514c6c2b76a3c215d9065b'
+// TODO: update trading mining address
+export const TRADING_MINING_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)
