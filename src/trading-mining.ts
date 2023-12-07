@@ -16,10 +16,21 @@ export function handleRewardTokensUpdated(event: RewardTokensUpdatedEvent): void
 }
 
 export function updateTraderEpochVolume(trader: Address, volume: BigInt): void {
+    const account = loadAccount(trader)
+    
     const tradingMining = TradingMiningContract.bind(Address.fromString(TRADING_MINING_ADDRESS))
     const epoch = tradingMining.getCurrentEpoch()
     const tradingMiningEpochVolume = loadTradingMiningEpochVolume(trader, epoch)
+    
+    // PCD holders get a bonus on their trading mining rewards
+    if (account.planckCatBalance.gt(ZERO_BI)) {
+        const tm = loadTradingMining(Address.fromString(TRADING_MINING_ADDRESS))
+        const bonus = BigInt.fromI32(tm.pcdHolderBonusPercentage)
+        volume = volume.plus(volume.times(bonus).div(BigInt.fromI32(100)))
+    }
+
     tradingMiningEpochVolume.volume = tradingMiningEpochVolume.volume.plus(volume)
+
     tradingMiningEpochVolume.save()
 }
 
