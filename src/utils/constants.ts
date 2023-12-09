@@ -9,7 +9,7 @@ export const PERIPHERY_ADDRESS = '0x2878837ea173e8bd40db7cee360b15c1c27deb5a' //
 export const OVL_ADDRESS = '0x3e27fae625f25291bfda517f74bf41dc40721da2' // arb-sep
 export const REFERRAL_ADDRESS = '0x426cb483cad253aa7e514c6c2b76a3c215d9065b'
 // TODO: update trading mining address
-export const TRADING_MINING_ADDRESS = '0x0000000000000000000000000000000000000000'
+export const TRADING_MINING_ADDRESS = '0x0000000000000000000000000000000000001234'
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)

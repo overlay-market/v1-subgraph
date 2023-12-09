@@ -60,7 +60,9 @@ describe("Reward tokens updated event", () => {
 
     test("creates TradingMining entity", () => {
         assert.entityCount("TradingMining", 1)
+    })
 
+    test("updates TradingMining entity", () => {
         assert.fieldEquals("TradingMining", tradingMining.toHexString(),
             "rewardToken2",
             rewardToken2.toHexString()

@@ -68,6 +68,13 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.oiLong = stateContract.ois(marketAddress).value0
     market.oiShort = stateContract.ois(marketAddress).value1
     market.isShutdown = false
+    market.totalBuildFees = ZERO_BI
+    market.numberOfBuilds = ZERO_BI
+    market.totalUnwindFees = ZERO_BI
+    market.numberOfUnwinds = ZERO_BI
+    market.totalLiquidateFees = ZERO_BI
+    market.numberOfLiquidates = ZERO_BI
+    market.totalFees = ZERO_BI
 
     MarketTemplate.create(marketAddress)
   }
