@@ -76,6 +76,24 @@ export class RewardTokensUpdated__Params {
   }
 }
 
+export class TotalRewardsUpdated extends ethereum.Event {
+  get params(): TotalRewardsUpdated__Params {
+    return new TotalRewardsUpdated__Params(this);
+  }
+}
+
+export class TotalRewardsUpdated__Params {
+  _event: TotalRewardsUpdated;
+
+  constructor(event: TotalRewardsUpdated) {
+    this._event = event;
+  }
+
+  get totalRewards(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
 export class TradingMining extends ethereum.SmartContract {
   static bind(address: Address): TradingMining {
     return new TradingMining("TradingMining", address);
@@ -299,6 +317,21 @@ export class TradingMining extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toI32());
   }
+
+  totalRewards(): BigInt {
+    let result = super.call("totalRewards", "totalRewards():(uint256)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_totalRewards(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("totalRewards", "totalRewards():(uint256)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
 }
 
 export class ConstructorCall extends ethereum.Call {
@@ -326,24 +359,28 @@ export class ConstructorCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
-  get _rewardToken1(): Address {
-    return this._call.inputValues[2].value.toAddress();
+  get _totalRewards(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
   }
 
-  get _rewardToken2(): Address {
+  get _rewardToken1(): Address {
     return this._call.inputValues[3].value.toAddress();
   }
 
-  get _token1Percentage(): i32 {
-    return this._call.inputValues[4].value.toI32();
+  get _rewardToken2(): Address {
+    return this._call.inputValues[4].value.toAddress();
   }
 
-  get _pcdHolderBonusPercentage(): i32 {
+  get _token1Percentage(): i32 {
     return this._call.inputValues[5].value.toI32();
   }
 
+  get _pcdHolderBonusPercentage(): i32 {
+    return this._call.inputValues[6].value.toI32();
+  }
+
   get _maxRewardPerEpochPerAddress(): BigInt {
-    return this._call.inputValues[6].value.toBigInt();
+    return this._call.inputValues[7].value.toBigInt();
   }
 }
 
@@ -421,10 +458,6 @@ export class InitClaimContractCall__Inputs {
   get merkleRoot(): Bytes {
     return this._call.inputValues[1].value.toBytes();
   }
-
-  get totalRewards(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
 }
 
 export class InitClaimContractCall__Outputs {
@@ -491,6 +524,36 @@ export class SetRewardToken2Call__Outputs {
   _call: SetRewardToken2Call;
 
   constructor(call: SetRewardToken2Call) {
+    this._call = call;
+  }
+}
+
+export class SetTotalRewardsCall extends ethereum.Call {
+  get inputs(): SetTotalRewardsCall__Inputs {
+    return new SetTotalRewardsCall__Inputs(this);
+  }
+
+  get outputs(): SetTotalRewardsCall__Outputs {
+    return new SetTotalRewardsCall__Outputs(this);
+  }
+}
+
+export class SetTotalRewardsCall__Inputs {
+  _call: SetTotalRewardsCall;
+
+  constructor(call: SetTotalRewardsCall) {
+    this._call = call;
+  }
+
+  get _totalRewards(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class SetTotalRewardsCall__Outputs {
+  _call: SetTotalRewardsCall;
+
+  constructor(call: SetTotalRewardsCall) {
     this._call = call;
   }
 }

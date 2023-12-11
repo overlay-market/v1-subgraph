@@ -3407,6 +3407,19 @@ export class TradingMining extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
+  get totalRewards(): BigInt {
+    let value = this.get("totalRewards");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalRewards(value: BigInt) {
+    this.set("totalRewards", Value.fromBigInt(value));
+  }
+
   get rewardToken1(): Bytes {
     let value = this.get("rewardToken1");
     if (!value || value.kind == ValueKind.NULL) {
@@ -3496,19 +3509,6 @@ export class TradingMining extends Entity {
 
   set maxRewardPerEpochPerAddress(value: BigInt) {
     this.set("maxRewardPerEpochPerAddress", Value.fromBigInt(value));
-  }
-
-  get totalAirdropped(): BigInt {
-    let value = this.get("totalAirdropped");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set totalAirdropped(value: BigInt) {
-    this.set("totalAirdropped", Value.fromBigInt(value));
   }
 }
 

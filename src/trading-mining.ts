@@ -2,7 +2,8 @@ import { Address, BigInt } from "@graphprotocol/graph-ts"
 
 import {
     TradingMining as TradingMiningContract,
-    RewardTokensUpdated as RewardTokensUpdatedEvent,    
+    RewardTokensUpdated as RewardTokensUpdatedEvent,
+    TotalRewardsUpdated as TotalRewardsUpdatedEvent
 } from "../generated/TradingMining/TradingMining"
 import { TradingMining, TradingMiningEpoch, TradingMiningEpochVolume } from "../generated/schema"
 import { ZERO_BI, TRADING_MINING_ADDRESS } from "./utils/constants"
@@ -12,6 +13,12 @@ export function handleRewardTokensUpdated(event: RewardTokensUpdatedEvent): void
     const tradingMining = loadTradingMining(event.address)
     tradingMining.rewardToken2 = event.params.rewardToken2
     tradingMining.token1Percentage = event.params.token1Percentage
+    tradingMining.save()
+}
+
+export function handleTotalRewardsUpdated(event: TotalRewardsUpdatedEvent): void {
+    const tradingMining = loadTradingMining(event.address)
+    tradingMining.totalRewards = event.params.totalRewards
     tradingMining.save()
 }
 
@@ -43,6 +50,7 @@ function loadTradingMining(address: Address): TradingMining {
     if (tradingMining == null) {
         const contract = TradingMiningContract.bind(address)
         tradingMining = new TradingMining(address)
+        tradingMining.totalRewards = contract.totalRewards()
         tradingMining.rewardToken1 = contract.rewardToken1()
         tradingMining.rewardToken2 = contract.rewardToken2()
         tradingMining.token1Percentage = contract.token1Percentage()
@@ -50,7 +58,6 @@ function loadTradingMining(address: Address): TradingMining {
         tradingMining.epochDuration = contract.epochDuration()
         tradingMining.pcdHolderBonusPercentage = contract.pcdHolderBonusPercentage()
         tradingMining.maxRewardPerEpochPerAddress = contract.maxRewardPerEpochPerAddress()
-        tradingMining.totalAirdropped = ZERO_BI
         tradingMining.save()
     }
     return tradingMining

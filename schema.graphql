@@ -410,6 +410,7 @@ type ReferralPosition @entity {
 
 type TradingMining @entity {
   id: Bytes! # address
+  totalRewards: BigInt!
   rewardToken1: Bytes! # address
   rewardToken2: Bytes! # address
   token1Percentage: Int!
@@ -417,7 +418,6 @@ type TradingMining @entity {
   epochDuration: BigInt!
   pcdHolderBonusPercentage: Int!
   maxRewardPerEpochPerAddress: BigInt!
-  totalAirdropped: BigInt!
 }
 
 type TradingMiningEpoch @entity {

@@ -194,6 +194,8 @@ dataSources:
       eventHandlers:
         - event: RewardTokensUpdated(indexed address,uint8)
           handler: handleRewardTokensUpdated
+        - event: TotalRewardsUpdated(uint256)
+          handler: handleTotalRewardsUpdated
       file: ./src/trading-mining.ts
 
 templates:
