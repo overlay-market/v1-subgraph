@@ -420,8 +420,14 @@ type TradingMining @entity {
   totalAirdropped: BigInt!
 }
 
-type TradingMiningEpochVolume @entity {
+type TradingMiningEpoch @entity {
   id: Bytes! # address + epoch
+  epoch: BigInt!
+  totalVolume: BigInt!
+}
+
+type TradingMiningEpochVolume @entity {
+  id: Bytes! # trader address + epoch
   epoch: BigInt!
   volume: BigInt!
   trader: Account!  

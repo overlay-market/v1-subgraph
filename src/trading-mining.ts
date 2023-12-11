@@ -4,7 +4,7 @@ import {
     TradingMining as TradingMiningContract,
     RewardTokensUpdated as RewardTokensUpdatedEvent,    
 } from "../generated/TradingMining/TradingMining"
-import { TradingMining, TradingMiningEpochVolume } from "../generated/schema"
+import { TradingMining, TradingMiningEpoch, TradingMiningEpochVolume } from "../generated/schema"
 import { ZERO_BI, TRADING_MINING_ADDRESS } from "./utils/constants"
 import { loadAccount } from "./utils"
 
@@ -17,21 +17,25 @@ export function handleRewardTokensUpdated(event: RewardTokensUpdatedEvent): void
 
 export function updateTraderEpochVolume(trader: Address, volume: BigInt): void {
     const account = loadAccount(trader)
+    const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
     
-    const tradingMining = TradingMiningContract.bind(Address.fromString(TRADING_MINING_ADDRESS))
+    const tradingMining = TradingMiningContract.bind(tmAddress)
     const epoch = tradingMining.getCurrentEpoch()
     const tradingMiningEpochVolume = loadTradingMiningEpochVolume(trader, epoch)
+    const tradingMiningEpoch = loadTradingMiningEpoch(tmAddress, epoch)
     
     // PCD holders get a bonus on their trading mining rewards
     if (account.planckCatBalance.gt(ZERO_BI)) {
-        const tm = loadTradingMining(Address.fromString(TRADING_MINING_ADDRESS))
+        const tm = loadTradingMining(tmAddress)
         const bonus = BigInt.fromI32(tm.pcdHolderBonusPercentage)
         volume = volume.plus(volume.times(bonus).div(BigInt.fromI32(100)))
     }
 
     tradingMiningEpochVolume.volume = tradingMiningEpochVolume.volume.plus(volume)
+    tradingMiningEpoch.totalVolume = tradingMiningEpoch.totalVolume.plus(volume)
 
     tradingMiningEpochVolume.save()
+    tradingMiningEpoch.save()
 }
 
 function loadTradingMining(address: Address): TradingMining {
@@ -50,6 +54,20 @@ function loadTradingMining(address: Address): TradingMining {
         tradingMining.save()
     }
     return tradingMining
+}
+
+function loadTradingMiningEpoch(tradingMining: Address, epoch: BigInt): TradingMiningEpoch {
+    const id = tradingMining.concatI32(epoch.toI32())
+    let tradingMiningEpoch = TradingMiningEpoch.load(id)
+
+    if (tradingMiningEpoch == null) {
+        tradingMiningEpoch = new TradingMiningEpoch(id)
+        tradingMiningEpoch.epoch = epoch
+        tradingMiningEpoch.totalVolume = ZERO_BI
+        tradingMiningEpoch.save()
+    }
+
+    return tradingMiningEpoch
 }
 
 function loadTradingMiningEpochVolume(trader: Address, epoch: BigInt): TradingMiningEpochVolume {

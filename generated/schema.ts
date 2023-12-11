@@ -3512,6 +3512,76 @@ export class TradingMining extends Entity {
   }
 }
 
+export class TradingMiningEpoch extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save TradingMiningEpoch entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type TradingMiningEpoch must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("TradingMiningEpoch", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): TradingMiningEpoch | null {
+    return changetype<TradingMiningEpoch | null>(
+      store.get_in_block("TradingMiningEpoch", id.toHexString())
+    );
+  }
+
+  static load(id: Bytes): TradingMiningEpoch | null {
+    return changetype<TradingMiningEpoch | null>(
+      store.get("TradingMiningEpoch", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get epoch(): BigInt {
+    let value = this.get("epoch");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set epoch(value: BigInt) {
+    this.set("epoch", Value.fromBigInt(value));
+  }
+
+  get totalVolume(): BigInt {
+    let value = this.get("totalVolume");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalVolume(value: BigInt) {
+    this.set("totalVolume", Value.fromBigInt(value));
+  }
+}
+
 export class TradingMiningEpochVolume extends Entity {
   constructor(id: Bytes) {
     super();
