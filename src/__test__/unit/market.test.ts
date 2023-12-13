@@ -72,6 +72,22 @@ describe("Market events", () => {
         // TradingMining contract
         createMockedFunction(tmAddress, "getCurrentEpoch", "getCurrentEpoch():(uint256)")
             .returns([ethereum.Value.fromI32(epoch)])
+        createMockedFunction(tmAddress, "rewardToken1", "rewardToken1():(address)")
+            .returns([ethereum.Value.fromAddress(Address.zero())])
+        createMockedFunction(tmAddress, "rewardToken2", "rewardToken2():(address)")
+            .returns([ethereum.Value.fromAddress(Address.zero())])
+        createMockedFunction(tmAddress, "token1Percentage", "token1Percentage():(uint8)")
+            .returns([ethereum.Value.fromI32(0)])
+        createMockedFunction(tmAddress, "startTime", "startTime():(uint64)")
+            .returns([ethereum.Value.fromI32(0)])
+        createMockedFunction(tmAddress, "epochDuration", "epochDuration():(uint64)")
+            .returns([ethereum.Value.fromI32(0)])
+        createMockedFunction(tmAddress, "pcdHolderBonusPercentage", "pcdHolderBonusPercentage():(uint8)")
+            .returns([ethereum.Value.fromI32(0)])
+        createMockedFunction(tmAddress, "totalRewards", "totalRewards():(uint256)")
+            .returns([ethereum.Value.fromI32(0)])
+        createMockedFunction(tmAddress, "maxRewardPerEpochPerAddress", "maxRewardPerEpochPerAddress():(uint256)")
+            .returns([ethereum.Value.fromI32(0)])
     })
 
     describe("Build event", () => {

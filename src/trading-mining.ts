@@ -75,9 +75,12 @@ function loadTradingMiningEpoch(tradingMining: Address, epoch: BigInt): TradingM
     let tradingMiningEpoch = TradingMiningEpoch.load(id)
 
     if (tradingMiningEpoch == null) {
+        const tm = loadTradingMining(tradingMining)
         tradingMiningEpoch = new TradingMiningEpoch(id)
         tradingMiningEpoch.epoch = epoch
         tradingMiningEpoch.totalVolume = ZERO_BI
+        tradingMiningEpoch.totalRewards = tm.totalRewards
+        tradingMiningEpoch.token1Percentage = tm.token1Percentage
         tradingMiningEpoch.save()
     }
 

@@ -424,10 +424,12 @@ type TradingMiningEpoch @entity {
   id: Bytes! # address + epoch
   epoch: BigInt!
   totalVolume: BigInt!
+  totalRewards: BigInt!
+  token1Percentage: Int!
 }
 
 type TradingMiningEpochVolume @entity {
-  id: Bytes! # trader address + epoch
+  id: Bytes! # trading mining address + trader address + epoch
   epoch: BigInt!
   volume: BigInt!
   trader: Account!  
