@@ -3580,6 +3580,32 @@ export class TradingMiningEpoch extends Entity {
   set totalVolume(value: BigInt) {
     this.set("totalVolume", Value.fromBigInt(value));
   }
+
+  get totalRewards(): BigInt {
+    let value = this.get("totalRewards");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalRewards(value: BigInt) {
+    this.set("totalRewards", Value.fromBigInt(value));
+  }
+
+  get token1Percentage(): i32 {
+    let value = this.get("token1Percentage");
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
+  }
+
+  set token1Percentage(value: i32) {
+    this.set("token1Percentage", Value.fromI32(value));
+  }
 }
 
 export class TradingMiningEpochVolume extends Entity {

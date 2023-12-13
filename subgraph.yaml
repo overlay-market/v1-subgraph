@@ -196,6 +196,8 @@ dataSources:
           handler: handleRewardTokensUpdated
         - event: TotalRewardsUpdated(uint256)
           handler: handleTotalRewardsUpdated
+        - event: PcdHolderBonusPercentageUpdated(uint8)
+          handler: handlePcdHolderBonusPercentageUpdated
       file: ./src/trading-mining.ts
 
 templates:

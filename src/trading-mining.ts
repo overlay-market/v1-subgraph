@@ -3,7 +3,8 @@ import { Address, BigInt } from "@graphprotocol/graph-ts"
 import {
     TradingMining as TradingMiningContract,
     RewardTokensUpdated as RewardTokensUpdatedEvent,
-    TotalRewardsUpdated as TotalRewardsUpdatedEvent
+    TotalRewardsUpdated as TotalRewardsUpdatedEvent,
+    PcdHolderBonusPercentageUpdated as PcdHolderBonusPercentageUpdatedEvent
 } from "../generated/TradingMining/TradingMining"
 import { TradingMining, TradingMiningEpoch, TradingMiningEpochVolume } from "../generated/schema"
 import { ZERO_BI, TRADING_MINING_ADDRESS } from "./utils/constants"
@@ -19,6 +20,12 @@ export function handleRewardTokensUpdated(event: RewardTokensUpdatedEvent): void
 export function handleTotalRewardsUpdated(event: TotalRewardsUpdatedEvent): void {
     const tradingMining = loadTradingMining(event.address)
     tradingMining.totalRewards = event.params.totalRewards
+    tradingMining.save()
+}
+
+export function handlePcdHolderBonusPercentageUpdated(event: PcdHolderBonusPercentageUpdatedEvent): void {
+    const tradingMining = loadTradingMining(event.address)
+    tradingMining.pcdHolderBonusPercentage = event.params.pcdHolderBonusPercentage
     tradingMining.save()
 }
 

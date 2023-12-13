@@ -107,6 +107,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "pcdHolderBonusPercentage",
+        "type": "uint8"
+      }
+    ],
+    "name": "PcdHolderBonusPercentageUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "rewardToken2",
@@ -325,6 +338,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint8",
+        "name": "_pcdHolderBonusPercentage",
+        "type": "uint8"
+      }
+    ],
+    "name": "setPcdHolderBonusPercentage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_rewardToken2",
         "type": "address"
@@ -401,6 +427,24 @@
       }
     ],
     "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "epoch",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "merkleRoot",
+        "type": "bytes32"
+      }
+    ],
+    "name": "updateMerkleRoot",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

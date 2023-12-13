@@ -54,6 +54,24 @@ export class OwnershipTransferred__Params {
   }
 }
 
+export class PcdHolderBonusPercentageUpdated extends ethereum.Event {
+  get params(): PcdHolderBonusPercentageUpdated__Params {
+    return new PcdHolderBonusPercentageUpdated__Params(this);
+  }
+}
+
+export class PcdHolderBonusPercentageUpdated__Params {
+  _event: PcdHolderBonusPercentageUpdated;
+
+  constructor(event: PcdHolderBonusPercentageUpdated) {
+    this._event = event;
+  }
+
+  get pcdHolderBonusPercentage(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+}
+
 export class RewardTokensUpdated extends ethereum.Event {
   get params(): RewardTokensUpdated__Params {
     return new RewardTokensUpdated__Params(this);
@@ -494,6 +512,36 @@ export class RenounceOwnershipCall__Outputs {
   }
 }
 
+export class SetPcdHolderBonusPercentageCall extends ethereum.Call {
+  get inputs(): SetPcdHolderBonusPercentageCall__Inputs {
+    return new SetPcdHolderBonusPercentageCall__Inputs(this);
+  }
+
+  get outputs(): SetPcdHolderBonusPercentageCall__Outputs {
+    return new SetPcdHolderBonusPercentageCall__Outputs(this);
+  }
+}
+
+export class SetPcdHolderBonusPercentageCall__Inputs {
+  _call: SetPcdHolderBonusPercentageCall;
+
+  constructor(call: SetPcdHolderBonusPercentageCall) {
+    this._call = call;
+  }
+
+  get _pcdHolderBonusPercentage(): i32 {
+    return this._call.inputValues[0].value.toI32();
+  }
+}
+
+export class SetPcdHolderBonusPercentageCall__Outputs {
+  _call: SetPcdHolderBonusPercentageCall;
+
+  constructor(call: SetPcdHolderBonusPercentageCall) {
+    this._call = call;
+  }
+}
+
 export class SetRewardToken2Call extends ethereum.Call {
   get inputs(): SetRewardToken2Call__Inputs {
     return new SetRewardToken2Call__Inputs(this);
@@ -584,6 +632,40 @@ export class TransferOwnershipCall__Outputs {
   _call: TransferOwnershipCall;
 
   constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateMerkleRootCall extends ethereum.Call {
+  get inputs(): UpdateMerkleRootCall__Inputs {
+    return new UpdateMerkleRootCall__Inputs(this);
+  }
+
+  get outputs(): UpdateMerkleRootCall__Outputs {
+    return new UpdateMerkleRootCall__Outputs(this);
+  }
+}
+
+export class UpdateMerkleRootCall__Inputs {
+  _call: UpdateMerkleRootCall;
+
+  constructor(call: UpdateMerkleRootCall) {
+    this._call = call;
+  }
+
+  get epoch(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get merkleRoot(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+}
+
+export class UpdateMerkleRootCall__Outputs {
+  _call: UpdateMerkleRootCall;
+
+  constructor(call: UpdateMerkleRootCall) {
     this._call = call;
   }
 }
