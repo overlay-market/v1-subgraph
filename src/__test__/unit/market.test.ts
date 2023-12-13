@@ -22,6 +22,7 @@ import { Account, TradingMining } from "../../../generated/schema"
 export { handleBuild }
 
 const market = Address.fromString("0x0000000000000000000000000000000000000001")
+const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
 
 // Build event parameters
 const sender = Address.fromString("0x0000000000000000000000000000000000000b0b")
@@ -69,7 +70,7 @@ describe("Market events", () => {
             .returns([ethereum.Value.fromI32(1)])
         
         // TradingMining contract
-        createMockedFunction(Address.fromString(TRADING_MINING_ADDRESS), "getCurrentEpoch", "getCurrentEpoch():(uint256)")
+        createMockedFunction(tmAddress, "getCurrentEpoch", "getCurrentEpoch():(uint256)")
             .returns([ethereum.Value.fromI32(epoch)])
     })
 
@@ -95,7 +96,7 @@ describe("Market events", () => {
             })
 
             test("updates trader's epoch volume", () => {
-                assert.fieldEquals("TradingMiningEpochVolume", sender.concatI32(epoch).toHexString(),
+                assert.fieldEquals("TradingMiningEpochVolume", tmAddress.concat(sender).concatI32(epoch).toHexString(),
                     "volume",
                     collateral.plus(debt).toString()
                 )
@@ -114,7 +115,7 @@ describe("Market events", () => {
                 account.save()
 
                 // Set bonus percentage in TradingMining entity
-                const tradingMining = new TradingMining(Address.fromString(TRADING_MINING_ADDRESS))
+                const tradingMining = new TradingMining(tmAddress)
                 tradingMining.pcdHolderBonusPercentage = bonus
                 tradingMining.rewardToken1 = Address.zero()
                 tradingMining.rewardToken2 = Address.zero()
@@ -122,7 +123,7 @@ describe("Market events", () => {
                 tradingMining.startTime = ZERO_BI
                 tradingMining.epochDuration = ZERO_BI
                 tradingMining.maxRewardPerEpochPerAddress = ZERO_BI
-                tradingMining.totalAirdropped = ZERO_BI
+                tradingMining.totalRewards = ZERO_BI
                 tradingMining.save()
 
                 // Create Build event with PCD holder as sender
@@ -131,7 +132,7 @@ describe("Market events", () => {
 
                 const volume = collateral.plus(debt)
 
-                assert.fieldEquals("TradingMiningEpochVolume", pcdHolder.concatI32(epoch).toHexString(),
+                assert.fieldEquals("TradingMiningEpochVolume", tmAddress.concat(pcdHolder).concatI32(epoch).toHexString(),
                     "volume",
                     volume.plus(volume.times(BigInt.fromI32(bonus)).div(BigInt.fromI32(100))).toString()
                 )

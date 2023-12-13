@@ -35,7 +35,7 @@ export function updateTraderEpochVolume(trader: Address, volume: BigInt): void {
     
     const tradingMining = TradingMiningContract.bind(tmAddress)
     const epoch = tradingMining.getCurrentEpoch()
-    const tradingMiningEpochVolume = loadTradingMiningEpochVolume(trader, epoch)
+    const tradingMiningEpochVolume = loadTradingMiningEpochVolume(trader, tmAddress, epoch)
     const tradingMiningEpoch = loadTradingMiningEpoch(tmAddress, epoch)
     
     // PCD holders get a bonus on their trading mining rewards
@@ -84,11 +84,15 @@ function loadTradingMiningEpoch(tradingMining: Address, epoch: BigInt): TradingM
     return tradingMiningEpoch
 }
 
-function loadTradingMiningEpochVolume(trader: Address, epoch: BigInt): TradingMiningEpochVolume {
+function loadTradingMiningEpochVolume(
+    trader: Address,
+    tradingMining: Address,
+    epoch: BigInt
+): TradingMiningEpochVolume {
     const account = loadAccount(trader)
     account.save() // ensure account exists
 
-    const id = trader.concatI32(epoch.toI32())
+    const id = tradingMining.concat(trader).concatI32(epoch.toI32())
     let tradingMiningEpochVolume = TradingMiningEpochVolume.load(id)
     if (tradingMiningEpochVolume == null) {
         tradingMiningEpochVolume = new TradingMiningEpochVolume(id)

@@ -45,6 +45,9 @@ describe("Reward tokens updated event", () => {
         createMockedFunction(tradingMining, "pcdHolderBonusPercentage", "pcdHolderBonusPercentage():(uint8)")
             .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0))])
 
+        createMockedFunction(tradingMining, "totalRewards", "totalRewards():(uint256)")
+            .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0))])
+
         createMockedFunction(tradingMining, "maxRewardPerEpochPerAddress", "maxRewardPerEpochPerAddress():(uint256)")
             .returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0))])
     })
