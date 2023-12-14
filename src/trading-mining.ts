@@ -34,7 +34,12 @@ export function updateTraderEpochVolume(trader: Address, volume: BigInt): void {
     const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
     
     const tradingMining = TradingMiningContract.bind(tmAddress)
+    
+    // Return if start time has not been reached yet
+    if (tradingMining.try_getCurrentEpoch().reverted) return
+
     const epoch = tradingMining.getCurrentEpoch()
+
     const tradingMiningEpochVolume = loadTradingMiningEpochVolume(trader, tmAddress, epoch)
     const tradingMiningEpoch = loadTradingMiningEpoch(tmAddress, epoch)
     
