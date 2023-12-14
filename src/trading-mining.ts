@@ -32,9 +32,6 @@ export function handlePcdHolderBonusPercentageUpdated(event: PcdHolderBonusPerce
 export function updateTraderEpochVolume(trader: Address, volume: BigInt): void {
     const account = loadAccount(trader)
     const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
-
-    // Note: we need the trading mining contract to be deployed to get the current epoch, etc.
-    if (TradingMining.load(tmAddress) == null) return
     
     const tradingMining = TradingMiningContract.bind(tmAddress)
     

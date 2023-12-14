@@ -221,6 +221,8 @@ templates:
           file: ./abis/ERC20.json
         - name: OverlayV1State
           file: ./abis/OverlayV1State.json
+        - name: TradingMining
+          file: ./abis/TradingMining.json
       eventHandlers:
         - event: Build(indexed address,uint256,uint256,uint256,bool,uint256)
           handler: handleBuild
