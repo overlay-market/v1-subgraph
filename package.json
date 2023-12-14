@@ -4,6 +4,7 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
+    "deploy": "graph deploy --studio",
     "deploy-goerli": "graph deploy --product hosted-service bigboydiamonds/overlay-v1-subgraph-goerli",
     "deploy-arb-confirmed": "graph deploy --studio overlay-v2-subgraph-arbitrum",
     "deploy-arb": "read -p 'Are you sure you want to deploy to production? (y/n): ' confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] && npm run deploy-arb-confirmed",
