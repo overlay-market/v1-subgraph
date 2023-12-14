@@ -177,11 +177,9 @@ dataSources:
     name: TradingMining
     network: arbitrum-sepolia
     source:
-      # TODO: update address
-      address: "0x0000000000000000000000000000000000000000"
+      address: "0xFDf98Ac225Aa3B2788dcE96ffe55C2Bb3edCf4c9"
       abi: TradingMining
-      # TODO: update start block
-      startBlock: 0000000
+      startBlock: 2784174
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
