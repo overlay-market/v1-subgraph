@@ -15,8 +15,9 @@ import {
     Build as BuildEvent,
 } from "../../../generated/templates/OverlayV1Market/OverlayV1Market"
 import { handleBuild } from "../../mapping"
-import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, ZERO_BI } from "../../utils/constants"
-import { Account, TradingMining } from "../../../generated/schema"
+import { loadAccount } from "../../utils"
+import { loadTradingMining } from "../../trading-mining"
+import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS } from "../../utils/constants"
 
 // Export handlers for coverage report
 export { handleBuild }
@@ -122,24 +123,13 @@ describe("Market events", () => {
                 const bonus = 10
 
                 // Create PCD holder account
-                const account = new Account(pcdHolder.toHexString())
+                const account = loadAccount(pcdHolder)
                 account.planckCatBalance = BigInt.fromI32(1)
-                account.realizedPnl = ZERO_BI
-                account.numberOfUnwinds = ZERO_BI
-                account.numberOfOpenPositions = ZERO_BI
-                account.numberOfLiquidatedPositions = ZERO_BI
                 account.save()
 
                 // Set bonus percentage in TradingMining entity
-                const tradingMining = new TradingMining(tmAddress)
+                const tradingMining = loadTradingMining(tmAddress)
                 tradingMining.pcdHolderBonusPercentage = bonus
-                tradingMining.rewardToken1 = Address.zero()
-                tradingMining.rewardToken2 = Address.zero()
-                tradingMining.token1Percentage = 0
-                tradingMining.startTime = ZERO_BI
-                tradingMining.epochDuration = ZERO_BI
-                tradingMining.maxRewardPerEpochPerAddress = ZERO_BI
-                tradingMining.totalRewards = ZERO_BI
                 tradingMining.save()
 
                 // Create Build event with PCD holder as sender
@@ -151,6 +141,11 @@ describe("Market events", () => {
                 assert.fieldEquals("TradingMiningEpochVolume", tmAddress.concat(pcdHolder).concatI32(epoch).toHexString(),
                     "volume",
                     volume.plus(volume.times(BigInt.fromI32(bonus)).div(BigInt.fromI32(100))).toString()
+                )
+
+                assert.fieldEquals("Account", pcdHolder.toHexString(),
+                    "ovlVolumeTraded",
+                    volume.toString()
                 )
             })
 

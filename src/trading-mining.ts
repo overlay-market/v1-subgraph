@@ -57,7 +57,7 @@ export function updateTraderEpochVolume(trader: Address, volume: BigInt): void {
     tradingMiningEpoch.save()
 }
 
-function loadTradingMining(address: Address): TradingMining {
+export function loadTradingMining(address: Address): TradingMining {
     let tradingMining = TradingMining.load(address)
     if (tradingMining == null) {
         const contract = TradingMiningContract.bind(address)
