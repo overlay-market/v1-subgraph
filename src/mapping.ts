@@ -220,6 +220,7 @@ export function handleBuild(event: BuildEvent): void {
 
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
   updateTraderEpochVolume(event.params.sender, initialNotional)
+  sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(initialNotional)
 
   position.save()
   market.save()
@@ -404,6 +405,7 @@ export function handleUnwind(event: UnwindEvent): void {
   
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
   updateTraderEpochVolume(event.params.sender, unwind.volume)
+  sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(unwind.volume)
   
   position.save()
   market.save()

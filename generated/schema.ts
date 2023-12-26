@@ -1779,6 +1779,19 @@ export class Account extends Entity {
     this.set("planckCatBalance", Value.fromBigInt(value));
   }
 
+  get ovlVolumeTraded(): BigInt {
+    let value = this.get("ovlVolumeTraded");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set ovlVolumeTraded(value: BigInt) {
+    this.set("ovlVolumeTraded", Value.fromBigInt(value));
+  }
+
   get positions(): PositionLoader {
     return new PositionLoader(
       "Account",
@@ -2579,7 +2592,9 @@ export class StakingPosition extends Entity {
   get tokensStaked(): TokensStakedLoader {
     return new TokensStakedLoader(
       "StakingPosition",
-      this.get("id")!.toString(),
+      this.get("id")!
+        .toBytes()
+        .toHexString(),
       "tokensStaked"
     );
   }
@@ -2587,7 +2602,9 @@ export class StakingPosition extends Entity {
   get tokensWithdrawn(): TokensWithdrawnLoader {
     return new TokensWithdrawnLoader(
       "StakingPosition",
-      this.get("id")!.toString(),
+      this.get("id")!
+        .toBytes()
+        .toHexString(),
       "tokensWithdrawn"
     );
   }
@@ -2595,7 +2612,9 @@ export class StakingPosition extends Entity {
   get rewardsClaimed(): RewardsClaimedLoader {
     return new RewardsClaimedLoader(
       "StakingPosition",
-      this.get("id")!.toString(),
+      this.get("id")!
+        .toBytes()
+        .toHexString(),
       "rewardsClaimed"
     );
   }
@@ -2762,7 +2781,9 @@ export class Staking extends Entity {
   get stakingPositions(): StakingPositionLoader {
     return new StakingPositionLoader(
       "Staking",
-      this.get("id")!.toString(),
+      this.get("id")!
+        .toBytes()
+        .toHexString(),
       "stakingPositions"
     );
   }
@@ -3193,7 +3214,9 @@ export class ReferralProgram extends Entity {
   get referralPositions(): ReferralPositionLoader {
     return new ReferralPositionLoader(
       "ReferralProgram",
-      this.get("id")!.toString(),
+      this.get("id")!
+        .toBytes()
+        .toHexString(),
       "referralPositions"
     );
   }

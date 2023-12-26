@@ -139,6 +139,7 @@ export function loadAccount(accountAddress: Address): Account {
     account.numberOfOpenPositions = ZERO_BI
     account.numberOfLiquidatedPositions = ZERO_BI
     account.planckCatBalance = ZERO_BI
+    account.ovlVolumeTraded = ZERO_BI
   }
 
   return account
