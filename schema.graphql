@@ -382,8 +382,8 @@ type ERC721Token @entity {
 type ReferralProgram @entity {
   id: Bytes! # address
   rewardToken: Bytes! # address
-  affiliateComission: BigInt! # bps
-  traderDiscount: BigInt! # bps
+  affiliateComission: [BigInt!]! # bps
+  traderDiscount: [BigInt!]! # bps
   # creation timestamp
   createdAtTimestamp: BigInt!
   # creation block number
@@ -400,7 +400,7 @@ type ReferralPosition @entity {
   id: Bytes! # referral address + owner addresses
   referralProgram: ReferralProgram!
   owner: Account! # address
-  isAffiliate: Boolean!
+  tier: Int!
   affiliatedTo: Account
   totalAffiliateComission: BigInt!
   totalTraderDiscount: BigInt!

@@ -31,6 +31,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "DowngradeNotPossible",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -58,6 +63,11 @@
   },
   {
     "inputs": [],
+    "name": "InvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "LengthMismatch",
     "type": "error"
   },
@@ -74,6 +84,11 @@
   {
     "inputs": [],
     "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ReferrerAlreadySet",
     "type": "error"
   },
   {
@@ -113,7 +128,7 @@
         "type": "address"
       }
     ],
-    "name": "AddAffiliate",
+    "name": "AddAffiliateOrKOL",
     "type": "event"
   },
   {
@@ -127,12 +142,25 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address[]",
-        "name": "affiliates",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "affiliate",
+        "type": "address"
       }
     ],
-    "name": "AllowAffiliates",
+    "name": "AllowAffiliate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "KOL",
+        "type": "address"
+      }
+    ],
+    "name": "AllowKOL",
     "type": "event"
   },
   {
@@ -217,6 +245,12 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "enum IReferralList.Tier",
+        "name": "tier",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
         "internalType": "uint48",
         "name": "affiliateComission",
         "type": "uint48"
@@ -243,12 +277,31 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "enum IReferralList.Tier",
+        "name": "tier",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
         "internalType": "uint48",
         "name": "traderDiscount",
         "type": "uint48"
       }
     ],
     "name": "SetTraderDiscount",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "verifyingAddress",
+        "type": "address"
+      }
+    ],
+    "name": "SetVerifyingAddress",
     "type": "event"
   },
   {
@@ -263,19 +316,6 @@
     ],
     "name": "Upgraded",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "ROLE_AIRDROPPER",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [],
@@ -294,26 +334,13 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_affiliate",
+        "name": "_user",
         "type": "address"
       }
     ],
-    "name": "addAffiliate",
+    "name": "addAffiliateOrKOL",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "affiliateComission",
-    "outputs": [
-      {
-        "internalType": "uint48",
-        "name": "",
-        "type": "uint48"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -342,12 +369,12 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "_affiliates",
-        "type": "address[]"
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
-    "name": "allowAffiliates",
+    "name": "allowAffiliate",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -356,19 +383,13 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "affiliate",
+        "name": "_KOL",
         "type": "address"
       }
     ],
-    "name": "allowedAffiliates",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "isAllowed",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "allowKOL",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -461,6 +482,11 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "owner_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_airdropper",
         "type": "address"
       },
@@ -470,14 +496,9 @@
         "type": "address"
       },
       {
-        "internalType": "uint48",
-        "name": "_affiliateComission",
-        "type": "uint48"
-      },
-      {
-        "internalType": "uint48",
-        "name": "_traderDiscount",
-        "type": "uint48"
+        "internalType": "address",
+        "name": "_verifyingAddress",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -629,6 +650,11 @@
   {
     "inputs": [
       {
+        "internalType": "enum IReferralList.Tier",
+        "name": "_tier",
+        "type": "uint8"
+      },
+      {
         "internalType": "uint48",
         "name": "_affiliateComission",
         "type": "uint48"
@@ -655,6 +681,11 @@
   {
     "inputs": [
       {
+        "internalType": "enum IReferralList.Tier",
+        "name": "_tier",
+        "type": "uint8"
+      },
+      {
         "internalType": "uint48",
         "name": "_traderDiscount",
         "type": "uint48"
@@ -666,8 +697,46 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "traderDiscount",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_verifyingAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setVerifyingAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IReferralList.Tier",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "name": "tierAffiliateComission",
+    "outputs": [
+      {
+        "internalType": "uint48",
+        "name": "",
+        "type": "uint48"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IReferralList.Tier",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "name": "tierTraderDiscount",
     "outputs": [
       {
         "internalType": "uint48",
@@ -707,6 +776,38 @@
     "name": "upgradeToAndCall",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "affiliate",
+        "type": "address"
+      }
+    ],
+    "name": "userTier",
+    "outputs": [
+      {
+        "internalType": "enum IReferralList.Tier",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "verifyingAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

@@ -3120,30 +3120,30 @@ export class ReferralProgram extends Entity {
     this.set("rewardToken", Value.fromBytes(value));
   }
 
-  get affiliateComission(): BigInt {
+  get affiliateComission(): Array<BigInt> {
     let value = this.get("affiliateComission");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigIntArray();
     }
   }
 
-  set affiliateComission(value: BigInt) {
-    this.set("affiliateComission", Value.fromBigInt(value));
+  set affiliateComission(value: Array<BigInt>) {
+    this.set("affiliateComission", Value.fromBigIntArray(value));
   }
 
-  get traderDiscount(): BigInt {
+  get traderDiscount(): Array<BigInt> {
     let value = this.get("traderDiscount");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigIntArray();
     }
   }
 
-  set traderDiscount(value: BigInt) {
-    this.set("traderDiscount", Value.fromBigInt(value));
+  set traderDiscount(value: Array<BigInt>) {
+    this.set("traderDiscount", Value.fromBigIntArray(value));
   }
 
   get createdAtTimestamp(): BigInt {
@@ -3291,17 +3291,17 @@ export class ReferralPosition extends Entity {
     this.set("owner", Value.fromString(value));
   }
 
-  get isAffiliate(): boolean {
-    let value = this.get("isAffiliate");
+  get tier(): i32 {
+    let value = this.get("tier");
     if (!value || value.kind == ValueKind.NULL) {
-      return false;
+      return 0;
     } else {
-      return value.toBoolean();
+      return value.toI32();
     }
   }
 
-  set isAffiliate(value: boolean) {
-    this.set("isAffiliate", Value.fromBoolean(value));
+  set tier(value: i32) {
+    this.set("tier", Value.fromI32(value));
   }
 
   get affiliatedTo(): string | null {

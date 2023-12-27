@@ -10,16 +10,16 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
-export class AddAffiliate extends ethereum.Event {
-  get params(): AddAffiliate__Params {
-    return new AddAffiliate__Params(this);
+export class AddAffiliateOrKOL extends ethereum.Event {
+  get params(): AddAffiliateOrKOL__Params {
+    return new AddAffiliateOrKOL__Params(this);
   }
 }
 
-export class AddAffiliate__Params {
-  _event: AddAffiliate;
+export class AddAffiliateOrKOL__Params {
+  _event: AddAffiliateOrKOL;
 
-  constructor(event: AddAffiliate) {
+  constructor(event: AddAffiliateOrKOL) {
     this._event = event;
   }
 
@@ -46,21 +46,39 @@ export class Airdrop__Params {
   }
 }
 
-export class AllowAffiliates extends ethereum.Event {
-  get params(): AllowAffiliates__Params {
-    return new AllowAffiliates__Params(this);
+export class AllowAffiliate extends ethereum.Event {
+  get params(): AllowAffiliate__Params {
+    return new AllowAffiliate__Params(this);
   }
 }
 
-export class AllowAffiliates__Params {
-  _event: AllowAffiliates;
+export class AllowAffiliate__Params {
+  _event: AllowAffiliate;
 
-  constructor(event: AllowAffiliates) {
+  constructor(event: AllowAffiliate) {
     this._event = event;
   }
 
-  get affiliates(): Array<Address> {
-    return this._event.parameters[0].value.toAddressArray();
+  get affiliate(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class AllowKOL extends ethereum.Event {
+  get params(): AllowKOL__Params {
+    return new AllowKOL__Params(this);
+  }
+}
+
+export class AllowKOL__Params {
+  _event: AllowKOL;
+
+  constructor(event: AllowKOL) {
+    this._event = event;
+  }
+
+  get KOL(): Address {
+    return this._event.parameters[0].value.toAddress();
   }
 }
 
@@ -175,8 +193,12 @@ export class SetAffiliateComission__Params {
     this._event = event;
   }
 
+  get tier(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+
   get affiliateComission(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
+    return this._event.parameters[1].value.toBigInt();
   }
 }
 
@@ -211,8 +233,30 @@ export class SetTraderDiscount__Params {
     this._event = event;
   }
 
+  get tier(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+
   get traderDiscount(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
+export class SetVerifyingAddress extends ethereum.Event {
+  get params(): SetVerifyingAddress__Params {
+    return new SetVerifyingAddress__Params(this);
+  }
+}
+
+export class SetVerifyingAddress__Params {
+  _event: SetVerifyingAddress;
+
+  constructor(event: SetVerifyingAddress) {
+    this._event = event;
+  }
+
+  get verifyingAddress(): Address {
+    return this._event.parameters[0].value.toAddress();
   }
 }
 
@@ -239,29 +283,6 @@ export class ReferralList extends ethereum.SmartContract {
     return new ReferralList("ReferralList", address);
   }
 
-  ROLE_AIRDROPPER(): BigInt {
-    let result = super.call(
-      "ROLE_AIRDROPPER",
-      "ROLE_AIRDROPPER():(uint256)",
-      []
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_ROLE_AIRDROPPER(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "ROLE_AIRDROPPER",
-      "ROLE_AIRDROPPER():(uint256)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   UPGRADE_INTERFACE_VERSION(): string {
     let result = super.call(
       "UPGRADE_INTERFACE_VERSION",
@@ -283,52 +304,6 @@ export class ReferralList extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toString());
-  }
-
-  affiliateComission(): BigInt {
-    let result = super.call(
-      "affiliateComission",
-      "affiliateComission():(uint48)",
-      []
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_affiliateComission(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "affiliateComission",
-      "affiliateComission():(uint48)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  allowedAffiliates(affiliate: Address): boolean {
-    let result = super.call(
-      "allowedAffiliates",
-      "allowedAffiliates(address):(bool)",
-      [ethereum.Value.fromAddress(affiliate)]
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_allowedAffiliates(affiliate: Address): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "allowedAffiliates",
-      "allowedAffiliates(address):(bool)",
-      [ethereum.Value.fromAddress(affiliate)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   hasAllRoles(user: Address, roles: BigInt): boolean {
@@ -501,23 +476,92 @@ export class ReferralList extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  traderDiscount(): BigInt {
-    let result = super.call("traderDiscount", "traderDiscount():(uint48)", []);
+  tierAffiliateComission(param0: i32): BigInt {
+    let result = super.call(
+      "tierAffiliateComission",
+      "tierAffiliateComission(uint8):(uint48)",
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
+    );
 
     return result[0].toBigInt();
   }
 
-  try_traderDiscount(): ethereum.CallResult<BigInt> {
+  try_tierAffiliateComission(param0: i32): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "traderDiscount",
-      "traderDiscount():(uint48)",
-      []
+      "tierAffiliateComission",
+      "tierAffiliateComission(uint8):(uint48)",
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  tierTraderDiscount(param0: i32): BigInt {
+    let result = super.call(
+      "tierTraderDiscount",
+      "tierTraderDiscount(uint8):(uint48)",
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_tierTraderDiscount(param0: i32): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "tierTraderDiscount",
+      "tierTraderDiscount(uint8):(uint48)",
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  userTier(affiliate: Address): i32 {
+    let result = super.call("userTier", "userTier(address):(uint8)", [
+      ethereum.Value.fromAddress(affiliate)
+    ]);
+
+    return result[0].toI32();
+  }
+
+  try_userTier(affiliate: Address): ethereum.CallResult<i32> {
+    let result = super.tryCall("userTier", "userTier(address):(uint8)", [
+      ethereum.Value.fromAddress(affiliate)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
+  }
+
+  verifyingAddress(): Address {
+    let result = super.call(
+      "verifyingAddress",
+      "verifyingAddress():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_verifyingAddress(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "verifyingAddress",
+      "verifyingAddress():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 }
 
@@ -547,32 +591,32 @@ export class ConstructorCall__Outputs {
   }
 }
 
-export class AddAffiliateCall extends ethereum.Call {
-  get inputs(): AddAffiliateCall__Inputs {
-    return new AddAffiliateCall__Inputs(this);
+export class AddAffiliateOrKOLCall extends ethereum.Call {
+  get inputs(): AddAffiliateOrKOLCall__Inputs {
+    return new AddAffiliateOrKOLCall__Inputs(this);
   }
 
-  get outputs(): AddAffiliateCall__Outputs {
-    return new AddAffiliateCall__Outputs(this);
+  get outputs(): AddAffiliateOrKOLCall__Outputs {
+    return new AddAffiliateOrKOLCall__Outputs(this);
   }
 }
 
-export class AddAffiliateCall__Inputs {
-  _call: AddAffiliateCall;
+export class AddAffiliateOrKOLCall__Inputs {
+  _call: AddAffiliateOrKOLCall;
 
-  constructor(call: AddAffiliateCall) {
+  constructor(call: AddAffiliateOrKOLCall) {
     this._call = call;
   }
 
-  get _affiliate(): Address {
+  get _user(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 }
 
-export class AddAffiliateCall__Outputs {
-  _call: AddAffiliateCall;
+export class AddAffiliateOrKOLCall__Outputs {
+  _call: AddAffiliateOrKOLCall;
 
-  constructor(call: AddAffiliateCall) {
+  constructor(call: AddAffiliateOrKOLCall) {
     this._call = call;
   }
 }
@@ -615,32 +659,62 @@ export class AirdropERC20Call__Outputs {
   }
 }
 
-export class AllowAffiliatesCall extends ethereum.Call {
-  get inputs(): AllowAffiliatesCall__Inputs {
-    return new AllowAffiliatesCall__Inputs(this);
+export class AllowAffiliateCall extends ethereum.Call {
+  get inputs(): AllowAffiliateCall__Inputs {
+    return new AllowAffiliateCall__Inputs(this);
   }
 
-  get outputs(): AllowAffiliatesCall__Outputs {
-    return new AllowAffiliatesCall__Outputs(this);
+  get outputs(): AllowAffiliateCall__Outputs {
+    return new AllowAffiliateCall__Outputs(this);
   }
 }
 
-export class AllowAffiliatesCall__Inputs {
-  _call: AllowAffiliatesCall;
+export class AllowAffiliateCall__Inputs {
+  _call: AllowAffiliateCall;
 
-  constructor(call: AllowAffiliatesCall) {
+  constructor(call: AllowAffiliateCall) {
     this._call = call;
   }
 
-  get _affiliates(): Array<Address> {
-    return this._call.inputValues[0].value.toAddressArray();
+  get signature(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
   }
 }
 
-export class AllowAffiliatesCall__Outputs {
-  _call: AllowAffiliatesCall;
+export class AllowAffiliateCall__Outputs {
+  _call: AllowAffiliateCall;
 
-  constructor(call: AllowAffiliatesCall) {
+  constructor(call: AllowAffiliateCall) {
+    this._call = call;
+  }
+}
+
+export class AllowKOLCall extends ethereum.Call {
+  get inputs(): AllowKOLCall__Inputs {
+    return new AllowKOLCall__Inputs(this);
+  }
+
+  get outputs(): AllowKOLCall__Outputs {
+    return new AllowKOLCall__Outputs(this);
+  }
+}
+
+export class AllowKOLCall__Inputs {
+  _call: AllowKOLCall;
+
+  constructor(call: AllowKOLCall) {
+    this._call = call;
+  }
+
+  get _KOL(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class AllowKOLCall__Outputs {
+  _call: AllowKOLCall;
+
+  constructor(call: AllowKOLCall) {
     this._call = call;
   }
 }
@@ -752,20 +826,20 @@ export class InitializeCall__Inputs {
     this._call = call;
   }
 
-  get _airdropper(): Address {
+  get owner_(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _rewardToken(): Address {
+  get _airdropper(): Address {
     return this._call.inputValues[1].value.toAddress();
   }
 
-  get _affiliateComission(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+  get _rewardToken(): Address {
+    return this._call.inputValues[2].value.toAddress();
   }
 
-  get _traderDiscount(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+  get _verifyingAddress(): Address {
+    return this._call.inputValues[3].value.toAddress();
   }
 }
 
@@ -910,8 +984,12 @@ export class SetAffiliateComissionCall__Inputs {
     this._call = call;
   }
 
+  get _tier(): i32 {
+    return this._call.inputValues[0].value.toI32();
+  }
+
   get _affiliateComission(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt();
   }
 }
 
@@ -970,8 +1048,12 @@ export class SetTraderDiscountCall__Inputs {
     this._call = call;
   }
 
+  get _tier(): i32 {
+    return this._call.inputValues[0].value.toI32();
+  }
+
   get _traderDiscount(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt();
   }
 }
 
@@ -979,6 +1061,36 @@ export class SetTraderDiscountCall__Outputs {
   _call: SetTraderDiscountCall;
 
   constructor(call: SetTraderDiscountCall) {
+    this._call = call;
+  }
+}
+
+export class SetVerifyingAddressCall extends ethereum.Call {
+  get inputs(): SetVerifyingAddressCall__Inputs {
+    return new SetVerifyingAddressCall__Inputs(this);
+  }
+
+  get outputs(): SetVerifyingAddressCall__Outputs {
+    return new SetVerifyingAddressCall__Outputs(this);
+  }
+}
+
+export class SetVerifyingAddressCall__Inputs {
+  _call: SetVerifyingAddressCall;
+
+  constructor(call: SetVerifyingAddressCall) {
+    this._call = call;
+  }
+
+  get _verifyingAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetVerifyingAddressCall__Outputs {
+  _call: SetVerifyingAddressCall;
+
+  constructor(call: SetVerifyingAddressCall) {
     this._call = call;
   }
 }

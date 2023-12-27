@@ -162,15 +162,17 @@ dataSources:
         - name: ReferralList
           file: ./abis/ReferralList.json
       eventHandlers:
-        - event: AllowAffiliates(address[])
-          handler: handleAllowAffiliates
-        - event: AddAffiliate(address,address)
-          handler: handleAddAffiliate
+        - event: AllowAffiliate(address)
+          handler: handleAllowAffiliate
+        - event: AllowKOL(address)
+          handler: handleAllowKOL
+        - event: AddAffiliateOrKOL(address,address)
+          handler: handleAddAffiliateOrKOL
         - event: SetRewardToken(address)
           handler: handleSetRewardToken
-        - event: SetAffiliateComission(uint48)
+        - event: SetAffiliateComission(uint8,uint48)
           handler: handleSetAffiliateComission
-        - event: SetTraderDiscount(uint48)
+        - event: SetTraderDiscount(uint8,uint48)
           handler: handleSetTraderDiscount
       file: ./src/referral.ts
   - kind: ethereum
