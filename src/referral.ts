@@ -115,10 +115,12 @@ export function loadReferralProgram(event: ethereum.Event, referralAddress: Addr
 
       referralProgram.rewardToken = referralContract.rewardToken();
 
+      referralProgram.affiliateComission = [ZERO_BI, ZERO_BI, ZERO_BI];
       referralProgram.affiliateComission[Tier.AFFILIATE] = referralContract.tierAffiliateComission(Tier.AFFILIATE);
-      referralProgram.traderDiscount[Tier.AFFILIATE] = referralContract.tierTraderDiscount(Tier.AFFILIATE);
-
       referralProgram.affiliateComission[Tier.KOL] = referralContract.tierAffiliateComission(Tier.KOL);
+      
+      referralProgram.traderDiscount = [ZERO_BI, ZERO_BI, ZERO_BI];
+      referralProgram.traderDiscount[Tier.AFFILIATE] = referralContract.tierTraderDiscount(Tier.AFFILIATE);
       referralProgram.traderDiscount[Tier.KOL] = referralContract.tierTraderDiscount(Tier.KOL);
 
       referralProgram.totalRewards = ZERO_BI;

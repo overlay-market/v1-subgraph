@@ -7,6 +7,7 @@ export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const FACTORY_ADDRESS = '0xa2dbe262d27647243ac3187d05dbf6c3c6ecc14d' // arbitrum-sepolia
 export const PERIPHERY_ADDRESS = '0x2878837ea173e8bd40db7cee360b15c1c27deb5a' // arbitrum-sepolia
 export const OVL_ADDRESS = '0x3e27fae625f25291bfda517f74bf41dc40721da2' // arbitrum-sepolia
+// TODO: update this address when the new contract is deployed
 export const REFERRAL_ADDRESS = '0x426cb483cad253aa7e514c6c2b76a3c215d9065b'
 export const TRADING_MINING_ADDRESS = '0xFDf98Ac225Aa3B2788dcE96ffe55C2Bb3edCf4c9' // arbitrum-sepolia
 
