@@ -1,6 +1,6 @@
 import { Address, BigInt, ethereum, Bytes } from '@graphprotocol/graph-ts'
 import { ReferralProgram, ReferralPosition } from '../generated/schema'
-import { ReferralList, AllowAffiliate, AddAffiliateOrKOL, SetRewardToken, SetAffiliateComission, SetTraderDiscount, AllowKOL } from '../generated/ReferralList/ReferralList'
+import { ReferralList, AllowAffiliate, AddAffiliateOrKOL, SetRewardToken, SetAffiliateComission, SetTraderDiscount, AllowKOL, ClaimRewards } from '../generated/ReferralList/ReferralList'
 import { ZERO_BI, REFERRAL_ADDRESS, BPS_BASE_BI } from './utils/constants'
 import { loadAccount, loadTransaction } from './utils'
 
@@ -62,6 +62,16 @@ export function handleSetTraderDiscount(event: SetTraderDiscount): void {
     referralProgram.save()
 }
 
+export function handleClaimRewards(event: ClaimRewards): void {
+    const referralProgram = loadReferralProgram(event, event.address)
+    const referralPosition = loadReferralPosition(event.address, event.params.to)
+    referralPosition.totalAirdroppedAmount = referralPosition.totalAirdroppedAmount.plus(event.params.amount)
+    referralPosition.totalRewardsPending = referralPosition.totalRewardsPending.minus(event.params.amount)
+    referralProgram.totalAirdropped = referralProgram.totalAirdropped.plus(event.params.amount)
+    referralPosition.save()
+    referralProgram.save()
+}
+
 export function updateReferralRewards(event: ethereum.Event, owner: Address, transferFeeAmount: BigInt): void {
     const ownerReferralPosition = loadReferralPosition(Address.fromString(REFERRAL_ADDRESS), owner)
     const affiliatedTo = ownerReferralPosition.affiliatedTo
@@ -85,21 +95,6 @@ export function updateReferralRewards(event: ethereum.Event, owner: Address, tra
         affiliateReferralPosition.save()
         referralProgram.save()
     }
-}
-
-// FIXME: adjust to new airdrop logic via MerkleClaim, once it's implemented.
-export function updateAirdrop(event: ethereum.Event, toAddress: Address, amount: BigInt, transferId: Bytes): void {
-    const referralProgram = loadReferralProgram(event, Address.fromString(REFERRAL_ADDRESS))
-    referralProgram.totalAirdropped = referralProgram.totalAirdropped.plus(amount)
-    referralProgram.save()
-
-    const referralPosition = loadReferralPosition(Address.fromString(REFERRAL_ADDRESS), toAddress)
-    referralPosition.totalAirdroppedAmount = referralPosition.totalAirdroppedAmount.plus(amount)
-    referralPosition.totalRewardsPending = referralPosition.totalRewardsPending.minus(amount)
-    let airdrops = referralPosition.airdrops
-    airdrops.push(transferId)
-    referralPosition.airdrops = airdrops
-    referralPosition.save()
 }
 
 export function loadReferralProgram(event: ethereum.Event, referralAddress: Address): ReferralProgram {
@@ -148,7 +143,6 @@ export function loadReferralPosition(referralProgram: Address, owner: Address): 
         referralPosition.totalTraderDiscount = ZERO_BI;
         referralPosition.totalAirdroppedAmount = ZERO_BI;
         referralPosition.totalRewardsPending = ZERO_BI;
-        referralPosition.airdrops = [];
     }
     return referralPosition
 }

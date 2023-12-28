@@ -32,17 +32,25 @@ export class AddAffiliateOrKOL__Params {
   }
 }
 
-export class Airdrop extends ethereum.Event {
-  get params(): Airdrop__Params {
-    return new Airdrop__Params(this);
+export class AdminChanged extends ethereum.Event {
+  get params(): AdminChanged__Params {
+    return new AdminChanged__Params(this);
   }
 }
 
-export class Airdrop__Params {
-  _event: Airdrop;
+export class AdminChanged__Params {
+  _event: AdminChanged;
 
-  constructor(event: Airdrop) {
+  constructor(event: AdminChanged) {
     this._event = event;
+  }
+
+  get previousAdmin(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newAdmin(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 }
 
@@ -82,6 +90,46 @@ export class AllowKOL__Params {
   }
 }
 
+export class BeaconUpgraded extends ethereum.Event {
+  get params(): BeaconUpgraded__Params {
+    return new BeaconUpgraded__Params(this);
+  }
+}
+
+export class BeaconUpgraded__Params {
+  _event: BeaconUpgraded;
+
+  constructor(event: BeaconUpgraded) {
+    this._event = event;
+  }
+
+  get beacon(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class ClaimRewards extends ethereum.Event {
+  get params(): ClaimRewards__Params {
+    return new ClaimRewards__Params(this);
+  }
+}
+
+export class ClaimRewards__Params {
+  _event: ClaimRewards;
+
+  constructor(event: ClaimRewards) {
+    this._event = event;
+  }
+
+  get to(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -95,8 +143,34 @@ export class Initialized__Params {
     this._event = event;
   }
 
-  get version(): BigInt {
+  get version(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+}
+
+export class NewClaimingPeriod extends ethereum.Event {
+  get params(): NewClaimingPeriod__Params {
+    return new NewClaimingPeriod__Params(this);
+  }
+}
+
+export class NewClaimingPeriod__Params {
+  _event: NewClaimingPeriod;
+
+  constructor(event: NewClaimingPeriod) {
+    this._event = event;
+  }
+
+  get period(): BigInt {
     return this._event.parameters[0].value.toBigInt();
+  }
+
+  get merkleRoot(): Bytes {
+    return this._event.parameters[1].value.toBytes();
+  }
+
+  get totalRewards(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -283,29 +357,6 @@ export class ReferralList extends ethereum.SmartContract {
     return new ReferralList("ReferralList", address);
   }
 
-  UPGRADE_INTERFACE_VERSION(): string {
-    let result = super.call(
-      "UPGRADE_INTERFACE_VERSION",
-      "UPGRADE_INTERFACE_VERSION():(string)",
-      []
-    );
-
-    return result[0].toString();
-  }
-
-  try_UPGRADE_INTERFACE_VERSION(): ethereum.CallResult<string> {
-    let result = super.tryCall(
-      "UPGRADE_INTERFACE_VERSION",
-      "UPGRADE_INTERFACE_VERSION():(string)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toString());
-  }
-
   hasAllRoles(user: Address, roles: BigInt): boolean {
     let result = super.call(
       "hasAllRoles",
@@ -421,6 +472,25 @@ export class ReferralList extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
+  referralClaim(): Address {
+    let result = super.call("referralClaim", "referralClaim():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_referralClaim(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "referralClaim",
+      "referralClaim():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   referrals(trader: Address): Address {
@@ -621,44 +691,6 @@ export class AddAffiliateOrKOLCall__Outputs {
   }
 }
 
-export class AirdropERC20Call extends ethereum.Call {
-  get inputs(): AirdropERC20Call__Inputs {
-    return new AirdropERC20Call__Inputs(this);
-  }
-
-  get outputs(): AirdropERC20Call__Outputs {
-    return new AirdropERC20Call__Outputs(this);
-  }
-}
-
-export class AirdropERC20Call__Inputs {
-  _call: AirdropERC20Call;
-
-  constructor(call: AirdropERC20Call) {
-    this._call = call;
-  }
-
-  get _addresses(): Array<Address> {
-    return this._call.inputValues[0].value.toAddressArray();
-  }
-
-  get _amounts(): Array<BigInt> {
-    return this._call.inputValues[1].value.toBigIntArray();
-  }
-
-  get _totalAmount(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-}
-
-export class AirdropERC20Call__Outputs {
-  _call: AirdropERC20Call;
-
-  constructor(call: AirdropERC20Call) {
-    this._call = call;
-  }
-}
-
 export class AllowAffiliateCall extends ethereum.Call {
   get inputs(): AllowAffiliateCall__Inputs {
     return new AllowAffiliateCall__Inputs(this);
@@ -745,6 +777,44 @@ export class CancelOwnershipHandoverCall__Outputs {
   }
 }
 
+export class ClaimRewardsCall extends ethereum.Call {
+  get inputs(): ClaimRewardsCall__Inputs {
+    return new ClaimRewardsCall__Inputs(this);
+  }
+
+  get outputs(): ClaimRewardsCall__Outputs {
+    return new ClaimRewardsCall__Outputs(this);
+  }
+}
+
+export class ClaimRewardsCall__Inputs {
+  _call: ClaimRewardsCall;
+
+  constructor(call: ClaimRewardsCall) {
+    this._call = call;
+  }
+
+  get to(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get proof(): Array<Bytes> {
+    return this._call.inputValues[2].value.toBytesArray();
+  }
+}
+
+export class ClaimRewardsCall__Outputs {
+  _call: ClaimRewardsCall;
+
+  constructor(call: ClaimRewardsCall) {
+    this._call = call;
+  }
+}
+
 export class CompleteOwnershipHandoverCall extends ethereum.Call {
   get inputs(): CompleteOwnershipHandoverCall__Inputs {
     return new CompleteOwnershipHandoverCall__Inputs(this);
@@ -805,6 +875,40 @@ export class GrantRolesCall__Outputs {
   _call: GrantRolesCall;
 
   constructor(call: GrantRolesCall) {
+    this._call = call;
+  }
+}
+
+export class InitClaimPeriodCall extends ethereum.Call {
+  get inputs(): InitClaimPeriodCall__Inputs {
+    return new InitClaimPeriodCall__Inputs(this);
+  }
+
+  get outputs(): InitClaimPeriodCall__Outputs {
+    return new InitClaimPeriodCall__Outputs(this);
+  }
+}
+
+export class InitClaimPeriodCall__Inputs {
+  _call: InitClaimPeriodCall;
+
+  constructor(call: InitClaimPeriodCall) {
+    this._call = call;
+  }
+
+  get _merkleRoot(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+
+  get totalRewards(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class InitClaimPeriodCall__Outputs {
+  _call: InitClaimPeriodCall;
+
+  constructor(call: InitClaimPeriodCall) {
     this._call = call;
   }
 }
@@ -1121,6 +1225,36 @@ export class TransferOwnershipCall__Outputs {
   _call: TransferOwnershipCall;
 
   constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class UpgradeToCall extends ethereum.Call {
+  get inputs(): UpgradeToCall__Inputs {
+    return new UpgradeToCall__Inputs(this);
+  }
+
+  get outputs(): UpgradeToCall__Outputs {
+    return new UpgradeToCall__Outputs(this);
+  }
+}
+
+export class UpgradeToCall__Inputs {
+  _call: UpgradeToCall;
+
+  constructor(call: UpgradeToCall) {
+    this._call = call;
+  }
+
+  get newImplementation(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class UpgradeToCall__Outputs {
+  _call: UpgradeToCall;
+
+  constructor(call: UpgradeToCall) {
     this._call = call;
   }
 }
