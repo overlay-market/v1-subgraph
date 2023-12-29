@@ -17,13 +17,15 @@ import {
 import { handleBuild } from "../../mapping"
 import { loadAccount } from "../../utils"
 import { loadTradingMining } from "../../trading-mining"
-import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS } from "../../utils/constants"
+import { loadReferralProgram, loadReferralPosition } from "../../referral"
+import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS } from "../../utils/constants"
 
 // Export handlers for coverage report
 export { handleBuild }
 
 const market = Address.fromString("0x0000000000000000000000000000000000000001")
 const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
+const referralAddress = Address.fromString(REFERRAL_ADDRESS)
 
 // Build event parameters
 const sender = Address.fromString("0x0000000000000000000000000000000000000b0b")
@@ -37,6 +39,13 @@ const collateral = BigInt.fromI32(1000)
 
 // Trading mining parameters
 const epoch = 0
+
+// Referral parameters
+const rewardToken = Address.fromString("0x0000000000000000000000000000000000000003")
+const affiliateComission = BigInt.fromI32(300) // 3%
+const kolComission = BigInt.fromI32(700) // 7%
+const affiliateDiscount = BigInt.fromI32(300) // 2%
+const kolDiscount = BigInt.fromI32(700) // 5%
 
 describe("Market events", () => {
 
@@ -146,6 +155,80 @@ describe("Market events", () => {
                 assert.fieldEquals("Account", pcdHolder.toHexString(),
                     "ovlVolumeTraded",
                     volume.toString()
+                )
+            })
+
+        })
+
+        describe("Referral", () => {
+
+            beforeAll(() => {
+                createMockedFunction(referralAddress, "rewardToken", "rewardToken():(address)")
+                .returns([ethereum.Value.fromAddress(rewardToken)])
+
+                createMockedFunction(referralAddress, "tierAffiliateComission", "tierAffiliateComission(uint8):(uint48)")
+                    .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1))])
+                    .returns([ethereum.Value.fromUnsignedBigInt(affiliateComission)])
+                createMockedFunction(referralAddress, "tierAffiliateComission", "tierAffiliateComission(uint8):(uint48)")
+                    .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(2))])
+                    .returns([ethereum.Value.fromUnsignedBigInt(kolComission)])
+                
+                createMockedFunction(referralAddress, "tierTraderDiscount", "tierTraderDiscount(uint8):(uint48)")
+                    .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1))])
+                    .returns([ethereum.Value.fromUnsignedBigInt(affiliateDiscount)])
+                createMockedFunction(referralAddress, "tierTraderDiscount", "tierTraderDiscount(uint8):(uint48)")
+                    .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(2))])
+                    .returns([ethereum.Value.fromUnsignedBigInt(kolDiscount)])
+            })
+
+            beforeEach(() => {
+                const referralProgram = loadReferralProgram(newMockEvent(), referralAddress)
+                referralProgram.affiliateComission = [BigInt.fromI32(0), affiliateComission, kolComission]
+                referralProgram.traderDiscount = [BigInt.fromI32(0), affiliateDiscount, kolDiscount]
+                referralProgram.save()
+
+                const affiliate = Address.fromString("0x0000000000000000000000000000000000000123")
+
+                const ownerReferralPosition = loadReferralPosition(referralAddress, sender)
+                ownerReferralPosition.affiliatedTo = affiliate.toHexString();
+                ownerReferralPosition.save()
+
+                const affiliateReferralPosition = loadReferralPosition(referralAddress, affiliate)
+                affiliateReferralPosition.tier = 1 // affiliate
+                affiliateReferralPosition.save()
+
+                const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price)
+                handleBuild(event)
+            })
+
+            // FIXME: transferFeeAmount is always 0 during build event
+            test("updates owner referral position", () => {
+                const id = referralAddress.concat(sender).toHexString()
+
+                assert.fieldEquals("ReferralPosition", id,
+                    "totalTraderDiscount",
+                    BigInt.fromI32(0).toString()
+                )
+
+                assert.fieldEquals("ReferralPosition", id,
+                    "totalRewardsPending",
+                    BigInt.fromI32(0).toString()
+                )
+            })
+
+            // FIXME: transferFeeAmount is always 0 during build event
+            test("updates affiliate referral position", () => {
+                const affiliate = Address.fromString("0x0000000000000000000000000000000000000123")
+                const id = referralAddress.concat(affiliate).toHexString()
+
+                assert.fieldEquals("ReferralPosition", id,
+                    "totalAffiliateComission",
+                    BigInt.fromI32(0).toString()
+                )
+
+                assert.fieldEquals("ReferralPosition", id,
+                    "totalRewardsPending",
+                    BigInt.fromI32(0).toString()
                 )
             })
 

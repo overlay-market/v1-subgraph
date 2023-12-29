@@ -1,4 +1,4 @@
-import { Address, BigInt, ethereum, Bytes } from '@graphprotocol/graph-ts'
+import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { ReferralProgram, ReferralPosition } from '../generated/schema'
 import { ReferralList, AllowAffiliate, AddAffiliateOrKOL, SetRewardToken, SetAffiliateComission, SetTraderDiscount, AllowKOL, ClaimRewards } from '../generated/ReferralList/ReferralList'
 import { ZERO_BI, REFERRAL_ADDRESS, BPS_BASE_BI } from './utils/constants'
