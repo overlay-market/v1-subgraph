@@ -3372,19 +3372,6 @@ export class ReferralPosition extends Entity {
   set totalRewardsPending(value: BigInt) {
     this.set("totalRewardsPending", Value.fromBigInt(value));
   }
-
-  get airdrops(): Array<Bytes> {
-    let value = this.get("airdrops");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytesArray();
-    }
-  }
-
-  set airdrops(value: Array<Bytes>) {
-    this.set("airdrops", Value.fromBytesArray(value));
-  }
 }
 
 export class TradingMining extends Entity {

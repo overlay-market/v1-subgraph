@@ -481,12 +481,17 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "_merkleRoot",
+        "name": "merkleRoot",
         "type": "bytes32"
       },
       {
         "internalType": "uint256",
         "name": "totalRewards",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastUpdateTimestamp",
         "type": "uint256"
       }
     ],

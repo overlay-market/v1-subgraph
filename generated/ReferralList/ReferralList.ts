@@ -896,12 +896,16 @@ export class InitClaimPeriodCall__Inputs {
     this._call = call;
   }
 
-  get _merkleRoot(): Bytes {
+  get merkleRoot(): Bytes {
     return this._call.inputValues[0].value.toBytes();
   }
 
   get totalRewards(): BigInt {
     return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get lastUpdateTimestamp(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
   }
 }
 
