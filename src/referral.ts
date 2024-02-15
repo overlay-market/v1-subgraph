@@ -4,7 +4,7 @@ import { ReferralList, AllowAffiliate, AddAffiliateOrKOL, SetRewardToken, SetAff
 import { ZERO_BI, REFERRAL_ADDRESS, BPS_BASE_BI } from './utils/constants'
 import { loadAccount, loadTransaction } from './utils'
 
-enum Tier {
+export enum Tier {
     NOT_AFFILIATE,
     AFFILIATE,
     KOL
@@ -43,7 +43,11 @@ export function handleSetRewardToken(event: SetRewardToken): void {
 export function handleSetAffiliateComission(event: SetAffiliateComission): void {
     const referralProgram = loadReferralProgram(event, event.address)
     const tier = event.params.tier
-    referralProgram.affiliateComission[tier] = event.params.affiliateComission
+
+    const newAffiliateComission = [ZERO_BI, ZERO_BI, ZERO_BI]     // initialize array
+    newAffiliateComission[tier] = event.params.affiliateComission // set new value
+    referralProgram.affiliateComission = newAffiliateComission    // update entity
+
     let transaction = loadTransaction(event)
     transaction.save()
 
@@ -54,7 +58,11 @@ export function handleSetAffiliateComission(event: SetAffiliateComission): void 
 export function handleSetTraderDiscount(event: SetTraderDiscount): void {
     const referralProgram = loadReferralProgram(event, event.address)
     const tier = event.params.tier
-    referralProgram.traderDiscount[tier] = event.params.traderDiscount
+
+    const newTraderDiscount = [ZERO_BI, ZERO_BI, ZERO_BI] // initialize array
+    newTraderDiscount[tier] = event.params.traderDiscount // set new value
+    referralProgram.traderDiscount = newTraderDiscount    // update entity
+
     let transaction = loadTransaction(event)
     transaction.save()
 
