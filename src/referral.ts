@@ -154,6 +154,7 @@ export function loadReferralPosition(referralProgram: Address, owner: Address): 
         referralPosition.totalTraderDiscount = ZERO_BI;
         referralPosition.totalAirdroppedAmount = ZERO_BI;
         referralPosition.totalRewardsPending = ZERO_BI;
+        referralPosition.accountsReferred = 0;
     }
     return referralPosition
 }
