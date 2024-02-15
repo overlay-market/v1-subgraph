@@ -47,7 +47,7 @@ export function handleSetAffiliateComission(event: SetAffiliateComission): void 
     const referralProgram = loadReferralProgram(event, event.address)
     const tier = event.params.tier
 
-    const newAffiliateComission = [ZERO_BI, ZERO_BI, ZERO_BI]     // initialize array
+    const newAffiliateComission = referralProgram.affiliateComission // initialize array
     newAffiliateComission[tier] = event.params.affiliateComission // set new value
     referralProgram.affiliateComission = newAffiliateComission    // update entity
 
@@ -62,7 +62,7 @@ export function handleSetTraderDiscount(event: SetTraderDiscount): void {
     const referralProgram = loadReferralProgram(event, event.address)
     const tier = event.params.tier
 
-    const newTraderDiscount = [ZERO_BI, ZERO_BI, ZERO_BI] // initialize array
+    const newTraderDiscount = referralProgram.traderDiscount // initialize array
     newTraderDiscount[tier] = event.params.traderDiscount // set new value
     referralProgram.traderDiscount = newTraderDiscount    // update entity
 

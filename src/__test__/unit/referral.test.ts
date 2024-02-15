@@ -116,6 +116,18 @@ describe("Referral contract events", () => {
             )
         })
 
+        test("updates ReferralProgram entity, and tier 2", () => {
+            const event = createSetTraderDiscountEvent(referralList, Tier.KOL, kolDiscount)
+            handleSetTraderDiscount(event)
+
+            assert.entityCount("ReferralProgram", 1)
+
+            assert.fieldEquals("ReferralProgram", referralList.toHexString(),
+                "traderDiscount",
+                `[${BigInt.fromI32(0)}, ${affiliateDiscount}, ${kolDiscount}]`
+            )
+        })
+
     })
 
     describe("SetTraderDiscount event", () => {
@@ -135,6 +147,18 @@ describe("Referral contract events", () => {
             assert.fieldEquals("ReferralProgram", referralList.toHexString(),
                 "affiliateComission",
                 `[${BigInt.fromI32(0)}, ${affiliateComission}, ${BigInt.fromI32(0)}]`
+            )
+        })
+
+        test("updates ReferralProgram entity, and tier 2", () => {
+            const event = createSetAffiliateComissionEvent(referralList, Tier.KOL, kolComission)
+            handleSetAffiliateComission(event)
+
+            assert.entityCount("ReferralProgram", 1)
+
+            assert.fieldEquals("ReferralProgram", referralList.toHexString(),
+                "affiliateComission",
+                `[${BigInt.fromI32(0)}, ${affiliateComission}, ${kolComission}]`
             )
         })
 
