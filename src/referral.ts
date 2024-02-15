@@ -28,6 +28,9 @@ export function handleAddAffiliateOrKOL(event: AddAffiliateOrKOL): void {
     const traderReferralPosition = loadReferralPosition(event.address, event.params.trader)
     traderReferralPosition.affiliatedTo = event.params.affiliate.toHexString();
     traderReferralPosition.save()
+    const affiliateReferralPosition = loadReferralPosition(event.address, event.params.affiliate)
+    affiliateReferralPosition.accountsReferred = affiliateReferralPosition.accountsReferred + 1
+    affiliateReferralPosition.save()
 }
 
 export function handleSetRewardToken(event: SetRewardToken): void {

@@ -3372,6 +3372,19 @@ export class ReferralPosition extends Entity {
   set totalRewardsPending(value: BigInt) {
     this.set("totalRewardsPending", Value.fromBigInt(value));
   }
+
+  get accountsReferred(): i32 {
+    let value = this.get("accountsReferred");
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
+  }
+
+  set accountsReferred(value: i32) {
+    this.set("accountsReferred", Value.fromI32(value));
+  }
 }
 
 export class TradingMining extends Entity {

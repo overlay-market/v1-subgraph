@@ -406,6 +406,7 @@ type ReferralPosition @entity {
   totalTraderDiscount: BigInt!
   totalAirdroppedAmount: BigInt!
   totalRewardsPending: BigInt!
+  accountsReferred: Int!
 }
 
 type TradingMining @entity {
