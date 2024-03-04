@@ -299,6 +299,8 @@ type ERC20Token @entity {
   totalSupply: BigInt!
   name: String!
   symbol: String!
+  # derived fields
+  totalSupplyHourData: [TotalSupplyHourData!]! @derivedFrom(field: "token")
 }
 
 type RewardsClaimed @entity(immutable: true) {
@@ -434,4 +436,25 @@ type TradingMiningEpochVolume @entity {
   epoch: BigInt!
   volume: BigInt!
   trader: Account!  
+}
+
+type TotalSupplyHourData @entity {
+  # token address concatendated with date
+  id: ID!
+  # unix timestamp for start of hour
+  periodStartUnix: Int!
+  # pointer to token
+  token: ERC20Token!
+  # volume in token units
+  minted: BigInt!
+  # volume in derived USD
+  burnt: BigInt!
+  # opening price USD
+  open: BigInt!
+  # high price USD
+  high: BigInt!
+  # low price USD
+  low: BigInt!
+  # close price USD
+  close: BigInt!
 }
