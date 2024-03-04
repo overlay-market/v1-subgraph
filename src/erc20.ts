@@ -95,7 +95,7 @@ function updateTotalSupplyHourData(token: ERC20Token, event: TransferEvent): voi
     let hourIndex = timestamp / 3600 // get unique hour within unix history
     let hourStartUnix = hourIndex * 3600 // want the rounded effect
     let tokenHourID = token.id
-      .toString()
+      .toHexString()
       .concat('-')
       .concat(hourIndex.toString())
     let totalSupplyHourData = TotalSupplyHourData.load(tokenHourID)
