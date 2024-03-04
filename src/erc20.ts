@@ -90,7 +90,7 @@ function loadTokenPosition(token: Address, owner: Address): TokenPosition {
     return tokenPosition
 }
 
-export function updateTotalSupplyHourData(token: ERC20Token, event: TransferEvent) {
+function updateTotalSupplyHourData(token: ERC20Token, event: TransferEvent): void {
     let timestamp = event.block.timestamp.toI32()
     let hourIndex = timestamp / 3600 // get unique hour within unix history
     let hourStartUnix = hourIndex * 3600 // want the rounded effect
