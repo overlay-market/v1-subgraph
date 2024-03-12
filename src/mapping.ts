@@ -21,6 +21,7 @@ import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
 import { updateReferralRewards } from "./referral";
 import { updateTraderEpochVolume } from "./trading-mining";
+import { updateMintBurnMarketHourData } from "./temporal-data-logger";
 
 // TODO: rename or separate this file into multiple files
 
@@ -232,6 +233,8 @@ export function handleBuild(event: BuildEvent): void {
 export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event, event.address)
   let sender = loadAccount(event.params.sender)
+  
+  updateMintBurnMarketHourData(market, event)
   
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
@@ -479,6 +482,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let market = loadMarket(event, event.address)
   let sender = loadAccount(event.params.sender)
   let owner = loadAccount(event.params.owner)
+
+  updateMintBurnMarketHourData(market, event)
 
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
