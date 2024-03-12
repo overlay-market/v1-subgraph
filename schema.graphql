@@ -64,8 +64,6 @@ type Market @entity {
   oiLong: BigInt!
   # total current oi short
   oiShort: BigInt!
-  # positions held in market
-  positions: [Position!]! @derivedFrom(field: "market")
   # if market is shut down
   isShutdown: Boolean!
   # fees and tx count:
@@ -82,7 +80,11 @@ type Market @entity {
   # sum of all build fees
   totalLiquidateFees: BigInt!
   # sum of all fees
-  totalFees: BigInt!
+  totalFees: BigInt!  
+  # derived fields
+  mintBurnMarketHourData: [MintBurnMarketHourData!]! @derivedFrom(field: "market")
+  # positions held in market
+  positions: [Position!]! @derivedFrom(field: "market")
 }
 
 type Position @entity {
@@ -445,16 +447,23 @@ type TotalSupplyHourData @entity {
   periodStartUnix: Int!
   # pointer to token
   token: ERC20Token!
-  # volume in token units
   minted: BigInt!
-  # volume in derived USD
   burnt: BigInt!
-  # opening price USD
   open: BigInt!
-  # high price USD
   high: BigInt!
-  # low price USD
   low: BigInt!
-  # close price USD
   close: BigInt!
+}
+
+type MintBurnMarketHourData @entity {
+  # market address concatendated with date
+  id: ID!
+  # unix timestamp for start of hour
+  periodStartUnix: Int!
+  # pointer to market
+  market: Market!
+  minted: BigInt!
+  burnt: BigInt!
+  # positive means net minting | negative means net burning
+  total: BigInt!
 }

@@ -458,14 +458,6 @@ export class Market extends Entity {
     this.set("oiShort", Value.fromBigInt(value));
   }
 
-  get positions(): PositionLoader {
-    return new PositionLoader(
-      "Market",
-      this.get("id")!.toString(),
-      "positions"
-    );
-  }
-
   get isShutdown(): boolean {
     let value = this.get("isShutdown");
     if (!value || value.kind == ValueKind.NULL) {
@@ -568,6 +560,22 @@ export class Market extends Entity {
 
   set totalFees(value: BigInt) {
     this.set("totalFees", Value.fromBigInt(value));
+  }
+
+  get mintBurnMarketHourData(): MintBurnMarketHourDataLoader {
+    return new MintBurnMarketHourDataLoader(
+      "Market",
+      this.get("id")!.toString(),
+      "mintBurnMarketHourData"
+    );
+  }
+
+  get positions(): PositionLoader {
+    return new PositionLoader(
+      "Market",
+      this.get("id")!.toString(),
+      "positions"
+    );
   }
 }
 
@@ -3875,6 +3883,118 @@ export class TotalSupplyHourData extends Entity {
   }
 }
 
+export class MintBurnMarketHourData extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save MintBurnMarketHourData entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type MintBurnMarketHourData must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("MintBurnMarketHourData", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): MintBurnMarketHourData | null {
+    return changetype<MintBurnMarketHourData | null>(
+      store.get_in_block("MintBurnMarketHourData", id)
+    );
+  }
+
+  static load(id: string): MintBurnMarketHourData | null {
+    return changetype<MintBurnMarketHourData | null>(
+      store.get("MintBurnMarketHourData", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get periodStartUnix(): i32 {
+    let value = this.get("periodStartUnix");
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
+  }
+
+  set periodStartUnix(value: i32) {
+    this.set("periodStartUnix", Value.fromI32(value));
+  }
+
+  get market(): string {
+    let value = this.get("market");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set market(value: string) {
+    this.set("market", Value.fromString(value));
+  }
+
+  get minted(): BigInt {
+    let value = this.get("minted");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set minted(value: BigInt) {
+    this.set("minted", Value.fromBigInt(value));
+  }
+
+  get burnt(): BigInt {
+    let value = this.get("burnt");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set burnt(value: BigInt) {
+    this.set("burnt", Value.fromBigInt(value));
+  }
+
+  get total(): BigInt {
+    let value = this.get("total");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set total(value: BigInt) {
+    this.set("total", Value.fromBigInt(value));
+  }
+}
+
 export class MarketLoader extends Entity {
   _entity: string;
   _field: string;
@@ -3890,6 +4010,24 @@ export class MarketLoader extends Entity {
   load(): Market[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<Market[]>(value);
+  }
+}
+
+export class MintBurnMarketHourDataLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): MintBurnMarketHourData[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<MintBurnMarketHourData[]>(value);
   }
 }
 
