@@ -233,8 +233,8 @@ export function handleBuild(event: BuildEvent): void {
 export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event, event.address)
   let sender = loadAccount(event.params.sender)
-  
-  updateMintBurnMarketHourData(market, event)
+
+  updateMintBurnMarketHourData(market, event.block.timestamp, event.params.mint)
   
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
@@ -483,7 +483,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let sender = loadAccount(event.params.sender)
   let owner = loadAccount(event.params.owner)
 
-  updateMintBurnMarketHourData(market, event)
+  updateMintBurnMarketHourData(market, event.block.timestamp, event.params.mint)
 
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
