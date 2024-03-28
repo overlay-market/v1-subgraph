@@ -197,8 +197,8 @@ export function handleBuild(event: BuildEvent): void {
   position.numberOfUniwnds = BigInt.fromI32(0)
   position.fractionUnwound = BigInt.fromI32(0)
 
-  market.oiLong = stateContract.ois(marketAddress).value0
-  market.oiShort = stateContract.ois(marketAddress).value1
+  // market.oiLong = stateContract.ois(marketAddress).value0
+  // market.oiShort = stateContract.ois(marketAddress).value1
   market.totalBuildFees = market.totalBuildFees.plus(transferFeeAmount)
   market.numberOfBuilds = market.numberOfBuilds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
@@ -247,8 +247,8 @@ export function handleUnwind(event: UnwindEvent): void {
   position.mint = position.mint.plus(event.params.mint)
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
-  market.oiLong = stateContract.ois(marketAddress).value0
-  market.oiShort = stateContract.ois(marketAddress).value1
+  // market.oiLong = stateContract.ois(marketAddress).value0
+  // market.oiShort = stateContract.ois(marketAddress).value1
 
   let transaction = loadTransaction(event)
   let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
@@ -359,22 +359,21 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.transferAmount =  transferAmount
   unwind.pnl =  pnl
   unwind.feeAmount =  transferFeeAmount
-  unwind.currentOi = position.currentOi
+  unwind.currentOi = position.currentOi // TODO remove
   unwind.currentDebt = position.currentDebt
-  unwind.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
+  unwind.isLong = position.isLong
   unwind.price = event.params.price
   unwind.fraction = event.params.fraction
   unwind.fractionOfPosition = fractionOfPosition
   unwind.volume = transferAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI)) 
   unwind.mint = event.params.mint
   unwind.unwindNumber = unwindNumber
-  unwind.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
-  unwind.value = stateContract.value(marketAddress, senderAddress, positionId)
+  unwind.collateral = ZERO_BI
+  unwind.value = ZERO_BI
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
 
-  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
-  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
+  // analytics update
 
   market.totalUnwindFees = market.totalUnwindFees.plus(transferFeeAmount)
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
@@ -434,8 +433,8 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
 
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
-  market.oiLong = stateContract.ois(marketAddress).value0
-  market.oiShort = stateContract.ois(marketAddress).value1
+  // market.oiLong = stateContract.ois(marketAddress).value0
+  // market.oiShort = stateContract.ois(marketAddress).value1
 
   let transaction = loadTransaction(event)
   let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
@@ -585,8 +584,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
   position.isLiquidated = true
   position.fractionUnwound = ONE_18DEC_BI
 
-  market.oiLong = stateContract.ois(marketAddress).value0
-  market.oiShort = stateContract.ois(marketAddress).value1
+  // market.oiLong = stateContract.ois(marketAddress).value0
+  // market.oiShort = stateContract.ois(marketAddress).value1
   market.totalLiquidateFees = market.totalLiquidateFees.plus(transferFeeAmount)
   market.numberOfLiquidates = market.numberOfLiquidates.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
@@ -599,11 +598,11 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.sender = sender.id
   liquidate.currentOi = position.currentOi
   liquidate.currentDebt = position.currentDebt
-  liquidate.isLong = stateContract.position(marketAddress, senderAddress, positionId).isLong
+  liquidate.isLong = position.isLong
   liquidate.price = event.params.price
   liquidate.mint = event.params.mint
-  liquidate.collateral = stateContract.collateral(marketAddress, senderAddress, positionId)
-  liquidate.value = stateContract.value(marketAddress, senderAddress, positionId)
+  liquidate.collateral = ZERO_BI
+  liquidate.value = ZERO_BI
   liquidate.timestamp = transaction.timestamp
   liquidate.transaction = transaction.id
   liquidate.fractionOfPosition = fractionOfPosition
