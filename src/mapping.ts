@@ -21,7 +21,7 @@ import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
 import { updateReferralRewards } from "./referral";
 import { updateTraderEpochVolume } from "./trading-mining";
-import { updateMintBurnMarketHourData } from "./temporal-data-logger";
+import { updateMarketHourData } from "./temporal-data-logger";
 
 // TODO: rename or separate this file into multiple files
 
@@ -78,6 +78,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.totalLiquidateFees = ZERO_BI
   market.numberOfLiquidates = ZERO_BI
   market.totalFees = ZERO_BI
+  market.totalVolume = ZERO_BI
 
   market.save()
   // create tracked market contract based on template
@@ -201,6 +202,7 @@ export function handleBuild(event: BuildEvent): void {
   market.totalBuildFees = market.totalBuildFees.plus(transferFeeAmount)
   market.numberOfBuilds = market.numberOfBuilds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
+  market.totalVolume = market.totalVolume.plus(initialNotional)
 
   let transaction = loadTransaction(event)
   let build = new Build(position.id) as Build
@@ -223,6 +225,8 @@ export function handleBuild(event: BuildEvent): void {
   updateTraderEpochVolume(event.params.sender, initialNotional)
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(initialNotional)
 
+  updateMarketHourData(market, event.block.timestamp, initialNotional, ZERO_BI)
+
   position.save()
   market.save()
   build.save()
@@ -233,9 +237,6 @@ export function handleBuild(event: BuildEvent): void {
 export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event, event.address)
   let sender = loadAccount(event.params.sender)
-
-  updateMintBurnMarketHourData(market, event.block.timestamp, event.params.mint)
-  
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
   
@@ -378,6 +379,7 @@ export function handleUnwind(event: UnwindEvent): void {
   market.totalUnwindFees = market.totalUnwindFees.plus(transferFeeAmount)
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
+  market.totalVolume = market.totalVolume.plus(unwind.volume)
 
   log.warning("fractionUnwound: {}, {}, {}", [
     fractionUnwound.toString(), 
@@ -410,6 +412,8 @@ export function handleUnwind(event: UnwindEvent): void {
   updateTraderEpochVolume(event.params.sender, unwind.volume)
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(unwind.volume)
   
+  updateMarketHourData(market, event.block.timestamp, unwind.volume, event.params.mint)
+
   position.save()
   market.save()
   unwind.save()
@@ -483,8 +487,6 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let sender = loadAccount(event.params.sender)
   let owner = loadAccount(event.params.owner)
 
-  updateMintBurnMarketHourData(market, event.block.timestamp, event.params.mint)
-
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
 
@@ -494,6 +496,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let receipt = event.receipt
   // initialize variables
   let transferFeeAmount = ZERO_BI
+  let transferLiquidatorAmount = ZERO_BI
   let factory = Factory.load(market.factory.toLowerCase())
   if (receipt && factory) {
     const logLength = receipt.logs.length
@@ -518,9 +521,9 @@ export function handleLiquidate(event: LiquidateEvent): void {
       liquidateIndex += 1
     }
     const feeIndex = +liquidateIndex + 3
-    const _topic0 = receipt.logs[feeIndex].topics[0]
-    const _address = receipt.logs[feeIndex].address
-    // find the log that matches the ERC20 transfer to the owner
+    let _topic0 = receipt.logs[feeIndex].topics[0]
+    let _address = receipt.logs[feeIndex].address
+    // find the log that matches the ERC20 transfer to the feeRecipient
     if (
       _topic0.equals(TRANSFER_SIG) &&
       _address.toHexString() == OVL_ADDRESS &&
@@ -542,6 +545,33 @@ export function handleLiquidate(event: LiquidateEvent): void {
         event.transaction.hash.toHexString(),
         liquidateIndex.toString(),
         feeIndex.toString()
+      ])
+    }
+    const liquidatorTransferIndex = +liquidateIndex + 2
+    _topic0 = receipt.logs[liquidatorTransferIndex].topics[0]
+    _address = receipt.logs[liquidatorTransferIndex].address
+    // find the log that matches the ERC20 transfer to the sender
+    if (
+      _topic0.equals(TRANSFER_SIG) &&
+      _address.toHexString() == OVL_ADDRESS &&
+      receipt.logs[liquidatorTransferIndex].topics.length > 1
+    ) {
+      let topics2address = ethereum.decode('address', receipt.logs[liquidatorTransferIndex].topics[2])!.toAddress()
+      if (topics2address.toHexString().toLowerCase() == sender.id.toLowerCase()) {
+        const _transferAmount = receipt.logs[liquidatorTransferIndex].data
+        transferLiquidatorAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+      } else {
+        log.error("handleLiquidate: 2nd if: transaction: {}, liquidateIndex: {}, liquidatorTransferIndex {}", [
+          event.transaction.hash.toHexString(),
+          liquidateIndex.toString(),
+          liquidatorTransferIndex.toString()
+        ])
+      }
+		} else {
+      log.error("handleLiquidate: 1st if: transaction: {}, liquidateIndex: {}, liquidatorTransferIndex {}", [
+        event.transaction.hash.toHexString(),
+        liquidateIndex.toString(),
+        liquidatorTransferIndex.toString()
       ])
     }
   }
@@ -577,12 +607,21 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.transaction = transaction.id
   liquidate.fractionOfPosition = fractionOfPosition
   liquidate.size = liquidateSize
+  liquidate.liquidationFee = transferLiquidatorAmount
+  // marginToBurn  = feeRecipientAmount / (1/ MaintenanceMarginBurnRate - 1) 
+  const marginToBurn = transferFeeAmount.times(ONE_18DEC_BI).div(ONE_18DEC_BI.times(ONE_18DEC_BI).div(market.maintenanceMarginBurnRate).minus(ONE_18DEC_BI))
+  liquidate.volume = transferFeeAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI)).plus(transferLiquidatorAmount)
+  liquidate.marginToBurn = marginToBurn
+  liquidate.transferFeeAmount = transferFeeAmount
+  market.totalVolume = market.totalVolume.plus(liquidate.volume)
 
-  position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
-  position.currentDebt = stateContract.debt(marketAddress, senderAddress, positionId)
+  position.currentOi = ZERO_BI
+  position.currentDebt = ZERO_BI
 
   owner.numberOfLiquidatedPositions = owner.numberOfLiquidatedPositions.plus(ONE_BI)
   owner.numberOfOpenPositions = owner.numberOfOpenPositions.minus(ONE_BI)
+
+  updateMarketHourData(market, event.block.timestamp, liquidate.volume, event.params.mint)
 
   position.save()
   market.save()

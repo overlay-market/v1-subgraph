@@ -81,8 +81,10 @@ type Market @entity {
   totalLiquidateFees: BigInt!
   # sum of all fees
   totalFees: BigInt!  
+  # sum of volume
+  totalVolume: BigInt!  
   # derived fields
-  mintBurnMarketHourData: [MintBurnMarketHourData!]! @derivedFrom(field: "market")
+  marketHourData: [MarketHourData!]! @derivedFrom(field: "market")
   # positions held in market
   positions: [Position!]! @derivedFrom(field: "market")
 }
@@ -251,6 +253,13 @@ type Liquidate @entity {
   timestamp: BigInt!
   # transaction the position was liquidated in
   transaction: Transaction!
+  # volume = (initialDebt * fractionOfPosition) + liquidationFee + marginRemaining
+  # TODO add marginToBurn
+  volume: BigInt!
+  # amount sent to liquidator (tx sender)
+  liquidationFee: BigInt!
+  marginToBurn: BigInt!
+  transferFeeAmount: BigInt!
 }
 
 type Account @entity {
@@ -455,7 +464,7 @@ type TotalSupplyHourData @entity {
   close: BigInt!
 }
 
-type MintBurnMarketHourData @entity {
+type MarketHourData @entity {
   # market address concatendated with date
   id: ID!
   # unix timestamp for start of hour
@@ -465,5 +474,6 @@ type MintBurnMarketHourData @entity {
   minted: BigInt!
   burnt: BigInt!
   # positive means net minting | negative means net burning
-  total: BigInt!
+  totalMint: BigInt!
+  volume: BigInt!
 }

@@ -75,6 +75,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.totalLiquidateFees = ZERO_BI
     market.numberOfLiquidates = ZERO_BI
     market.totalFees = ZERO_BI
+    market.totalVolume = ZERO_BI
 
     MarketTemplate.create(marketAddress)
   }
