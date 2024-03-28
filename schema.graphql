@@ -1,3 +1,15 @@
+type Analytics @entity {
+  # factory address - for uniqueness
+  id: ID!
+  totalUsers: BigInt!
+  totalTransactions: BigInt!
+  totalTokensLocked: BigInt!
+  totalVolumeBuilds: BigInt!
+  totalVolumeUnwinds: BigInt!
+  totalVolumeLiquidations: BigInt!
+  totalVolume: BigInt!
+}
+
 type Factory @entity {
   # factory address
   id: ID!

@@ -1,5 +1,5 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
-import { Market, Transaction, Position, Factory, Account } from '../../generated/schema'
+import { Market, Transaction, Position, Factory, Account, Analytics } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
@@ -144,4 +144,24 @@ export function loadAccount(accountAddress: Address): Account {
   }
 
   return account
+}
+
+export function loadAnalytics(factory: string): Analytics {
+  let analyticsId = factory
+  let analytics = Analytics.load(analyticsId)
+
+  if (analytics === null) {
+    analytics = new Analytics(analyticsId)
+
+
+    analytics.totalUsers = ZERO_BI
+    analytics.totalTransactions = ZERO_BI
+    analytics.totalTokensLocked = ZERO_BI
+    analytics.totalVolumeBuilds = ZERO_BI
+    analytics.totalVolumeUnwinds = ZERO_BI
+    analytics.totalVolumeLiquidations = ZERO_BI
+    analytics.totalVolume = ZERO_BI
+  }
+
+  return analytics
 }

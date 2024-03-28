@@ -18,7 +18,7 @@ import {
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS } from './utils/constants';
-import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount } from "./utils";
+import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount, loadAnalytics } from "./utils";
 import { updateReferralRewards } from "./referral";
 import { updateTraderEpochVolume } from "./trading-mining";
 import { updateMarketHourData } from "./temporal-data-logger";
@@ -219,6 +219,16 @@ export function handleBuild(event: BuildEvent): void {
   build.transaction = transaction.id
   build.feeAmount =  transferFeeAmount
 
+  // analytics update
+  let analytics = loadAnalytics(market.factory.toLowerCase())
+  if (sender.ovlVolumeTraded.equals(ZERO_BI)) {
+    analytics.totalUsers = analytics.totalUsers.plus(ONE_BI)
+  }
+  analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
+  analytics.totalTokensLocked = analytics.totalTokensLocked.plus(initialCollateral)
+  analytics.totalVolumeBuilds = analytics.totalVolumeBuilds.plus(initialNotional)
+  analytics.totalVolume = analytics.totalVolume.plus(initialNotional)
+
   sender.numberOfOpenPositions = sender.numberOfOpenPositions.plus(ONE_BI)
 
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
@@ -232,6 +242,7 @@ export function handleBuild(event: BuildEvent): void {
   build.save()
   sender.save()
   transaction.save()
+  analytics.save()
 }
 
 export function handleUnwind(event: UnwindEvent): void {
@@ -374,6 +385,14 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.transaction = transaction.id
 
   // analytics update
+  let analytics = loadAnalytics(market.factory.toLowerCase())
+  analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
+  analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
+  analytics.totalVolumeUnwinds = analytics.totalVolumeUnwinds.plus(unwind.volume)
+  analytics.totalVolume = analytics.totalVolume.plus(unwind.volume)
+
+  // position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
+  position.currentDebt = position.currentDebt.times(ONE_18DEC_BI.minus(unwind.fraction)).div(ONE_18DEC_BI)
 
   market.totalUnwindFees = market.totalUnwindFees.plus(transferFeeAmount)
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
@@ -418,6 +437,7 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.save()
   sender.save()
   transaction.save()
+  analytics.save()
 }
 
 export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
@@ -613,6 +633,14 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.volume = transferFeeAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI)).plus(transferLiquidatorAmount)
   liquidate.marginToBurn = marginToBurn
   liquidate.transferFeeAmount = transferFeeAmount
+
+  // analytics update
+  let analytics = loadAnalytics(market.factory.toLowerCase())
+  analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
+  analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
+  analytics.totalVolumeUnwinds = analytics.totalVolumeUnwinds.plus(liquidate.volume)
+  analytics.totalVolume = analytics.totalVolume.plus(liquidate.volume)
+
   market.totalVolume = market.totalVolume.plus(liquidate.volume)
 
   position.currentOi = ZERO_BI
@@ -629,6 +657,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   sender.save()
   owner.save()
   transaction.save()
+  analytics.save()
 }
 
 
