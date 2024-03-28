@@ -489,9 +489,10 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
+  let ownerAddress = Address.fromString(owner.id)
 
   let positionId = event.params.positionId
-  let position = loadPosition(event, senderAddress, market, positionId)
+  let position = loadPosition(event, ownerAddress, market, positionId)
 
   let receipt = event.receipt
   // initialize variables
