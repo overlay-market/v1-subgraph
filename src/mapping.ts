@@ -638,7 +638,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let analytics = loadAnalytics(market.factory.toLowerCase())
   analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
   analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
-  analytics.totalVolumeUnwinds = analytics.totalVolumeUnwinds.plus(liquidate.volume)
+  analytics.totalVolumeLiquidations = analytics.totalVolumeLiquidations.plus(liquidate.volume)
   analytics.totalVolume = analytics.totalVolume.plus(liquidate.volume)
 
   market.totalVolume = market.totalVolume.plus(liquidate.volume)
