@@ -721,6 +721,199 @@ export class Market extends Entity {
       "positions"
     );
   }
+
+  get marketState(): MarketStateLoader {
+    return new MarketStateLoader(
+      "Market",
+      this.get("id")!.toString(),
+      "marketState"
+    );
+  }
+}
+
+export class MarketState extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save MarketState entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type MarketState must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("MarketState", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): MarketState | null {
+    return changetype<MarketState | null>(
+      store.get_in_block("MarketState", id)
+    );
+  }
+
+  static load(id: string): MarketState | null {
+    return changetype<MarketState | null>(store.get("MarketState", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get market(): string {
+    let value = this.get("market");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set market(value: string) {
+    this.set("market", Value.fromString(value));
+  }
+
+  get bid(): BigInt {
+    let value = this.get("bid");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set bid(value: BigInt) {
+    this.set("bid", Value.fromBigInt(value));
+  }
+
+  get ask(): BigInt {
+    let value = this.get("ask");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set ask(value: BigInt) {
+    this.set("ask", Value.fromBigInt(value));
+  }
+
+  get mid(): BigInt {
+    let value = this.get("mid");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set mid(value: BigInt) {
+    this.set("mid", Value.fromBigInt(value));
+  }
+
+  get volumeBid(): BigInt {
+    let value = this.get("volumeBid");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set volumeBid(value: BigInt) {
+    this.set("volumeBid", Value.fromBigInt(value));
+  }
+
+  get volumeAsk(): BigInt {
+    let value = this.get("volumeAsk");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set volumeAsk(value: BigInt) {
+    this.set("volumeAsk", Value.fromBigInt(value));
+  }
+
+  get oiLong(): BigInt {
+    let value = this.get("oiLong");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiLong(value: BigInt) {
+    this.set("oiLong", Value.fromBigInt(value));
+  }
+
+  get oiShort(): BigInt {
+    let value = this.get("oiShort");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiShort(value: BigInt) {
+    this.set("oiShort", Value.fromBigInt(value));
+  }
+
+  get capOi(): BigInt {
+    let value = this.get("capOi");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set capOi(value: BigInt) {
+    this.set("capOi", Value.fromBigInt(value));
+  }
+
+  get circuitBreakerLevel(): BigInt {
+    let value = this.get("circuitBreakerLevel");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set circuitBreakerLevel(value: BigInt) {
+    this.set("circuitBreakerLevel", Value.fromBigInt(value));
+  }
+
+  get fundingRate(): BigInt {
+    let value = this.get("fundingRate");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set fundingRate(value: BigInt) {
+    this.set("fundingRate", Value.fromBigInt(value));
+  }
 }
 
 export class Position extends Entity {
@@ -4197,6 +4390,45 @@ export class MarketHourData extends Entity {
   set volume(value: BigInt) {
     this.set("volume", Value.fromBigInt(value));
   }
+
+  get oiLong(): BigInt {
+    let value = this.get("oiLong");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiLong(value: BigInt) {
+    this.set("oiLong", Value.fromBigInt(value));
+  }
+
+  get oiShort(): BigInt {
+    let value = this.get("oiShort");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiShort(value: BigInt) {
+    this.set("oiShort", Value.fromBigInt(value));
+  }
+
+  get fundingRate(): BigInt {
+    let value = this.get("fundingRate");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set fundingRate(value: BigInt) {
+    this.set("fundingRate", Value.fromBigInt(value));
+  }
 }
 
 export class MarketLoader extends Entity {
@@ -4250,6 +4482,24 @@ export class PositionLoader extends Entity {
   load(): Position[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<Position[]>(value);
+  }
+}
+
+export class MarketStateLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): MarketState[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<MarketState[]>(value);
   }
 }
 

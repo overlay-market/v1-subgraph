@@ -99,6 +99,24 @@ type Market @entity {
   marketHourData: [MarketHourData!]! @derivedFrom(field: "market")
   # positions held in market
   positions: [Position!]! @derivedFrom(field: "market")
+  # last state of the market
+  marketState: MarketState! @derivedFrom(field: "market")
+}
+
+type MarketState @entity {
+  # market address
+  id: ID!
+  market: Market!
+  bid: BigInt!
+  ask: BigInt!
+  mid: BigInt!
+  volumeBid: BigInt!
+  volumeAsk: BigInt!
+  oiLong: BigInt!
+  oiShort: BigInt!
+  capOi: BigInt!
+  circuitBreakerLevel: BigInt!
+  fundingRate: BigInt!
 }
 
 type Position @entity {
@@ -488,4 +506,7 @@ type MarketHourData @entity {
   # positive means net minting | negative means net burning
   totalMint: BigInt!
   volume: BigInt!
+  oiLong: BigInt!
+  oiShort: BigInt!
+  fundingRate: BigInt!
 }

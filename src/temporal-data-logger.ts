@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts"
-import { Market, MarketHourData } from "../generated/schema"
+import { Market, MarketHourData, MarketState } from "../generated/schema"
 import { ZERO_BI } from "./utils/constants";
 
 export function updateMarketHourData(market: Market, eventTimestamp: BigInt, volumeAmount: BigInt, mintAmount?: BigInt): void {
@@ -19,6 +19,9 @@ export function updateMarketHourData(market: Market, eventTimestamp: BigInt, vol
       marketHourData.burnt = ZERO_BI
       marketHourData.totalMint = ZERO_BI
       marketHourData.volume = ZERO_BI
+      marketHourData.oiLong = ZERO_BI
+      marketHourData.oiShort = ZERO_BI
+      marketHourData.fundingRate = ZERO_BI
     }
 
     if (mintAmount) {
@@ -28,6 +31,13 @@ export function updateMarketHourData(market: Market, eventTimestamp: BigInt, vol
         marketHourData.burnt = marketHourData.burnt.minus(mintAmount)
         }
         marketHourData.totalMint = marketHourData.totalMint.plus(mintAmount)
+    }
+
+    let marketState = MarketState.load(market.id)
+    if (marketState) {
+      marketHourData.oiLong = marketState.oiLong
+      marketHourData.oiShort = marketState.oiShort
+      marketHourData.fundingRate = marketState.fundingRate
     }
 
     marketHourData.volume = marketHourData.volume.plus(volumeAmount)

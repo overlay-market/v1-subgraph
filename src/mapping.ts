@@ -22,6 +22,7 @@ import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount, lo
 import { updateReferralRewards } from "./referral";
 import { updateTraderEpochVolume } from "./trading-mining";
 import { updateMarketHourData } from "./temporal-data-logger";
+import { updateMarketState } from "./utils/helpers";
 
 // TODO: rename or separate this file into multiple files
 
@@ -47,6 +48,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   let feedAddress = event.params.feed
   let marketContract = OverlayV1Market.bind(event.params.market)
   let market = new Market(marketAddress.toHexString()) as Market
+  let marketState = updateMarketState(market.id)
 
   market.feedAddress = feedAddress.toHexString()
   market.factory = factory.id
@@ -68,8 +70,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.minCollateral = marketContract.params(integer.fromNumber(12))
   market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
-  market.oiLong = stateContract.try_ois(marketAddress).reverted ? ZERO_BI : stateContract.try_ois(marketAddress).value.value0
-  market.oiShort = stateContract.try_ois(marketAddress).reverted ? ZERO_BI : stateContract.try_ois(marketAddress).value.value1
+  market.oiLong = marketState.oiLong
+  market.oiShort = marketState.oiShort
   market.isShutdown = false
   market.totalBuildFees = ZERO_BI
   market.numberOfBuilds = ZERO_BI
@@ -88,6 +90,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 
 export function handleBuild(event: BuildEvent): void {
   let market = loadMarket(event, event.address)
+  let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
 
   let marketAddress = Address.fromString(market.id)
@@ -197,8 +200,8 @@ export function handleBuild(event: BuildEvent): void {
   position.numberOfUniwnds = BigInt.fromI32(0)
   position.fractionUnwound = BigInt.fromI32(0)
 
-  // market.oiLong = stateContract.ois(marketAddress).value0
-  // market.oiShort = stateContract.ois(marketAddress).value1
+  market.oiLong = marketState.oiLong
+  market.oiShort = marketState.oiShort
   market.totalBuildFees = market.totalBuildFees.plus(transferFeeAmount)
   market.numberOfBuilds = market.numberOfBuilds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
@@ -247,6 +250,7 @@ export function handleBuild(event: BuildEvent): void {
 
 export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event, event.address)
+  let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
@@ -258,8 +262,8 @@ export function handleUnwind(event: UnwindEvent): void {
   position.mint = position.mint.plus(event.params.mint)
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
-  // market.oiLong = stateContract.ois(marketAddress).value0
-  // market.oiShort = stateContract.ois(marketAddress).value1
+  market.oiLong = marketState.oiLong
+  market.oiShort = marketState.oiShort
 
   let transaction = loadTransaction(event)
   let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
@@ -442,6 +446,7 @@ export function handleUnwind(event: UnwindEvent): void {
 
 export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   let market = loadMarket(event, event.address)
+  let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
   
   let marketAddress = Address.fromString(market.id)
@@ -453,8 +458,8 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
 
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
-  // market.oiLong = stateContract.ois(marketAddress).value0
-  // market.oiShort = stateContract.ois(marketAddress).value1
+  market.oiLong = marketState.oiLong
+  market.oiShort = marketState.oiShort
 
   let transaction = loadTransaction(event)
   let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
@@ -503,6 +508,7 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
 
 export function handleLiquidate(event: LiquidateEvent): void {
   let market = loadMarket(event, event.address)
+  let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
   let owner = loadAccount(event.params.owner)
 
@@ -604,8 +610,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
   position.isLiquidated = true
   position.fractionUnwound = ONE_18DEC_BI
 
-  // market.oiLong = stateContract.ois(marketAddress).value0
-  // market.oiShort = stateContract.ois(marketAddress).value1
+  market.oiLong = marketState.oiLong
+  market.oiShort = marketState.oiShort
   market.totalLiquidateFees = market.totalLiquidateFees.plus(transferFeeAmount)
   market.numberOfLiquidates = market.numberOfLiquidates.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
@@ -630,6 +636,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.liquidationFee = transferLiquidatorAmount
   // marginToBurn  = feeRecipientAmount / (1/ MaintenanceMarginBurnRate - 1) 
   const marginToBurn = transferFeeAmount.times(ONE_18DEC_BI).div(ONE_18DEC_BI.times(ONE_18DEC_BI).div(market.maintenanceMarginBurnRate).minus(ONE_18DEC_BI))
+  // volume = transferFeeAmount + initialDebt * fractionOfPosition / ONE + transferLiquidatorAmount
   liquidate.volume = transferFeeAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI)).plus(transferLiquidatorAmount)
   liquidate.marginToBurn = marginToBurn
   liquidate.transferFeeAmount = transferFeeAmount
