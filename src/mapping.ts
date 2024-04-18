@@ -81,6 +81,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.numberOfLiquidates = ZERO_BI
   market.totalFees = ZERO_BI
   market.totalVolume = ZERO_BI
+  market.totalMint = ZERO_BI
 
   market.save()
   // create tracked market contract based on template
@@ -402,6 +403,7 @@ export function handleUnwind(event: UnwindEvent): void {
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
   market.totalVolume = market.totalVolume.plus(unwind.volume)
+  market.totalMint = market.totalMint.plus(event.params.mint)
 
   log.warning("fractionUnwound: {}, {}, {}", [
     fractionUnwound.toString(), 
@@ -649,6 +651,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   analytics.totalVolume = analytics.totalVolume.plus(liquidate.volume)
 
   market.totalVolume = market.totalVolume.plus(liquidate.volume)
+  market.totalMint = market.totalMint.plus(event.params.mint)
 
   position.currentOi = ZERO_BI
   position.currentDebt = ZERO_BI

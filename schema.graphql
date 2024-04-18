@@ -95,6 +95,8 @@ type Market @entity {
   totalFees: BigInt!  
   # sum of volume
   totalVolume: BigInt!  
+  # positive means net minting | negative means net burning
+  totalMint: BigInt!
   # derived fields
   marketHourData: [MarketHourData!]! @derivedFrom(field: "market")
   # positions held in market

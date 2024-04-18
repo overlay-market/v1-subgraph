@@ -706,6 +706,19 @@ export class Market extends Entity {
     this.set("totalVolume", Value.fromBigInt(value));
   }
 
+  get totalMint(): BigInt {
+    let value = this.get("totalMint");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalMint(value: BigInt) {
+    this.set("totalMint", Value.fromBigInt(value));
+  }
+
   get marketHourData(): MarketHourDataLoader {
     return new MarketHourDataLoader(
       "Market",
