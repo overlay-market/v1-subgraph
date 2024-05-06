@@ -18,6 +18,7 @@ export function updateMarketHourData(market: Market, eventTimestamp: BigInt, vol
       marketHourData.minted = ZERO_BI
       marketHourData.burnt = ZERO_BI
       marketHourData.totalMint = ZERO_BI
+      marketHourData.accumulatedTotalMint = ZERO_BI
       marketHourData.volume = ZERO_BI
       marketHourData.oiLong = ZERO_BI
       marketHourData.oiShort = ZERO_BI
@@ -41,5 +42,6 @@ export function updateMarketHourData(market: Market, eventTimestamp: BigInt, vol
     }
 
     marketHourData.volume = marketHourData.volume.plus(volumeAmount)
+    marketHourData.accumulatedTotalMint = market.totalMint
     marketHourData.save()
 }

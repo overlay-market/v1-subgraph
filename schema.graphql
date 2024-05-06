@@ -507,6 +507,8 @@ type MarketHourData @entity {
   burnt: BigInt!
   # positive means net minting | negative means net burning
   totalMint: BigInt!
+  # positive means net minting | negative means net burning
+  accumulatedTotalMint: BigInt!
   volume: BigInt!
   oiLong: BigInt!
   oiShort: BigInt!

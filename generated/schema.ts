@@ -4391,6 +4391,19 @@ export class MarketHourData extends Entity {
     this.set("totalMint", Value.fromBigInt(value));
   }
 
+  get accumulatedTotalMint(): BigInt {
+    let value = this.get("accumulatedTotalMint");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set accumulatedTotalMint(value: BigInt) {
+    this.set("accumulatedTotalMint", Value.fromBigInt(value));
+  }
+
   get volume(): BigInt {
     let value = this.get("volume");
     if (!value || value.kind == ValueKind.NULL) {
