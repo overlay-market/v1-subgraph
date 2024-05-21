@@ -77,6 +77,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.totalFees = ZERO_BI
     market.totalVolume = ZERO_BI
     market.totalMint = ZERO_BI
+    market.dpUpperLimit = ZERO_BI
 
     MarketTemplate.create(marketAddress)
   }
@@ -98,7 +99,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
 
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
     position.initialDebt = stateContract.debt(marketAddress, sender, positionId)
-    
+
     let initialCollateral = stateContract.cost(marketAddress, sender, positionId)
     let initialDebt = stateContract.debt(marketAddress, sender, positionId)
     let initialNotional = initialCollateral.plus(initialDebt)
@@ -121,7 +122,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.currentOi = stateContract.oi(marketAddress, sender, positionId)
     position.currentDebt = stateContract.debt(marketAddress, sender, positionId)
     position.mint = ZERO_BI
-    
+
     position.createdAtTimestamp = event.block.timestamp
     position.createdAtBlockNumber = event.block.number
   }

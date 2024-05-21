@@ -218,4 +218,7 @@ templates:
         - event: EmergencyWithdraw(indexed address,uint256,uint256)
           handler: handleEmergencyWithdraw
           receipt: true
+        - event: CacheRiskCalc(uint256)
+          handler: handleCacheRiskCalc
+          receipt: true
       file: ./src/mapping.ts

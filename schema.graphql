@@ -97,6 +97,8 @@ type Market @entity {
   totalVolume: BigInt!  
   # positive means net minting | negative means net burning
   totalMint: BigInt!
+  # used in dataIsValid function
+  dpUpperLimit: BigInt!
   # derived fields
   marketHourData: [MarketHourData!]! @derivedFrom(field: "market")
   # positions held in market
