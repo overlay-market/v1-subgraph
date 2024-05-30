@@ -7,7 +7,7 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt
+  BigInt,
 } from "@graphprotocol/graph-ts";
 
 export class ContractURIUpdated extends ethereum.Event {
@@ -402,7 +402,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "DEFAULT_ADMIN_ROLE",
       "DEFAULT_ADMIN_ROLE():(bytes32)",
-      []
+      [],
     );
 
     return result[0].toBytes();
@@ -412,7 +412,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "DEFAULT_ADMIN_ROLE",
       "DEFAULT_ADMIN_ROLE():(bytes32)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -461,7 +461,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "contractVersion",
       "contractVersion():(uint8)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -474,12 +474,12 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "getRewardRatio",
       "getRewardRatio():(uint256,uint256)",
-      []
+      [],
     );
 
     return new TokenStake__getRewardRatioResult(
       result[0].toBigInt(),
-      result[1].toBigInt()
+      result[1].toBigInt(),
     );
   }
 
@@ -487,7 +487,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "getRewardRatio",
       "getRewardRatio():(uint256,uint256)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -496,8 +496,8 @@ export class TokenStake extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(
       new TokenStake__getRewardRatioResult(
         value[0].toBigInt(),
-        value[1].toBigInt()
-      )
+        value[1].toBigInt(),
+      ),
     );
   }
 
@@ -505,7 +505,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "getRewardTokenBalance",
       "getRewardTokenBalance():(uint256)",
-      []
+      [],
     );
 
     return result[0].toBigInt();
@@ -515,7 +515,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "getRewardTokenBalance",
       "getRewardTokenBalance():(uint256)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -526,7 +526,7 @@ export class TokenStake extends ethereum.SmartContract {
 
   getRoleAdmin(role: Bytes): Bytes {
     let result = super.call("getRoleAdmin", "getRoleAdmin(bytes32):(bytes32)", [
-      ethereum.Value.fromFixedBytes(role)
+      ethereum.Value.fromFixedBytes(role),
     ]);
 
     return result[0].toBytes();
@@ -536,7 +536,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "getRoleAdmin",
       "getRoleAdmin(bytes32):(bytes32)",
-      [ethereum.Value.fromFixedBytes(role)]
+      [ethereum.Value.fromFixedBytes(role)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -551,8 +551,8 @@ export class TokenStake extends ethereum.SmartContract {
       "getRoleMember(bytes32,uint256):(address)",
       [
         ethereum.Value.fromFixedBytes(role),
-        ethereum.Value.fromUnsignedBigInt(index)
-      ]
+        ethereum.Value.fromUnsignedBigInt(index),
+      ],
     );
 
     return result[0].toAddress();
@@ -564,8 +564,8 @@ export class TokenStake extends ethereum.SmartContract {
       "getRoleMember(bytes32,uint256):(address)",
       [
         ethereum.Value.fromFixedBytes(role),
-        ethereum.Value.fromUnsignedBigInt(index)
-      ]
+        ethereum.Value.fromUnsignedBigInt(index),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -578,7 +578,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "getRoleMemberCount",
       "getRoleMemberCount(bytes32):(uint256)",
-      [ethereum.Value.fromFixedBytes(role)]
+      [ethereum.Value.fromFixedBytes(role)],
     );
 
     return result[0].toBigInt();
@@ -588,7 +588,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "getRoleMemberCount",
       "getRoleMemberCount(bytes32):(uint256)",
-      [ethereum.Value.fromFixedBytes(role)]
+      [ethereum.Value.fromFixedBytes(role)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -601,22 +601,22 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "getStakeInfo",
       "getStakeInfo(address):(uint256,uint256)",
-      [ethereum.Value.fromAddress(_staker)]
+      [ethereum.Value.fromAddress(_staker)],
     );
 
     return new TokenStake__getStakeInfoResult(
       result[0].toBigInt(),
-      result[1].toBigInt()
+      result[1].toBigInt(),
     );
   }
 
   try_getStakeInfo(
-    _staker: Address
+    _staker: Address,
   ): ethereum.CallResult<TokenStake__getStakeInfoResult> {
     let result = super.tryCall(
       "getStakeInfo",
       "getStakeInfo(address):(uint256,uint256)",
-      [ethereum.Value.fromAddress(_staker)]
+      [ethereum.Value.fromAddress(_staker)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -625,8 +625,8 @@ export class TokenStake extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(
       new TokenStake__getStakeInfoResult(
         value[0].toBigInt(),
-        value[1].toBigInt()
-      )
+        value[1].toBigInt(),
+      ),
     );
   }
 
@@ -648,7 +648,7 @@ export class TokenStake extends ethereum.SmartContract {
   hasRole(role: Bytes, account: Address): boolean {
     let result = super.call("hasRole", "hasRole(bytes32,address):(bool)", [
       ethereum.Value.fromFixedBytes(role),
-      ethereum.Value.fromAddress(account)
+      ethereum.Value.fromAddress(account),
     ]);
 
     return result[0].toBoolean();
@@ -657,7 +657,7 @@ export class TokenStake extends ethereum.SmartContract {
   try_hasRole(role: Bytes, account: Address): ethereum.CallResult<boolean> {
     let result = super.tryCall("hasRole", "hasRole(bytes32,address):(bool)", [
       ethereum.Value.fromFixedBytes(role),
-      ethereum.Value.fromAddress(account)
+      ethereum.Value.fromAddress(account),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -670,7 +670,10 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "hasRoleWithSwitch",
       "hasRoleWithSwitch(bytes32,address):(bool)",
-      [ethereum.Value.fromFixedBytes(role), ethereum.Value.fromAddress(account)]
+      [
+        ethereum.Value.fromFixedBytes(role),
+        ethereum.Value.fromAddress(account),
+      ],
     );
 
     return result[0].toBoolean();
@@ -678,12 +681,15 @@ export class TokenStake extends ethereum.SmartContract {
 
   try_hasRoleWithSwitch(
     role: Bytes,
-    account: Address
+    account: Address,
   ): ethereum.CallResult<boolean> {
     let result = super.tryCall(
       "hasRoleWithSwitch",
       "hasRoleWithSwitch(bytes32,address):(bool)",
-      [ethereum.Value.fromFixedBytes(role), ethereum.Value.fromAddress(account)]
+      [
+        ethereum.Value.fromFixedBytes(role),
+        ethereum.Value.fromAddress(account),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -696,7 +702,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "isTrustedForwarder",
       "isTrustedForwarder(address):(bool)",
-      [ethereum.Value.fromAddress(forwarder)]
+      [ethereum.Value.fromAddress(forwarder)],
     );
 
     return result[0].toBoolean();
@@ -706,7 +712,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "isTrustedForwarder",
       "isTrustedForwarder(address):(bool)",
-      [ethereum.Value.fromAddress(forwarder)]
+      [ethereum.Value.fromAddress(forwarder)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -717,7 +723,7 @@ export class TokenStake extends ethereum.SmartContract {
 
   multicall(data: Array<Bytes>): Array<Bytes> {
     let result = super.call("multicall", "multicall(bytes[]):(bytes[])", [
-      ethereum.Value.fromBytesArray(data)
+      ethereum.Value.fromBytesArray(data),
     ]);
 
     return result[0].toBytesArray();
@@ -725,7 +731,7 @@ export class TokenStake extends ethereum.SmartContract {
 
   try_multicall(data: Array<Bytes>): ethereum.CallResult<Array<Bytes>> {
     let result = super.tryCall("multicall", "multicall(bytes[]):(bytes[])", [
-      ethereum.Value.fromBytesArray(data)
+      ethereum.Value.fromBytesArray(data),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -753,7 +759,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "rewardTokenDecimals",
       "rewardTokenDecimals():(uint256)",
-      []
+      [],
     );
 
     return result[0].toBigInt();
@@ -763,7 +769,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "rewardTokenDecimals",
       "rewardTokenDecimals():(uint256)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -776,14 +782,14 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "stakers",
       "stakers(address):(uint256,uint256,uint256,uint256)",
-      [ethereum.Value.fromAddress(param0)]
+      [ethereum.Value.fromAddress(param0)],
     );
 
     return new TokenStake__stakersResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
       result[2].toBigInt(),
-      result[3].toBigInt()
+      result[3].toBigInt(),
     );
   }
 
@@ -791,7 +797,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "stakers",
       "stakers(address):(uint256,uint256,uint256,uint256)",
-      [ethereum.Value.fromAddress(param0)]
+      [ethereum.Value.fromAddress(param0)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -802,14 +808,14 @@ export class TokenStake extends ethereum.SmartContract {
         value[0].toBigInt(),
         value[1].toBigInt(),
         value[2].toBigInt(),
-        value[3].toBigInt()
-      )
+        value[3].toBigInt(),
+      ),
     );
   }
 
   stakersArray(param0: BigInt): Address {
     let result = super.call("stakersArray", "stakersArray(uint256):(address)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
+      ethereum.Value.fromUnsignedBigInt(param0),
     ]);
 
     return result[0].toAddress();
@@ -819,7 +825,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "stakersArray",
       "stakersArray(uint256):(address)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
+      [ethereum.Value.fromUnsignedBigInt(param0)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -847,7 +853,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "stakingTokenBalance",
       "stakingTokenBalance():(uint256)",
-      []
+      [],
     );
 
     return result[0].toBigInt();
@@ -857,7 +863,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "stakingTokenBalance",
       "stakingTokenBalance():(uint256)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -870,7 +876,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.call(
       "stakingTokenDecimals",
       "stakingTokenDecimals():(uint256)",
-      []
+      [],
     );
 
     return result[0].toBigInt();
@@ -880,7 +886,7 @@ export class TokenStake extends ethereum.SmartContract {
     let result = super.tryCall(
       "stakingTokenDecimals",
       "stakingTokenDecimals():(uint256)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
