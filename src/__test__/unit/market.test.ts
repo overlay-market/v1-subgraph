@@ -26,6 +26,7 @@ export { handleBuild }
 const market = Address.fromString("0x0000000000000000000000000000000000000001")
 const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
 const referralAddress = Address.fromString(REFERRAL_ADDRESS)
+const marketStateAddress = Address.fromString(PERIPHERY_ADDRESS)
 
 // Build event parameters
 const sender = Address.fromString("0x0000000000000000000000000000000000000b0b")
@@ -78,7 +79,7 @@ describe("Market events", () => {
         createMockedFunction(Address.fromString(PERIPHERY_ADDRESS), "value", "value(address,address,uint256):(uint256)")
             .withArgs([ethereum.Value.fromAddress(market), ethereum.Value.fromAddress(pcdHolder), ethereum.Value.fromUnsignedBigInt(positionId)])
             .returns([ethereum.Value.fromI32(1)])
-        
+
         // TradingMining contract
         createMockedFunction(tmAddress, "getCurrentEpoch", "getCurrentEpoch():(uint256)")
             .returns([ethereum.Value.fromI32(epoch)])
@@ -98,15 +99,30 @@ describe("Market events", () => {
             .returns([ethereum.Value.fromI32(0)])
         createMockedFunction(tmAddress, "maxRewardPerEpochPerAddress", "maxRewardPerEpochPerAddress():(uint256)")
             .returns([ethereum.Value.fromI32(0)])
-    })
 
+        // Market state contract
+        createMockedFunction(marketStateAddress, "marketState", "marketState(address):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,int256))")
+            .withArgs([ethereum.Value.fromAddress(market)])
+            .returns([ethereum.Value.fromTuple(changetype<ethereum.Tuple>([
+                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
+                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
+                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
+                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
+                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
+                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
+                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
+                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
+                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
+                ethereum.Value.fromSignedBigInt(BigInt.fromI32(1))
+            ]))])
+    })
     describe("Build event", () => {
 
         beforeEach(() => {
             const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price)
             handleBuild(event)
         })
-    
+
         afterEach(() => {
             clearStore()
         })
@@ -164,7 +180,7 @@ describe("Market events", () => {
 
             beforeAll(() => {
                 createMockedFunction(referralAddress, "rewardToken", "rewardToken():(address)")
-                .returns([ethereum.Value.fromAddress(rewardToken)])
+                    .returns([ethereum.Value.fromAddress(rewardToken)])
 
                 createMockedFunction(referralAddress, "tierAffiliateComission", "tierAffiliateComission(uint8):(uint48)")
                     .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1))])
@@ -172,7 +188,7 @@ describe("Market events", () => {
                 createMockedFunction(referralAddress, "tierAffiliateComission", "tierAffiliateComission(uint8):(uint48)")
                     .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(2))])
                     .returns([ethereum.Value.fromUnsignedBigInt(kolComission)])
-                
+
                 createMockedFunction(referralAddress, "tierTraderDiscount", "tierTraderDiscount(uint8):(uint48)")
                     .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(1))])
                     .returns([ethereum.Value.fromUnsignedBigInt(affiliateDiscount)])
