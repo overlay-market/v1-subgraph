@@ -1,3 +1,15 @@
+type Analytics @entity {
+  # factory address - for uniqueness
+  id: ID!
+  totalUsers: BigInt!
+  totalTransactions: BigInt!
+  totalTokensLocked: BigInt!
+  totalVolumeBuilds: BigInt!
+  totalVolumeUnwinds: BigInt!
+  totalVolumeLiquidations: BigInt!
+  totalVolume: BigInt!
+}
+
 type Factory @entity {
   # factory address
   id: ID!
@@ -64,8 +76,6 @@ type Market @entity {
   oiLong: BigInt!
   # total current oi short
   oiShort: BigInt!
-  # positions held in market
-  positions: [Position!]! @derivedFrom(field: "market")
   # if market is shut down
   isShutdown: Boolean!
   # fees and tx count:
@@ -82,7 +92,33 @@ type Market @entity {
   # sum of all build fees
   totalLiquidateFees: BigInt!
   # sum of all fees
-  totalFees: BigInt!
+  totalFees: BigInt!  
+  # sum of volume
+  totalVolume: BigInt!  
+  # positive means net minting | negative means net burning
+  totalMint: BigInt!
+  # derived fields
+  marketHourData: [MarketHourData!]! @derivedFrom(field: "market")
+  # positions held in market
+  positions: [Position!]! @derivedFrom(field: "market")
+  # last state of the market
+  marketState: MarketState! @derivedFrom(field: "market")
+}
+
+type MarketState @entity {
+  # market address
+  id: ID!
+  market: Market!
+  bid: BigInt!
+  ask: BigInt!
+  mid: BigInt!
+  volumeBid: BigInt!
+  volumeAsk: BigInt!
+  oiLong: BigInt!
+  oiShort: BigInt!
+  capOi: BigInt!
+  circuitBreakerLevel: BigInt!
+  fundingRate: BigInt!
 }
 
 type Position @entity {
@@ -249,6 +285,13 @@ type Liquidate @entity {
   timestamp: BigInt!
   # transaction the position was liquidated in
   transaction: Transaction!
+  # volume = (initialDebt * fractionOfPosition) + liquidationFee + marginRemaining
+  # TODO add marginToBurn
+  volume: BigInt!
+  # amount sent to liquidator (tx sender)
+  liquidationFee: BigInt!
+  marginToBurn: BigInt!
+  transferFeeAmount: BigInt!
 }
 
 type Account @entity {
@@ -263,12 +306,15 @@ type Account @entity {
   # numberOfOpenPositions
   numberOfOpenPositions: BigInt!
   planckCatBalance: BigInt! # number of PlanckCat NFTs owned
+  ovlVolumeTraded: BigInt! # total OVL volume traded historically
   # derived account info
   positions: [Position!]! @derivedFrom(field: "owner")
   builds: [Build!]! @derivedFrom(field: "owner")
   unwinds: [Unwind!]! @derivedFrom(field: "owner")
   liquidates: [Liquidate!]! @derivedFrom(field: "owner")
   stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
+  referralPositions: [ReferralPosition!]! @derivedFrom(field: "owner")
+  tradingMiningEpochVolumes: [TradingMiningEpochVolume!]! @derivedFrom(field: "trader")
   tokens: [TokenPosition!]! @derivedFrom(field: "owner")
   nfts: [ERC721NFT!]! @derivedFrom(field: "owner")
 }
@@ -296,6 +342,8 @@ type ERC20Token @entity {
   totalSupply: BigInt!
   name: String!
   symbol: String!
+  # derived fields
+  totalSupplyHourData: [TotalSupplyHourData!]! @derivedFrom(field: "token")
 }
 
 type RewardsClaimed @entity(immutable: true) {
@@ -374,4 +422,95 @@ type ERC721Token @entity {
   name: String!
   symbol: String!
   totalSupply: BigInt!
+}
+
+type ReferralProgram @entity {
+  id: Bytes! # address
+  rewardToken: Bytes! # address
+  affiliateComission: [BigInt!]! # bps
+  traderDiscount: [BigInt!]! # bps
+  # creation timestamp
+  createdAtTimestamp: BigInt!
+  # creation block number
+  createdAtBlockNumber: BigInt!
+  # last modification transaction
+  latestUpdateTransaction: Transaction!
+  # totalRewards
+  totalRewards: BigInt!
+  totalAirdropped: BigInt!
+  referralPositions: [ReferralPosition!]! @derivedFrom(field: "referralProgram")
+}
+
+type ReferralPosition @entity {
+  id: Bytes! # referral address + owner addresses
+  referralProgram: ReferralProgram!
+  owner: Account! # address
+  tier: Int!
+  affiliatedTo: Account
+  totalAffiliateComission: BigInt!
+  totalTraderDiscount: BigInt!
+  totalAirdroppedAmount: BigInt!
+  totalRewardsPending: BigInt!
+  accountsReferred: Int!
+}
+
+type TradingMining @entity {
+  id: Bytes! # address
+  totalRewards: BigInt!
+  rewardToken1: Bytes! # address
+  rewardToken2: Bytes! # address
+  token1Percentage: Int!
+  startTime: BigInt!
+  epochDuration: BigInt!
+  pcdHolderBonusPercentage: Int!
+  maxRewardPerEpochPerAddress: BigInt!
+}
+
+type TradingMiningEpoch @entity {
+  id: Bytes! # address + epoch
+  epoch: BigInt!
+  totalVolume: BigInt!
+  totalRewards: BigInt!
+  token1Percentage: Int!
+}
+
+type TradingMiningEpochVolume @entity {
+  id: Bytes! # trading mining address + trader address + epoch
+  epoch: BigInt!
+  volume: BigInt!
+  trader: Account!  
+}
+
+type TotalSupplyHourData @entity {
+  # token address concatendated with date
+  id: ID!
+  # unix timestamp for start of hour
+  periodStartUnix: Int!
+  # pointer to token
+  token: ERC20Token!
+  minted: BigInt!
+  burnt: BigInt!
+  open: BigInt!
+  high: BigInt!
+  low: BigInt!
+  close: BigInt!
+}
+
+type MarketHourData @entity {
+  # market address concatendated with date
+  id: ID!
+  # unix timestamp for start of hour
+  periodStartUnix: Int!
+  # pointer to market
+  market: Market!
+  minted: BigInt!
+  burnt: BigInt!
+  # positive means net minting | negative means net burning
+  totalMint: BigInt!
+  # positive means net minting | negative means net burning
+  accumulatedTotalMint: BigInt!
+  volume: BigInt!
+  oiLong: BigInt!
+  oiShort: BigInt!
+  fundingRate: BigInt!
 }

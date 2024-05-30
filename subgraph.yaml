@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: arbitrum-one
+    network: arbitrum-sepolia
     source:
-      address: "0xfa39cde07ff63b4329a70784c0600da38cf4777c"
+      address: "0xa2dBe262D27647243Ac3187d05DBF6c3C6ECC14D"
       abi: OverlayV1Factory
-      startBlock: 54163540
+      startBlock: 1590150
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -45,11 +45,11 @@ dataSources:
       file: ./src/mapping.ts
   - kind: ethereum
     name: TokenStake
-    network: arbitrum-one
+    network: arbitrum-sepolia
     source:
-      address: "0x1921054a4f8817F9783628F0694744F91Dd9d34e"
+      address: "0x0000000000000000000000000000000000000000"
       abi: TokenStake
-      startBlock: 107498003
+      startBlock: 1590150
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -81,11 +81,11 @@ dataSources:
       file: ./src/token-stake.ts
   - kind: ethereum
     name: OverlayV1Token
-    network: arbitrum-one
+    network: arbitrum-sepolia
     source:
-      address: "0x4305C4Bc521B052F17d389c2Fe9d37caBeB70d54"
+      address: "0x3E27fAe625f25291bFda517f74bf41DC40721dA2"
       abi: OverlayV1Token
-      startBlock: 53958817
+      startBlock: 1589788
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -103,11 +103,11 @@ dataSources:
       file: ./src/erc20.ts
   - kind: ethereum
     name: NIP
-    network: arbitrum-one
+    network: arbitrum-sepolia
     source:
-      address: "0x088feB3063d118c037ecAc999AD53Ec532780614"
+      address: "0x0000000000000000000000000000000000000000"
       abi: NIP
-      startBlock: 107495349
+      startBlock: 1589788
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -125,11 +125,11 @@ dataSources:
       file: ./src/erc20.ts
   - kind: ethereum
     name: PlanckCat
-    network: arbitrum-one
+    network: arbitrum-sepolia
     source:
-      address: "0xc9B28946144E3A0e02fcC119a622E30565916784"
+      address: "0x0000000000000000000000000000000000000000"
       abi: PlanckCat
-      startBlock: 4746070
+      startBlock: 1589788
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -145,11 +145,67 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/planck-cat.ts
+  - kind: ethereum
+    name: ReferralList
+    network: arbitrum-sepolia
+    source:
+      address: "0x1cee53AB89004b2a9E173edc6F51509f8eB32122"
+      abi: ReferralList
+      startBlock: 8197611
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - addEvents
+      abis:
+        - name: ReferralList
+          file: ./abis/ReferralList.json
+      eventHandlers:
+        - event: AllowAffiliate(address)
+          handler: handleAllowAffiliate
+        - event: AllowKOL(address)
+          handler: handleAllowKOL
+        - event: AddAffiliateOrKOL(address,address)
+          handler: handleAddAffiliateOrKOL
+        - event: SetRewardToken(address)
+          handler: handleSetRewardToken
+        - event: SetAffiliateComission(uint8,uint48)
+          handler: handleSetAffiliateComission
+        - event: SetTraderDiscount(uint8,uint48)
+          handler: handleSetTraderDiscount
+        - event: ClaimRewards(indexed address,uint256)
+          handler: handleClaimRewards
+      file: ./src/referral.ts
+  - kind: ethereum
+    name: TradingMining
+    network: arbitrum-sepolia
+    source:
+      address: "0xFDf98Ac225Aa3B2788dcE96ffe55C2Bb3edCf4c9"
+      abi: TradingMining
+      startBlock: 2784174
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - addEvents
+      abis:
+        - name: TradingMining
+          file: ./abis/TradingMining.json
+      eventHandlers:
+        - event: RewardTokensUpdated(indexed address,uint8)
+          handler: handleRewardTokensUpdated
+        - event: TotalRewardsUpdated(uint256)
+          handler: handleTotalRewardsUpdated
+        - event: PcdHolderBonusPercentageUpdated(uint8)
+          handler: handlePcdHolderBonusPercentageUpdated
+      file: ./src/trading-mining.ts
 
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: arbitrum-one
+    network: arbitrum-sepolia
     source:
       abi: OverlayV1Market
     mapping:
@@ -169,6 +225,8 @@ templates:
           file: ./abis/ERC20.json
         - name: OverlayV1State
           file: ./abis/OverlayV1State.json
+        - name: TradingMining
+          file: ./abis/TradingMining.json
       eventHandlers:
         - event: Build(indexed address,uint256,uint256,uint256,bool,uint256)
           handler: handleBuild

@@ -4,10 +4,12 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
+    "deploy": "graph deploy --studio",
     "deploy-goerli": "graph deploy --product hosted-service bigboydiamonds/overlay-v1-subgraph-goerli",
     "deploy-arb-confirmed": "graph deploy --studio overlay-v2-subgraph-arbitrum",
     "deploy-arb": "read -p 'Are you sure you want to deploy to production? (y/n): ' confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] && npm run deploy-arb-confirmed",
     "deploy-arb-test": "graph deploy --studio overlay-subgraph-arbitrum",
+    "deploy-arb-sepolia-test": "graph deploy --product hosted-service overlay-market/overlay-sepolia-test",
     "deploy-eth": "graph deploy --studio overlay-subgraph-eth",
     "create-local": "graph create --node http://localhost:8020/ overlay/v1-subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ overlay/v1-subgraph",
@@ -19,7 +21,7 @@
     "test:unit-win": "docker run -it --rm --mount type=bind,source=%PWD%,target=/matchstick matchstick"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.49.0",
+    "@graphprotocol/graph-cli": "0.62.0",
     "@graphprotocol/graph-ts": "0.29.3",
     "@protofire/subgraph-toolkit": "0.1.2",
     "axios": "^1.4.0"

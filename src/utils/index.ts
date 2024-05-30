@@ -1,5 +1,5 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
-import { Market, Transaction, Position, Factory, Account } from '../../generated/schema'
+import { Market, Transaction, Position, Factory, Account, Analytics } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
@@ -68,6 +68,15 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.oiLong = stateContract.ois(marketAddress).value0
     market.oiShort = stateContract.ois(marketAddress).value1
     market.isShutdown = false
+    market.totalBuildFees = ZERO_BI
+    market.numberOfBuilds = ZERO_BI
+    market.totalUnwindFees = ZERO_BI
+    market.numberOfUnwinds = ZERO_BI
+    market.totalLiquidateFees = ZERO_BI
+    market.numberOfLiquidates = ZERO_BI
+    market.totalFees = ZERO_BI
+    market.totalVolume = ZERO_BI
+    market.totalMint = ZERO_BI
 
     MarketTemplate.create(marketAddress)
   }
@@ -132,7 +141,28 @@ export function loadAccount(accountAddress: Address): Account {
     account.numberOfOpenPositions = ZERO_BI
     account.numberOfLiquidatedPositions = ZERO_BI
     account.planckCatBalance = ZERO_BI
+    account.ovlVolumeTraded = ZERO_BI
   }
 
   return account
+}
+
+export function loadAnalytics(factory: string): Analytics {
+  let analyticsId = factory
+  let analytics = Analytics.load(analyticsId)
+
+  if (analytics === null) {
+    analytics = new Analytics(analyticsId)
+
+
+    analytics.totalUsers = ZERO_BI
+    analytics.totalTransactions = ZERO_BI
+    analytics.totalTokensLocked = ZERO_BI
+    analytics.totalVolumeBuilds = ZERO_BI
+    analytics.totalVolumeUnwinds = ZERO_BI
+    analytics.totalVolumeLiquidations = ZERO_BI
+    analytics.totalVolume = ZERO_BI
+  }
+
+  return analytics
 }
