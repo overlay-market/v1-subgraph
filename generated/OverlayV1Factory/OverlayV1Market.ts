@@ -46,6 +46,32 @@ export class Build__Params {
   get price(): BigInt {
     return this._event.parameters[5].value.toBigInt();
   }
+
+  get oiAfterBuild(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+
+  get oiSharesAfterBuild(): BigInt {
+    return this._event.parameters[7].value.toBigInt();
+  }
+}
+
+export class CacheRiskCalc extends ethereum.Event {
+  get params(): CacheRiskCalc__Params {
+    return new CacheRiskCalc__Params(this);
+  }
+}
+
+export class CacheRiskCalc__Params {
+  _event: CacheRiskCalc;
+
+  constructor(event: CacheRiskCalc) {
+    this._event = event;
+  }
+
+  get newDpUpperLimit(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
 }
 
 export class EmergencyWithdraw extends ethereum.Event {
@@ -106,6 +132,50 @@ export class Liquidate__Params {
   get price(): BigInt {
     return this._event.parameters[4].value.toBigInt();
   }
+
+  get oiAfterLiquidate(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get oiSharesAfterLiquidate(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+}
+
+export class Paused extends ethereum.Event {
+  get params(): Paused__Params {
+    return new Paused__Params(this);
+  }
+}
+
+export class Paused__Params {
+  _event: Paused;
+
+  constructor(event: Paused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class Unpaused extends ethereum.Event {
+  get params(): Unpaused__Params {
+    return new Unpaused__Params(this);
+  }
+}
+
+export class Unpaused__Params {
+  _event: Unpaused;
+
+  constructor(event: Unpaused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
 }
 
 export class Unwind extends ethereum.Event {
@@ -139,6 +209,14 @@ export class Unwind__Params {
 
   get price(): BigInt {
     return this._event.parameters[4].value.toBigInt();
+  }
+
+  get oiAfterUnwind(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get oiSharesAfterUnwind(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
   }
 }
 
@@ -1071,14 +1149,14 @@ export class OverlayV1Market extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  ovl(): Address {
-    let result = super.call("ovl", "ovl():(address)", []);
+  ov(): Address {
+    let result = super.call("ov", "ov():(address)", []);
 
     return result[0].toAddress();
   }
 
-  try_ovl(): ethereum.CallResult<Address> {
-    let result = super.tryCall("ovl", "ovl():(address)", []);
+  try_ov(): ethereum.CallResult<Address> {
+    let result = super.tryCall("ov", "ov():(address)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1103,6 +1181,21 @@ export class OverlayV1Market extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  paused(): boolean {
+    let result = super.call("paused", "paused():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_paused(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("paused", "paused():(bool)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   positions(param0: Bytes): OverlayV1Market__positionsResult {
@@ -1466,6 +1559,32 @@ export class LiquidateCall__Outputs {
   }
 }
 
+export class PauseCall extends ethereum.Call {
+  get inputs(): PauseCall__Inputs {
+    return new PauseCall__Inputs(this);
+  }
+
+  get outputs(): PauseCall__Outputs {
+    return new PauseCall__Outputs(this);
+  }
+}
+
+export class PauseCall__Inputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall__Outputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
 export class SetRiskParamCall extends ethereum.Call {
   get inputs(): SetRiskParamCall__Inputs {
     return new SetRiskParamCall__Inputs(this);
@@ -1522,6 +1641,32 @@ export class ShutdownCall__Outputs {
   _call: ShutdownCall;
 
   constructor(call: ShutdownCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall extends ethereum.Call {
+  get inputs(): UnpauseCall__Inputs {
+    return new UnpauseCall__Inputs(this);
+  }
+
+  get outputs(): UnpauseCall__Outputs {
+    return new UnpauseCall__Outputs(this);
+  }
+}
+
+export class UnpauseCall__Inputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall__Outputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
     this._call = call;
   }
 }
