@@ -1458,6 +1458,32 @@ export class Build extends Entity {
     this.set("price", Value.fromBigInt(value));
   }
 
+  get oiAfterBuild(): BigInt {
+    let value = this.get("oiAfterBuild");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiAfterBuild(value: BigInt) {
+    this.set("oiAfterBuild", Value.fromBigInt(value));
+  }
+
+  get oiSharesAfterBuild(): BigInt {
+    let value = this.get("oiSharesAfterBuild");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiSharesAfterBuild(value: BigInt) {
+    this.set("oiSharesAfterBuild", Value.fromBigInt(value));
+  }
+
   get feeAmount(): BigInt {
     let value = this.get("feeAmount");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1652,6 +1678,32 @@ export class Unwind extends Entity {
 
   set price(value: BigInt) {
     this.set("price", Value.fromBigInt(value));
+  }
+
+  get oiAfterUnwind(): BigInt {
+    let value = this.get("oiAfterUnwind");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiAfterUnwind(value: BigInt) {
+    this.set("oiAfterUnwind", Value.fromBigInt(value));
+  }
+
+  get oiSharesAfterUnwind(): BigInt {
+    let value = this.get("oiSharesAfterUnwind");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiSharesAfterUnwind(value: BigInt) {
+    this.set("oiSharesAfterUnwind", Value.fromBigInt(value));
   }
 
   get fraction(): BigInt {
@@ -1965,6 +2017,32 @@ export class Liquidate extends Entity {
 
   set price(value: BigInt) {
     this.set("price", Value.fromBigInt(value));
+  }
+
+  get oiAfterLiquidate(): BigInt {
+    let value = this.get("oiAfterLiquidate");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiAfterLiquidate(value: BigInt) {
+    this.set("oiAfterLiquidate", Value.fromBigInt(value));
+  }
+
+  get oiSharesAfterLiquidate(): BigInt {
+    let value = this.get("oiSharesAfterLiquidate");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiSharesAfterLiquidate(value: BigInt) {
+    this.set("oiSharesAfterLiquidate", Value.fromBigInt(value));
   }
 
   get mint(): BigInt {

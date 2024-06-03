@@ -199,6 +199,10 @@ type Build @entity {
   isLong: Boolean!
   # price at time of build
   price: BigInt!
+  # oi after build
+  oiAfterBuild: BigInt!
+  # oi shares after build
+  oiSharesAfterBuild: BigInt!
   # Fee amount of this build
   feeAmount: BigInt!
   # current collateral backing position
@@ -228,6 +232,10 @@ type Unwind @entity {
   isLong: Boolean!
   # price at time of unwind
   price: BigInt!
+  # oi after unwind
+  oiAfterUnwind: BigInt!
+  # oi shares after unwind
+  oiSharesAfterUnwind: BigInt!
   # fraction of unwind
   fraction: BigInt!
   # fraction of the original position
@@ -247,7 +255,7 @@ type Unwind @entity {
   # current collateral backing position
   collateral: BigInt!
   # current value of position
-  value: BigInt!
+  value: BigInt!      
   # timestamp of transaction
   timestamp: BigInt!
   # transaction the position was unwinded in
@@ -275,6 +283,10 @@ type Liquidate @entity {
   isLong: Boolean!
   # price at time of liquidate
   price: BigInt!
+  # oi after liquidate
+  oiAfterLiquidate: BigInt!
+  # oi shares after liquidate
+  oiSharesAfterLiquidate: BigInt!
   # total ovl minted/burned in this transaction
   mint: BigInt!
   # current collateral backing position
