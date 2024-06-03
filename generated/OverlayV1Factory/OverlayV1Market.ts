@@ -220,6 +220,28 @@ export class Unwind__Params {
   }
 }
 
+export class Update extends ethereum.Event {
+  get params(): Update__Params {
+    return new Update__Params(this);
+  }
+}
+
+export class Update__Params {
+  _event: Update;
+
+  constructor(event: Update) {
+    this._event = event;
+  }
+
+  get oiLong(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get oiShort(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class OverlayV1Market__askInputDataStruct extends ethereum.Tuple {
   get timestamp(): BigInt {
     return this[0].toBigInt();

@@ -13,7 +13,8 @@ import {
   Liquidate as LiquidateEvent,
   Unwind as UnwindEvent,
   EmergencyWithdraw as EmergencyWithdrawEvent,
-  CacheRiskCalc as CacheRiskCalcEvent
+  CacheRiskCalc as CacheRiskCalcEvent,
+  Update as UpdateEvent
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
@@ -519,6 +520,16 @@ export function handleCacheRiskCalc(event: CacheRiskCalcEvent): void {
   let marketState = updateMarketState(market.id)
 
   market.dpUpperLimit = event.params.newDpUpperLimit
+
+  market.save()
+}
+
+export function handleUpdate(event: UpdateEvent): void {
+  let market = loadMarket(event, event.address)
+  let marketState = updateMarketState(market.id)
+
+  market.oiLong = event.params.oiLong
+  market.oiShort = event.params.oiShort
 
   market.save()
 }
