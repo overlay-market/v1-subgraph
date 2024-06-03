@@ -1,0 +1,218 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_ov",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_aggregator",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_microWindow",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_macroWindow",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_heartbeat",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "aggregator",
+    "outputs": [
+      {
+        "internalType": "contract AggregatorV3Interface",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "description",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feedFactory",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "heartbeat",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "latest",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "microWindow",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "macroWindow",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceOverMicroWindow",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceOverMacroWindow",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceOneMacroWindowAgo",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserveOverMicroWindow",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "hasReserve",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct Oracle.Data",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "macroWindow",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "microWindow",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ov",
+    "outputs": [
+      {
+        "internalType": "contract IOverlayV1Token",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_heartbeat",
+        "type": "uint256"
+      }
+    ],
+    "name": "setHeartbeat",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "heartbeat",
+        "type": "uint256"
+      }
+    ],
+    "name": "HeartbeatSet",
+    "type": "event"
+  }
+]
