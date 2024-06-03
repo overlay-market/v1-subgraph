@@ -179,6 +179,26 @@ dataSources:
         - event: PcdHolderBonusPercentageUpdated(uint8)
           handler: handlePcdHolderBonusPercentageUpdated
       file: ./src/trading-mining.ts
+  - kind: ethereum
+    name: OverlayV1ChainlinkFeedFactory
+    network: arbitrum-sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: OverlayV1ChainlinkFeedFactory
+      startBlock: 45021636
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ChainlinkFeed
+      abis:
+        - name: OverlayV1ChainlinkFeedFactory
+          file: ./abis/OverlayV1ChainlinkFeedFactory.json
+      eventHandlers:
+        - event: FeedDeployed(indexed address,address)
+          handler: handleFeedDeployed
+      file: ./src/chainlink-feed.ts
 
 templates:
   - kind: ethereum
@@ -225,3 +245,21 @@ templates:
           handler: handleUpdate
           receipt: true 
       file: ./src/mapping.ts
+  - kind: ethereum
+    name: OverlayV1ChainlinkFeed
+    network: arbitrum-sepolia
+    source:
+      abi: OverlayV1ChainlinkFeed
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ChainlinkFeed
+      abis:
+        - name: OverlayV1ChainlinkFeed
+          file: ./abis/OverlayV1ChainlinkFeed.json
+      eventHandlers:
+        - event: HeartbeatSet(uint256)
+          handler: handleHeartbeatSet
+      file: ./src/chainlink-feed.ts

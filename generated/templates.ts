@@ -19,3 +19,17 @@ export class OverlayV1Market extends DataSourceTemplate {
     );
   }
 }
+
+export class OverlayV1ChainlinkFeed extends DataSourceTemplate {
+  static create(address: Address): void {
+    DataSourceTemplate.create("OverlayV1ChainlinkFeed", [address.toHex()]);
+  }
+
+  static createWithContext(address: Address, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext(
+      "OverlayV1ChainlinkFeed",
+      [address.toHex()],
+      context,
+    );
+  }
+}

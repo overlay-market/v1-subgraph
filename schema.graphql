@@ -528,3 +528,10 @@ type MarketHourData @entity {
   oiShort: BigInt!
   fundingRate: BigInt!
 }
+
+type ChainlinkFeed @entity {
+  # chainlink feed address
+  id: ID!
+  # current heartbeat
+  heartbeat: BigInt!
+}
