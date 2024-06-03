@@ -37,6 +37,8 @@ const debt = BigInt.fromI32(20)
 const isLong = true
 const price = BigInt.fromI32(100)
 const collateral = BigInt.fromI32(1000)
+const oiAfterBuild = BigInt.fromI32(51)
+const oiSharesAfterBuild = BigInt.fromI32(1)
 
 // Trading mining parameters
 const epoch = 0
@@ -119,7 +121,7 @@ describe("Market events", () => {
     describe("Build event", () => {
 
         beforeEach(() => {
-            const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price)
+            const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price, oiAfterBuild, oiSharesAfterBuild)
             handleBuild(event)
         })
 
@@ -158,7 +160,7 @@ describe("Market events", () => {
                 tradingMining.save()
 
                 // Create Build event with PCD holder as sender
-                const event = createBuildEvent(market, pcdHolder, positionId, oi, debt, isLong, price)
+                const event = createBuildEvent(market, pcdHolder, positionId, oi, debt, isLong, price, oiAfterBuild, oiSharesAfterBuild)
                 handleBuild(event)
 
                 const volume = collateral.plus(debt)
@@ -213,7 +215,7 @@ describe("Market events", () => {
                 affiliateReferralPosition.tier = 1 // affiliate
                 affiliateReferralPosition.save()
 
-                const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price)
+                const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price, oiAfterBuild, oiSharesAfterBuild)
                 handleBuild(event)
             })
 
@@ -261,7 +263,9 @@ function createBuildEvent(
     oi: BigInt,
     debt: BigInt,
     isLong: boolean,
-    price: BigInt
+    price: BigInt,
+    oiAfterBuild: BigInt,
+    oiSharesAfterBuild: BigInt
 ): BuildEvent {
     const event = changetype<BuildEvent>(newMockEvent())
 
@@ -290,6 +294,14 @@ function createBuildEvent(
 
     event.parameters.push(
         new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
+    )
+
+    event.parameters.push(
+        new ethereum.EventParam("oiAfterBuild", ethereum.Value.fromUnsignedBigInt(oiAfterBuild))
+    )
+
+    event.parameters.push(
+        new ethereum.EventParam("oiSharesAfterBuild", ethereum.Value.fromUnsignedBigInt(oiSharesAfterBuild))
     )
 
     return event
