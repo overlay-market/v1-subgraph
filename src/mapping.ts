@@ -72,6 +72,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
   market.oiLong = marketState.oiLong
   market.oiShort = marketState.oiShort
+  market.oiLongShares = marketContract.oiLongShares();
+  market.oiShortShares = marketContract.oiShortShares();
   market.isShutdown = false
   market.totalBuildFees = ZERO_BI
   market.numberOfBuilds = ZERO_BI
@@ -201,8 +203,15 @@ export function handleBuild(event: BuildEvent): void {
   position.numberOfUniwnds = BigInt.fromI32(0)
   position.fractionUnwound = BigInt.fromI32(0)
 
-  market.oiLong = marketState.oiLong
-  market.oiShort = marketState.oiShort
+  if (position.isLong) {
+    market.oiLong = event.params.oiAfterBuild
+    market.oiShort = marketState.oiShort
+    market.oiLongShares = event.params.oiSharesAfterBuild
+  } else {
+    market.oiLong = marketState.oiLong
+    market.oiShort = event.params.oiAfterBuild
+    market.oiShortShares = event.params.oiSharesAfterBuild
+  }
   market.totalBuildFees = market.totalBuildFees.plus(transferFeeAmount)
   market.numberOfBuilds = market.numberOfBuilds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
@@ -217,8 +226,6 @@ export function handleBuild(event: BuildEvent): void {
   build.currentDebt = event.params.debt
   build.isLong = event.params.isLong
   build.price = event.params.price
-  build.oiAfterBuild = event.params.oiAfterBuild
-  build.oiSharesAfterBuild = event.params.oiSharesAfterBuild
   build.collateral = initialCollateral
   build.value = stateContract.value(marketAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
@@ -382,8 +389,6 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.isLong = position.isLong
   unwind.price = event.params.price
   unwind.fraction = event.params.fraction
-  unwind.oiAfterUnwind = event.params.oiAfterUnwind
-  unwind.oiSharesAfterUnwind = event.params.oiSharesAfterUnwind
   unwind.fractionOfPosition = fractionOfPosition
   unwind.volume = transferAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI))
   unwind.mint = event.params.mint
@@ -402,6 +407,16 @@ export function handleUnwind(event: UnwindEvent): void {
 
   // position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = position.currentDebt.times(ONE_18DEC_BI.minus(unwind.fraction)).div(ONE_18DEC_BI)
+
+  if (position.isLong) {
+    market.oiLong = event.params.oiAfterUnwind
+    market.oiShort = marketState.oiShort
+    market.oiLongShares = event.params.oiSharesAfterUnwind
+  } else {
+    market.oiLong = marketState.oiLong
+    market.oiShort = event.params.oiAfterUnwind
+    market.oiShortShares = event.params.oiSharesAfterUnwind
+  }
 
   market.totalUnwindFees = market.totalUnwindFees.plus(transferFeeAmount)
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
@@ -616,8 +631,15 @@ export function handleLiquidate(event: LiquidateEvent): void {
   position.isLiquidated = true
   position.fractionUnwound = ONE_18DEC_BI
 
-  market.oiLong = marketState.oiLong
-  market.oiShort = marketState.oiShort
+  if (position.isLong) {
+    market.oiLong = event.params.oiAfterLiquidate
+    market.oiShort = marketState.oiShort
+    market.oiLongShares = event.params.oiSharesAfterLiquidate
+  } else {
+    market.oiLong = marketState.oiLong
+    market.oiShort = event.params.oiAfterLiquidate
+    market.oiShortShares = event.params.oiSharesAfterLiquidate
+  }
   market.totalLiquidateFees = market.totalLiquidateFees.plus(transferFeeAmount)
   market.numberOfLiquidates = market.numberOfLiquidates.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
@@ -633,8 +655,6 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.isLong = position.isLong
   liquidate.price = event.params.price
   liquidate.mint = event.params.mint
-  liquidate.oiAfterLiquidate = event.params.oiAfterLiquidate
-  liquidate.oiSharesAfterLiquidate = event.params.oiSharesAfterLiquidate
   liquidate.collateral = ZERO_BI
   liquidate.value = ZERO_BI
   liquidate.timestamp = transaction.timestamp

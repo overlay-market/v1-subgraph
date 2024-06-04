@@ -67,6 +67,8 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
     market.oiLong = stateContract.ois(marketAddress).value0
     market.oiShort = stateContract.ois(marketAddress).value1
+    market.oiLongShares = marketContract.oiLongShares()
+    market.oiShortShares = marketContract.oiShortShares()
     market.isShutdown = false
     market.totalBuildFees = ZERO_BI
     market.numberOfBuilds = ZERO_BI
@@ -98,7 +100,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
 
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
     position.initialDebt = stateContract.debt(marketAddress, sender, positionId)
-    
+
     let initialCollateral = stateContract.cost(marketAddress, sender, positionId)
     let initialDebt = stateContract.debt(marketAddress, sender, positionId)
     let initialNotional = initialCollateral.plus(initialDebt)
@@ -121,7 +123,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.currentOi = stateContract.oi(marketAddress, sender, positionId)
     position.currentDebt = stateContract.debt(marketAddress, sender, positionId)
     position.mint = ZERO_BI
-    
+
     position.createdAtTimestamp = event.block.timestamp
     position.createdAtBlockNumber = event.block.number
   }
