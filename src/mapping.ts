@@ -84,7 +84,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.totalFees = ZERO_BI
   market.totalVolume = ZERO_BI
   market.totalMint = ZERO_BI
-  market.dpUpperLimit = ZERO_BI
+  market.dpUpperLimit = marketContract.dpUpperLimit()
 
   market.save()
   // create tracked market contract based on template

@@ -77,7 +77,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.totalFees = ZERO_BI
     market.totalVolume = ZERO_BI
     market.totalMint = ZERO_BI
-    market.dpUpperLimit = ZERO_BI
+    market.dpUpperLimit = marketContract.dpUpperLimit()
 
     MarketTemplate.create(marketAddress)
   }
