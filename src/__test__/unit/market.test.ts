@@ -75,6 +75,10 @@ describe("Market events", () => {
         }
         createMockedFunction(market, "dpUpperLimit", "dpUpperLimit():(uint256)")
             .returns([ethereum.Value.fromI32(1)])
+        createMockedFunction(market, "oiLongShares", "oiLongShares():(uint256)")
+            .returns([ethereum.Value.fromI32(1)])
+        createMockedFunction(market, "oiShortShares", "oiShortShares():(uint256)")
+            .returns([ethereum.Value.fromI32(1)])
 
         // Periphery contract
         createMockedFunction(Address.fromString(PERIPHERY_ADDRESS), "ois", "ois(address):(uint256,uint256)")
