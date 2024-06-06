@@ -72,8 +72,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
   market.oiLong = marketState.oiLong
   market.oiShort = marketState.oiShort
-  market.oiLongShares = marketContract.oiLongShares();
-  market.oiShortShares = marketContract.oiShortShares();
+  market.oiLongShares = ZERO_BI;
+  market.oiShortShares = ZERO_BI;
   market.isShutdown = false
   market.totalBuildFees = ZERO_BI
   market.numberOfBuilds = ZERO_BI
@@ -205,10 +205,8 @@ export function handleBuild(event: BuildEvent): void {
 
   if (position.isLong) {
     market.oiLong = event.params.oiAfterBuild
-    market.oiShort = marketState.oiShort
     market.oiLongShares = event.params.oiSharesAfterBuild
   } else {
-    market.oiLong = marketState.oiLong
     market.oiShort = event.params.oiAfterBuild
     market.oiShortShares = event.params.oiSharesAfterBuild
   }
@@ -410,10 +408,8 @@ export function handleUnwind(event: UnwindEvent): void {
 
   if (position.isLong) {
     market.oiLong = event.params.oiAfterUnwind
-    market.oiShort = marketState.oiShort
     market.oiLongShares = event.params.oiSharesAfterUnwind
   } else {
-    market.oiLong = marketState.oiLong
     market.oiShort = event.params.oiAfterUnwind
     market.oiShortShares = event.params.oiSharesAfterUnwind
   }
@@ -633,10 +629,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   if (position.isLong) {
     market.oiLong = event.params.oiAfterLiquidate
-    market.oiShort = marketState.oiShort
     market.oiLongShares = event.params.oiSharesAfterLiquidate
   } else {
-    market.oiLong = marketState.oiLong
     market.oiShort = event.params.oiAfterLiquidate
     market.oiShortShares = event.params.oiSharesAfterLiquidate
   }
