@@ -18,7 +18,8 @@
     "test:compat": "jest --testPathPattern=compatibility --testTimeout=60000",
     "test:build": "docker build -t matchstick .",
     "test:unit": "docker run -it --rm --mount type=bind,source=$PWD,target=/matchstick matchstick",
-    "test:unit-win": "docker run -it --rm --mount type=bind,source=%PWD%,target=/matchstick matchstick"
+    "test:unit-win": "docker run -it --rm --mount type=bind,source=%PWD%,target=/matchstick matchstick",
+    "test:unit-job": "docker run --rm --mount type=bind,source=$PWD,target=/matchstick matchstick"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.62.0",
