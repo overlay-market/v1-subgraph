@@ -16,9 +16,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Install PostgreSQL
-        run: sudo apt-get update && sudo apt-get install -y postgresql
-      - name: Install dependencies
-        run: npm install
-      - name: Run tests and collect coverage
-        run: npm run test
+      - name: Build matchstick
+        run: npm run test:build
+      - name: Run tests
+        run: npm run test:unit
+      - name: Collect coverage
+        run: npm run test:coverage
