@@ -12,7 +12,9 @@ import {
   Build as BuildEvent,
   Liquidate as LiquidateEvent,
   Unwind as UnwindEvent,
-  EmergencyWithdraw as EmergencyWithdrawEvent
+  EmergencyWithdraw as EmergencyWithdrawEvent,
+  CacheRiskCalc as CacheRiskCalcEvent,
+  Update as UpdateEvent
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
@@ -84,6 +86,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.totalFees = ZERO_BI
   market.totalVolume = ZERO_BI
   market.totalMint = ZERO_BI
+  market.dpUpperLimit = marketContract.dpUpperLimit()
 
   market.save()
   // create tracked market contract based on template
@@ -521,6 +524,25 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   unwind.save()
   sender.save()
   transaction.save()
+}
+
+export function handleCacheRiskCalc(event: CacheRiskCalcEvent): void {
+  let market = loadMarket(event, event.address)
+  let marketState = updateMarketState(market.id)
+
+  market.dpUpperLimit = event.params.newDpUpperLimit
+
+  market.save()
+}
+
+export function handleUpdate(event: UpdateEvent): void {
+  let market = loadMarket(event, event.address)
+  let marketState = updateMarketState(market.id)
+
+  market.oiLong = event.params.oiLong
+  market.oiShort = event.params.oiShort
+
+  market.save()
 }
 
 export function handleLiquidate(event: LiquidateEvent): void {
