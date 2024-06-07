@@ -17,8 +17,8 @@
     "test": "graph test -c",
     "test:compat": "jest --testPathPattern=compatibility --testTimeout=60000",
     "test:build": "docker build -t matchstick .",
-    "test:unit": "docker run -it --rm --mount type=bind,source=$PWD,target=/matchstick matchstick",
-    "test:coverage": "docker run -e ARGS=-c -it --rm --mount type=bind,source=$PWD,target=/matchstick matchstick",
+    "test:unit": "docker run -i --rm --mount type=bind,source=$PWD,target=/matchstick matchstick",
+    "test:coverage": "docker run -e ARGS=-c -i --rm --mount type=bind,source=$PWD,target=/matchstick matchstick",
     "test:unit-win": "docker run -it --rm --mount type=bind,source=%PWD%,target=/matchstick matchstick"
   },
   "dependencies": {
