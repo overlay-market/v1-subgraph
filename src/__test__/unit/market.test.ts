@@ -13,8 +13,10 @@ import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
 
 import {
     Build as BuildEvent,
+    CacheRiskCalc as CacheRiskCalcEvent,
+    Update as UpdateEvent,
 } from "../../../generated/templates/OverlayV1Market/OverlayV1Market"
-import { handleBuild } from "../../mapping"
+import { handleBuild, handleCacheRiskCalc, handleUpdate } from "../../mapping"
 import { loadAccount } from "../../utils"
 import { loadTradingMining } from "../../trading-mining"
 import { loadReferralProgram, loadReferralPosition } from "../../referral"
@@ -37,6 +39,15 @@ const debt = BigInt.fromI32(20)
 const isLong = true
 const price = BigInt.fromI32(100)
 const collateral = BigInt.fromI32(1000)
+const oiAfterBuild = BigInt.fromI32(51)
+const oiSharesAfterBuild = BigInt.fromI32(1)
+
+// CacheRiskCalc event parameters
+const dpUpperLimit = BigInt.fromI32(100)
+
+// Update event parameters
+const oiLong = BigInt.fromI32(50)
+const oiShort = BigInt.fromI32(50)
 
 // Trading mining parameters
 const epoch = 0
@@ -62,6 +73,12 @@ describe("Market events", () => {
                 .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(i))])
                 .returns([ethereum.Value.fromI32(1)])
         }
+        createMockedFunction(market, "dpUpperLimit", "dpUpperLimit():(uint256)")
+            .returns([ethereum.Value.fromI32(1)])
+        createMockedFunction(market, "oiLongShares", "oiLongShares():(uint256)")
+            .returns([ethereum.Value.fromI32(1)])
+        createMockedFunction(market, "oiShortShares", "oiShortShares():(uint256)")
+            .returns([ethereum.Value.fromI32(1)])
 
         // Periphery contract
         createMockedFunction(Address.fromString(PERIPHERY_ADDRESS), "ois", "ois(address):(uint256,uint256)")
@@ -119,7 +136,7 @@ describe("Market events", () => {
     describe("Build event", () => {
 
         beforeEach(() => {
-            const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price)
+            const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price, oiAfterBuild, oiSharesAfterBuild)
             handleBuild(event)
         })
 
@@ -158,7 +175,7 @@ describe("Market events", () => {
                 tradingMining.save()
 
                 // Create Build event with PCD holder as sender
-                const event = createBuildEvent(market, pcdHolder, positionId, oi, debt, isLong, price)
+                const event = createBuildEvent(market, pcdHolder, positionId, oi, debt, isLong, price, oiAfterBuild, oiSharesAfterBuild)
                 handleBuild(event)
 
                 const volume = collateral.plus(debt)
@@ -213,7 +230,7 @@ describe("Market events", () => {
                 affiliateReferralPosition.tier = 1 // affiliate
                 affiliateReferralPosition.save()
 
-                const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price)
+                const event = createBuildEvent(market, sender, positionId, oi, debt, isLong, price, oiAfterBuild, oiSharesAfterBuild)
                 handleBuild(event)
             })
 
@@ -252,6 +269,46 @@ describe("Market events", () => {
 
     })
 
+    describe("CacheRiskCalc event", () => {
+        beforeEach(() => {
+            const event = createCacheRiskCalcEvent(market, dpUpperLimit)
+            handleCacheRiskCalc(event)
+        })
+
+        afterEach(() => {
+            clearStore()
+        })
+
+        test("updates Market entity", () => {
+            assert.fieldEquals("Market", market.toHexString(),
+                "dpUpperLimit",
+                dpUpperLimit.toString()
+            )
+        })
+    })
+
+    describe("Update event", () => {
+        beforeEach(() => {
+            const event = createUpdateEvent(market, oiLong, oiShort)
+            handleUpdate(event)
+        })
+
+        afterEach(() => {
+            clearStore()
+        })
+
+        test("updates Market entity", () => {
+            assert.fieldEquals("Market", market.toHexString(),
+                "oiLong",
+                oiLong.toString()
+            )
+
+            assert.fieldEquals("Market", market.toHexString(),
+                "oiShort",
+                oiShort.toString()
+            )
+        })
+    })
 })
 
 function createBuildEvent(
@@ -261,7 +318,9 @@ function createBuildEvent(
     oi: BigInt,
     debt: BigInt,
     isLong: boolean,
-    price: BigInt
+    price: BigInt,
+    oiAfterBuild: BigInt,
+    oiSharesAfterBuild: BigInt
 ): BuildEvent {
     const event = changetype<BuildEvent>(newMockEvent())
 
@@ -290,6 +349,51 @@ function createBuildEvent(
 
     event.parameters.push(
         new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price))
+    )
+
+    event.parameters.push(
+        new ethereum.EventParam("oiAfterBuild", ethereum.Value.fromUnsignedBigInt(oiAfterBuild))
+    )
+
+    event.parameters.push(
+        new ethereum.EventParam("oiSharesAfterBuild", ethereum.Value.fromUnsignedBigInt(oiSharesAfterBuild))
+    )
+
+    return event
+}
+
+function createCacheRiskCalcEvent(
+    market: Address,
+    dpUpperLimit: BigInt
+): CacheRiskCalcEvent {
+    const event = changetype<CacheRiskCalcEvent>(newMockEvent())
+
+    event.address = market
+    event.parameters = new Array()
+
+    event.parameters.push(
+        new ethereum.EventParam("dpUpperLimit", ethereum.Value.fromUnsignedBigInt(dpUpperLimit))
+    )
+
+    return event
+}
+
+function createUpdateEvent(
+    market: Address,
+    oiLong: BigInt,
+    oiShort: BigInt
+): UpdateEvent {
+    const event = changetype<UpdateEvent>(newMockEvent())
+
+    event.address = market
+    event.parameters = new Array()
+
+    event.parameters.push(
+        new ethereum.EventParam("oiLong", ethereum.Value.fromUnsignedBigInt(oiLong))
+    )
+
+    event.parameters.push(
+        new ethereum.EventParam("oiShort", ethereum.Value.fromUnsignedBigInt(oiShort))
     )
 
     return event

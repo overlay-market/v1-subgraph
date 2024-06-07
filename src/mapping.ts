@@ -12,7 +12,9 @@ import {
   Build as BuildEvent,
   Liquidate as LiquidateEvent,
   Unwind as UnwindEvent,
-  EmergencyWithdraw as EmergencyWithdrawEvent
+  EmergencyWithdraw as EmergencyWithdrawEvent,
+  CacheRiskCalc as CacheRiskCalcEvent,
+  Update as UpdateEvent
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
@@ -27,7 +29,7 @@ import { updateMarketState } from "./utils/helpers";
 // TODO: rename or separate this file into multiple files
 
 export function handleMarketDeployed(event: MarketDeployed): void {
-  
+
   // load factory
   let factory = Factory.load(FACTORY_ADDRESS.toLowerCase())
   if (factory === null) {
@@ -72,6 +74,8 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.averageBlockTime = marketContract.params(integer.fromNumber(14))
   market.oiLong = marketState.oiLong
   market.oiShort = marketState.oiShort
+  market.oiLongShares = ZERO_BI;
+  market.oiShortShares = ZERO_BI;
   market.isShutdown = false
   market.totalBuildFees = ZERO_BI
   market.numberOfBuilds = ZERO_BI
@@ -82,6 +86,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   market.totalFees = ZERO_BI
   market.totalVolume = ZERO_BI
   market.totalMint = ZERO_BI
+  market.dpUpperLimit = marketContract.dpUpperLimit()
 
   market.save()
   // create tracked market contract based on template
@@ -100,7 +105,7 @@ export function handleBuild(event: BuildEvent): void {
   let positionId = event.params.positionId
   let id = market.id.concat('-').concat(positionId.toHexString())
   let position = new Position(id) as Position
-  
+
   let transferFeeAmount = ZERO_BI
   let receipt = event.receipt
   let factory = Factory.load(market.factory.toLowerCase())
@@ -118,7 +123,7 @@ export function handleBuild(event: BuildEvent): void {
       receipt.logs[0].transactionLogIndex.toI32().toString(),
     ])
     let buildIndex = 0
-    for (let i=0; i < receipt.logs.length; i++) {
+    for (let i = 0; i < receipt.logs.length; i++) {
       if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
         buildIndex = i
         break
@@ -164,7 +169,7 @@ export function handleBuild(event: BuildEvent): void {
           index.toString()
         ])
       }
-		} else {
+    } else {
       log.error("handleBuild: 1st if: transaction: {}, buildIndex: {}, index {}", [
         event.transaction.hash.toHexString(),
         buildIndex.toString(),
@@ -174,11 +179,11 @@ export function handleBuild(event: BuildEvent): void {
   } else {
     log.error("handleBuild: receipt && factory: tx {}, {}, {}", [
       event.transaction.hash.toHexString(),
-      !receipt ? "no receipt" : "receipt found", 
+      !receipt ? "no receipt" : "receipt found",
       !factory ? "no factory" : factory.feeRecipient
     ])
   }
-  
+
   position.owner = sender.id
   position.positionId = positionId.toHexString()
   position.market = market.id
@@ -201,8 +206,13 @@ export function handleBuild(event: BuildEvent): void {
   position.numberOfUniwnds = BigInt.fromI32(0)
   position.fractionUnwound = BigInt.fromI32(0)
 
-  market.oiLong = marketState.oiLong
-  market.oiShort = marketState.oiShort
+  if (position.isLong) {
+    market.oiLong = event.params.oiAfterBuild
+    market.oiLongShares = event.params.oiSharesAfterBuild
+  } else {
+    market.oiShort = event.params.oiAfterBuild
+    market.oiShortShares = event.params.oiSharesAfterBuild
+  }
   market.totalBuildFees = market.totalBuildFees.plus(transferFeeAmount)
   market.numberOfBuilds = market.numberOfBuilds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
@@ -221,7 +231,7 @@ export function handleBuild(event: BuildEvent): void {
   build.value = stateContract.value(marketAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
-  build.feeAmount =  transferFeeAmount
+  build.feeAmount = transferFeeAmount
 
   // analytics update
   let analytics = loadAnalytics(market.factory.toLowerCase())
@@ -255,7 +265,7 @@ export function handleUnwind(event: UnwindEvent): void {
   let sender = loadAccount(event.params.sender)
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
-  
+
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
   let unwindNumber = position.numberOfUniwnds
@@ -284,7 +294,7 @@ export function handleUnwind(event: UnwindEvent): void {
     ).div(
       ONE_18DEC_BI
     )
-  
+
   let factory = Factory.load(market.factory.toLowerCase())
   if (receipt && factory) {
     const logLength = receipt.logs.length
@@ -299,7 +309,7 @@ export function handleUnwind(event: UnwindEvent): void {
       receipt.logs[0].transactionLogIndex.toI32().toString(),
     ])
     let unwindIndex = 0
-    for (let i=0; i < receipt.logs.length; i++) {
+    for (let i = 0; i < receipt.logs.length; i++) {
       if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
         unwindIndex = i
         break
@@ -334,7 +344,7 @@ export function handleUnwind(event: UnwindEvent): void {
           userTransferIndex.toString()
         ])
       }
-		} else {
+    } else {
       log.error("handleUnwind: 1st if: transaction: {}, unwindIndex: {}, userTransferIndex {}", [
         event.transaction.hash.toHexString(),
         unwindIndex.toString(),
@@ -360,7 +370,7 @@ export function handleUnwind(event: UnwindEvent): void {
           feeIndex.toString()
         ])
       }
-		} else {
+    } else {
       log.error("handleUnwind: 1st if: transaction: {}, unwindIndex: {}, feeIndex {}", [
         event.transaction.hash.toHexString(),
         unwindIndex.toString(),
@@ -372,16 +382,16 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.position = position.id
   unwind.owner = sender.id
   unwind.size = unwindSize
-  unwind.transferAmount =  transferAmount
-  unwind.pnl =  pnl
-  unwind.feeAmount =  transferFeeAmount
+  unwind.transferAmount = transferAmount
+  unwind.pnl = pnl
+  unwind.feeAmount = transferFeeAmount
   unwind.currentOi = position.currentOi // TODO remove
   unwind.currentDebt = position.currentDebt
   unwind.isLong = position.isLong
   unwind.price = event.params.price
   unwind.fraction = event.params.fraction
   unwind.fractionOfPosition = fractionOfPosition
-  unwind.volume = transferAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI)) 
+  unwind.volume = transferAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI))
   unwind.mint = event.params.mint
   unwind.unwindNumber = unwindNumber
   unwind.collateral = ZERO_BI
@@ -399,6 +409,14 @@ export function handleUnwind(event: UnwindEvent): void {
   // position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = position.currentDebt.times(ONE_18DEC_BI.minus(unwind.fraction)).div(ONE_18DEC_BI)
 
+  if (position.isLong) {
+    market.oiLong = event.params.oiAfterUnwind
+    market.oiLongShares = event.params.oiSharesAfterUnwind
+  } else {
+    market.oiShort = event.params.oiAfterUnwind
+    market.oiShortShares = event.params.oiSharesAfterUnwind
+  }
+
   market.totalUnwindFees = market.totalUnwindFees.plus(transferFeeAmount)
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
@@ -406,36 +424,36 @@ export function handleUnwind(event: UnwindEvent): void {
   market.totalMint = market.totalMint.plus(event.params.mint)
 
   log.warning("fractionUnwound: {}, {}, {}", [
-    fractionUnwound.toString(), 
-    event.params.fraction.toString(), 
+    fractionUnwound.toString(),
+    event.params.fraction.toString(),
     ONE_18DEC_BI
       .minus(
         (ONE_18DEC_BI.minus(fractionUnwound))
-        .times
-        (ONE_18DEC_BI.minus(event.params.fraction))
-        .div(ONE_18DEC_BI)
+          .times
+          (ONE_18DEC_BI.minus(event.params.fraction))
+          .div(ONE_18DEC_BI)
       ).toString()
   ])
 
-  position.fractionUnwound = 
+  position.fractionUnwound =
     ONE_18DEC_BI
-    .minus(
-      (ONE_18DEC_BI.minus(fractionUnwound))
-      .times
-      (ONE_18DEC_BI.minus(event.params.fraction))
-      .div(ONE_18DEC_BI)
-    )
+      .minus(
+        (ONE_18DEC_BI.minus(fractionUnwound))
+          .times
+          (ONE_18DEC_BI.minus(event.params.fraction))
+          .div(ONE_18DEC_BI)
+      )
 
   sender.numberOfUnwinds = sender.numberOfUnwinds.plus(ONE_BI)
   sender.realizedPnl = sender.realizedPnl.plus(pnl)
   if (event.params.fraction == ONE_18DEC_BI) {
     sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
   }
-  
+
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
   updateTraderEpochVolume(event.params.sender, unwind.volume)
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(unwind.volume)
-  
+
   updateMarketHourData(market, event.block.timestamp, unwind.volume, event.params.mint)
 
   position.save()
@@ -450,10 +468,10 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   let market = loadMarket(event, event.address)
   let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
-  
+
   let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
-  
+
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
   let unwindNumber = position.numberOfUniwnds
@@ -500,12 +518,31 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
 
   sender.numberOfUnwinds = sender.numberOfUnwinds.plus(ONE_BI)
   sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
-  
+
   position.save()
   market.save()
   unwind.save()
   sender.save()
   transaction.save()
+}
+
+export function handleCacheRiskCalc(event: CacheRiskCalcEvent): void {
+  let market = loadMarket(event, event.address)
+  let marketState = updateMarketState(market.id)
+
+  market.dpUpperLimit = event.params.newDpUpperLimit
+
+  market.save()
+}
+
+export function handleUpdate(event: UpdateEvent): void {
+  let market = loadMarket(event, event.address)
+  let marketState = updateMarketState(market.id)
+
+  market.oiLong = event.params.oiLong
+  market.oiShort = event.params.oiShort
+
+  market.save()
 }
 
 export function handleLiquidate(event: LiquidateEvent): void {
@@ -539,7 +576,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
       receipt.logs[0].transactionLogIndex.toI32().toString(),
     ])
     let liquidateIndex = 0
-    for (let i=0; i < receipt.logs.length; i++) {
+    for (let i = 0; i < receipt.logs.length; i++) {
       if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
         liquidateIndex = i
         break
@@ -568,7 +605,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
           feeIndex.toString()
         ])
       }
-		} else {
+    } else {
       log.error("handleLiquidate: 1st if: transaction: {}, liquidateIndex: {}, feeIndex {}", [
         event.transaction.hash.toHexString(),
         liquidateIndex.toString(),
@@ -595,7 +632,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
           liquidatorTransferIndex.toString()
         ])
       }
-		} else {
+    } else {
       log.error("handleLiquidate: 1st if: transaction: {}, liquidateIndex: {}, liquidatorTransferIndex {}", [
         event.transaction.hash.toHexString(),
         liquidateIndex.toString(),
@@ -612,8 +649,13 @@ export function handleLiquidate(event: LiquidateEvent): void {
   position.isLiquidated = true
   position.fractionUnwound = ONE_18DEC_BI
 
-  market.oiLong = marketState.oiLong
-  market.oiShort = marketState.oiShort
+  if (position.isLong) {
+    market.oiLong = event.params.oiAfterLiquidate
+    market.oiLongShares = event.params.oiSharesAfterLiquidate
+  } else {
+    market.oiShort = event.params.oiAfterLiquidate
+    market.oiShortShares = event.params.oiSharesAfterLiquidate
+  }
   market.totalLiquidateFees = market.totalLiquidateFees.plus(transferFeeAmount)
   market.numberOfLiquidates = market.numberOfLiquidates.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
@@ -679,7 +721,7 @@ export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
   factory.save()
 }
 
-export function handleFeedFactoryAdded(event: FeedFactoryAdded): void {}
+export function handleFeedFactoryAdded(event: FeedFactoryAdded): void { }
 
 
 export function handleParamUpdated(event: ParamUpdated): void {

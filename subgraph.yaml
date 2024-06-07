@@ -6,9 +6,9 @@ dataSources:
     name: OverlayV1Factory
     network: arbitrum-sepolia
     source:
-      address: "0xa2dBe262D27647243Ac3187d05DBF6c3C6ECC14D"
+      address: "0xed2817a1B52936cc9d6895C69df90d80d44F7dea"
       abi: OverlayV1Factory
-      startBlock: 1590150
+      startBlock: 45021636
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -49,7 +49,7 @@ dataSources:
     source:
       address: "0x0000000000000000000000000000000000000000"
       abi: TokenStake
-      startBlock: 1590150
+      startBlock: 45021636
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -83,9 +83,9 @@ dataSources:
     name: OverlayV1Token
     network: arbitrum-sepolia
     source:
-      address: "0x3E27fAe625f25291bFda517f74bf41DC40721dA2"
+      address: "0x17148E389cE87A35f7a5c44976682E66F4307313"
       abi: OverlayV1Token
-      startBlock: 1589788
+      startBlock: 45021636
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -107,7 +107,7 @@ dataSources:
     source:
       address: "0x0000000000000000000000000000000000000000"
       abi: PlanckCat
-      startBlock: 1589788
+      startBlock: 45021636
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -127,9 +127,9 @@ dataSources:
     name: ReferralList
     network: arbitrum-sepolia
     source:
-      address: "0x1cee53AB89004b2a9E173edc6F51509f8eB32122"
+      address: "0x0000000000000000000000000000000000000000"
       abi: ReferralList
-      startBlock: 8197611
+      startBlock: 45021636
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -159,9 +159,9 @@ dataSources:
     name: TradingMining
     network: arbitrum-sepolia
     source:
-      address: "0xFDf98Ac225Aa3B2788dcE96ffe55C2Bb3edCf4c9"
+      address: "0x0000000000000000000000000000000000000000"
       abi: TradingMining
-      startBlock: 2784174
+      startBlock: 45021636
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -206,16 +206,22 @@ templates:
         - name: TradingMining
           file: ./abis/TradingMining.json
       eventHandlers:
-        - event: Build(indexed address,uint256,uint256,uint256,bool,uint256)
+        - event: Build(indexed address,uint256,uint256,uint256,bool,uint256,uint256,uint256)
           handler: handleBuild
           receipt: true
-        - event: Liquidate(indexed address,indexed address,uint256,int256,uint256)
+        - event: Liquidate(indexed address,indexed address,uint256,int256,uint256,uint256,uint256)
           handler: handleLiquidate
           receipt: true
-        - event: Unwind(indexed address,uint256,uint256,int256,uint256)
+        - event: Unwind(indexed address,uint256,uint256,int256,uint256,uint256,uint256)
           handler: handleUnwind
           receipt: true
         - event: EmergencyWithdraw(indexed address,uint256,uint256)
           handler: handleEmergencyWithdraw
           receipt: true
+        - event: CacheRiskCalc(uint256)
+          handler: handleCacheRiskCalc
+          receipt: true
+        - event: Update(uint256,uint256)
+          handler: handleUpdate
+          receipt: true 
       file: ./src/mapping.ts

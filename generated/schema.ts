@@ -589,6 +589,32 @@ export class Market extends Entity {
     this.set("oiShort", Value.fromBigInt(value));
   }
 
+  get oiLongShares(): BigInt {
+    let value = this.get("oiLongShares");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiLongShares(value: BigInt) {
+    this.set("oiLongShares", Value.fromBigInt(value));
+  }
+
+  get oiShortShares(): BigInt {
+    let value = this.get("oiShortShares");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set oiShortShares(value: BigInt) {
+    this.set("oiShortShares", Value.fromBigInt(value));
+  }
+
   get isShutdown(): boolean {
     let value = this.get("isShutdown");
     if (!value || value.kind == ValueKind.NULL) {
@@ -717,6 +743,19 @@ export class Market extends Entity {
 
   set totalMint(value: BigInt) {
     this.set("totalMint", Value.fromBigInt(value));
+  }
+
+  get dpUpperLimit(): BigInt {
+    let value = this.get("dpUpperLimit");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set dpUpperLimit(value: BigInt) {
+    this.set("dpUpperLimit", Value.fromBigInt(value));
   }
 
   get marketHourData(): MarketHourDataLoader {

@@ -76,6 +76,10 @@ type Market @entity {
   oiLong: BigInt!
   # total current oi short
   oiShort: BigInt!
+  # oi long shares
+  oiLongShares: BigInt!
+  # oi short shares
+  oiShortShares: BigInt!
   # if market is shut down
   isShutdown: Boolean!
   # fees and tx count:
@@ -97,6 +101,8 @@ type Market @entity {
   totalVolume: BigInt!  
   # positive means net minting | negative means net burning
   totalMint: BigInt!
+  # used in dataIsValid function
+  dpUpperLimit: BigInt!
   # derived fields
   marketHourData: [MarketHourData!]! @derivedFrom(field: "market")
   # positions held in market
