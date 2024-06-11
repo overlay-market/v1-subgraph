@@ -448,14 +448,12 @@ export function handleUnwind(event: UnwindEvent): void {
           .div(ONE_18DEC_BI)
       )
 
-  // fraction of the position unwound DURING this transaction
-  const fractionUnwoundInThisTransaction = position.fractionUnwound.minus(fractionUnwound)
   // funding = exitPrice * (oiUnwound - oiInitial * fractionUnwound)
   // oiUnwound = oiBeforeUnwind - oiAfterUnwind
 
   const fundingPayment = event.params.price.times(
     oiUnwound.minus(
-      position.initialOi.times(fractionUnwoundInThisTransaction)
+      position.initialOi.times(fractionOfPosition)
     )
   )
   unwind.fundingPayment = fundingPayment
@@ -686,7 +684,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   // funding = exitPrice * (oiUnwound - oiInitial * fractionUnwound)
   // oiUnwound = oiBeforeUnwind - oiAfterUnwind
   const fundingPayment = event.params.price.times(
-    oiUnwound.minus(liquidateSize)
+    oiUnwound.minus(fractionOfPosition)
   )
   liquidate.fundingPayment = fundingPayment
   liquidate.position = position.id
