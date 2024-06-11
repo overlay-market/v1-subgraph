@@ -1758,6 +1758,19 @@ export class Unwind extends Entity {
     this.set("feeAmount", Value.fromBigInt(value));
   }
 
+  get fundingPayment(): BigInt {
+    let value = this.get("fundingPayment");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set fundingPayment(value: BigInt) {
+    this.set("fundingPayment", Value.fromBigInt(value));
+  }
+
   get size(): BigInt {
     let value = this.get("size");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1939,6 +1952,19 @@ export class Liquidate extends Entity {
 
   set fractionOfPosition(value: BigInt) {
     this.set("fractionOfPosition", Value.fromBigInt(value));
+  }
+
+  get fundingPayment(): BigInt {
+    let value = this.get("fundingPayment");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set fundingPayment(value: BigInt) {
+    this.set("fundingPayment", Value.fromBigInt(value));
   }
 
   get size(): BigInt {
