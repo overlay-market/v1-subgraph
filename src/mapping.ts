@@ -31,18 +31,7 @@ import { updateMarketState } from "./utils/helpers";
 export function handleMarketDeployed(event: MarketDeployed): void {
 
   // load factory
-  let factory = Factory.load(FACTORY_ADDRESS.toLowerCase())
-  if (factory === null) {
-    factory = new Factory(FACTORY_ADDRESS.toLowerCase())
-    factory.marketCount = ZERO_BI
-    factory.txCount = ZERO_BI
-    factory.totalVolumeOVL = ZERO_BD
-    factory.totalFeesOVL = ZERO_BD
-    factory.totalValueLockedOVL = ZERO_BD
-
-    factory.feeRecipient = factoryContract.try_feeRecipient().reverted ? ADDRESS_ZERO : factoryContract.try_feeRecipient().value.toHexString()
-    factory.owner = factoryContract.try_deployer().reverted ? ADDRESS_ZERO : factoryContract.try_deployer().value.toHexString()
-  }
+  let factory = loadFactory(FACTORY_ADDRESS.toLowerCase())
 
   factory.marketCount = factory.marketCount.plus(ONE_BI)
 
