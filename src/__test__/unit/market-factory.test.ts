@@ -13,9 +13,10 @@ import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
 import {
     MarketDeployed as MarketDeployedEvent,
     FeeRecipientUpdated as FeeRecipientUpdatedEvent,
-    ParamUpdated as ParamUpdatedEvent
+    ParamUpdated as ParamUpdatedEvent,
+    EmergencyShutdown as EmergencyShutdownEvent
 } from "../../../generated/OverlayV1Factory/OverlayV1Factory"
-import { handleFeeRecipientUpdated, handleMarketDeployed, handleParamUpdated } from "../../mapping"
+import { handleEmergencyShutdown, handleFeeRecipientUpdated, handleMarketDeployed, handleParamUpdated } from "../../mapping"
 import { FACTORY_ADDRESS, PERIPHERY_ADDRESS } from "../../utils/constants"
 import { setupMarketMockedFunctions } from "./shared/mockedFunctions"
 import { loadFactory } from "../../utils"
@@ -94,6 +95,22 @@ describe("Market Factory events", () => {
             assert.fieldEquals("Market", market.toHexString(), paramNameKey, paramValue.toString())
         })
     })
+
+    describe("Emergency Shutdown event", () => {
+        beforeEach(() => {
+            loadFactory(factoryAddress.toString())
+            const event = createEmergencyShutdownEvent(factoryAddress, user, market)
+            handleEmergencyShutdown(event)
+        })
+
+        afterEach(() => {
+            clearStore()
+        })
+
+        test("market is marked as shut down", () => {
+            assert.fieldEquals("Market", market.toHexString(), "isShutdown", "true")
+        })
+    })
 })
 
 function createMarketDeployedEvent(
@@ -164,6 +181,26 @@ function createParamUpdatedEvent(
     )
     event.parameters.push(
         new ethereum.EventParam("value", ethereum.Value.fromUnsignedBigInt(value)),
+    )
+
+    return event
+}
+
+function createEmergencyShutdownEvent(
+    factory: Address,
+    user: Address,
+    market: Address
+): EmergencyShutdownEvent {
+    const event = changetype<EmergencyShutdownEvent>(newMockEvent())
+
+    event.address = factory
+    event.parameters = new Array()
+
+    event.parameters.push(
+        new ethereum.EventParam("user", ethereum.Value.fromAddress(user)),
+    )
+    event.parameters.push(
+        new ethereum.EventParam("market", ethereum.Value.fromAddress(market)),
     )
 
     return event
