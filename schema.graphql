@@ -244,6 +244,8 @@ type Unwind @entity {
   pnl: BigInt!
   # Fee amount of this unwind
   feeAmount: BigInt!
+  # funding payment of this unwind
+  fundingPayment: BigInt!
   # fraction of initial collateral of this unwind
   size: BigInt!
   # volume = transferAmount + (initialDebt * fractionOfPosition) 
@@ -271,6 +273,8 @@ type Liquidate @entity {
   position: Position!
   # fraction of the original position
   fractionOfPosition: BigInt!
+  # funding payment of this liquidation
+  fundingPayment: BigInt!
   # liquidate size = initialCollateral * fractionOfPosition
   size: BigInt!
   # current position oi

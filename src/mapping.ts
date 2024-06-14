@@ -409,10 +409,14 @@ export function handleUnwind(event: UnwindEvent): void {
   // position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = position.currentDebt.times(ONE_18DEC_BI.minus(unwind.fraction)).div(ONE_18DEC_BI)
 
+  let oiUnwound: BigInt; // used later for fundingPayment calculations
+
   if (position.isLong) {
+    oiUnwound = market.oiLong.minus(event.params.oiAfterUnwind)
     market.oiLong = event.params.oiAfterUnwind
     market.oiLongShares = event.params.oiSharesAfterUnwind
   } else {
+    oiUnwound = market.oiShort.minus(event.params.oiAfterUnwind)
     market.oiShort = event.params.oiAfterUnwind
     market.oiShortShares = event.params.oiSharesAfterUnwind
   }
@@ -443,6 +447,16 @@ export function handleUnwind(event: UnwindEvent): void {
           (ONE_18DEC_BI.minus(event.params.fraction))
           .div(ONE_18DEC_BI)
       )
+
+  // funding = exitPrice * (oiUnwound - oiInitial * fractionUnwound)
+  // oiUnwound = oiBeforeUnwind - oiAfterUnwind
+
+  const fundingPayment = event.params.price.times(
+    oiUnwound.minus(
+      position.initialOi.times(fractionOfPosition)
+    )
+  )
+  unwind.fundingPayment = fundingPayment
 
   sender.numberOfUnwinds = sender.numberOfUnwinds.plus(ONE_BI)
   sender.realizedPnl = sender.realizedPnl.plus(pnl)
@@ -649,10 +663,14 @@ export function handleLiquidate(event: LiquidateEvent): void {
   position.isLiquidated = true
   position.fractionUnwound = ONE_18DEC_BI
 
+  let oiUnwound: BigInt; // used later for fundingPayment calculations
+
   if (position.isLong) {
+    oiUnwound = market.oiLong.minus(event.params.oiAfterLiquidate)
     market.oiLong = event.params.oiAfterLiquidate
     market.oiLongShares = event.params.oiSharesAfterLiquidate
   } else {
+    oiUnwound = market.oiShort.minus(event.params.oiAfterLiquidate)
     market.oiShort = event.params.oiAfterLiquidate
     market.oiShortShares = event.params.oiSharesAfterLiquidate
   }
@@ -663,6 +681,12 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let transaction = loadTransaction(event)
   let liquidate = new Liquidate(position.id) as Liquidate
 
+  // funding = exitPrice * (oiUnwound - oiInitial * fractionUnwound)
+  // oiUnwound = oiBeforeUnwind - oiAfterUnwind
+  const fundingPayment = event.params.price.times(
+    oiUnwound.minus(fractionOfPosition)
+  )
+  liquidate.fundingPayment = fundingPayment
   liquidate.position = position.id
   liquidate.owner = owner.id
   liquidate.sender = sender.id
