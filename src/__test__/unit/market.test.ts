@@ -20,25 +20,29 @@ import { handleBuild, handleCacheRiskCalc, handleUpdate } from "../../mapping"
 import { loadAccount } from "../../utils"
 import { loadTradingMining } from "../../trading-mining"
 import { loadReferralProgram, loadReferralPosition } from "../../referral"
-import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS } from "../../utils/constants"
+import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS, ADDRESS_ZERO } from "../../utils/constants"
+import { setupMarketMockedFunctions, setupTradingMiningMockedFunctions } from "./shared/mockedFunctions"
+import { MARKET_COLLATERAL, MARKET_PCD_HOLDER, MARKET_POSITION_ID, MARKET_SENDER } from "./shared/constants"
 
 // Export handlers for coverage report
-export { handleBuild }
+export { handleBuild, handleCacheRiskCalc, handleUpdate }
 
 const market = Address.fromString("0x0000000000000000000000000000000000000001")
 const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
 const referralAddress = Address.fromString(REFERRAL_ADDRESS)
 const marketStateAddress = Address.fromString(PERIPHERY_ADDRESS)
+const zeroAddress = Address.fromString(ADDRESS_ZERO)
 
 // Build event parameters
-const sender = Address.fromString("0x0000000000000000000000000000000000000b0b")
-const pcdHolder = Address.fromString("0x000000000000000000000000000000000000ca1e")
-const positionId = BigInt.fromI32(1)
+const sender = MARKET_SENDER
+const pcdHolder = MARKET_PCD_HOLDER
+const positionId = MARKET_POSITION_ID
+const collateral = MARKET_COLLATERAL
+
 const oi = BigInt.fromI32(50)
 const debt = BigInt.fromI32(20)
 const isLong = true
 const price = BigInt.fromI32(100)
-const collateral = BigInt.fromI32(1000)
 const oiAfterBuild = BigInt.fromI32(51)
 const oiSharesAfterBuild = BigInt.fromI32(1)
 
@@ -63,75 +67,8 @@ describe("Market events", () => {
 
     // Mock contract calls with dummy values
     beforeAll(() => {
-        // Market contract
-        createMockedFunction(market, "feed", "feed():(address)")
-            .returns([ethereum.Value.fromAddress(Address.zero())])
-        createMockedFunction(market, "factory", "factory():(address)")
-            .returns([ethereum.Value.fromAddress(Address.zero())])
-        for (let i = 0; i < 15; i++) {
-            createMockedFunction(market, "params", "params(uint256):(uint256)")
-                .withArgs([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(i))])
-                .returns([ethereum.Value.fromI32(1)])
-        }
-        createMockedFunction(market, "dpUpperLimit", "dpUpperLimit():(uint256)")
-            .returns([ethereum.Value.fromI32(1)])
-        createMockedFunction(market, "oiLongShares", "oiLongShares():(uint256)")
-            .returns([ethereum.Value.fromI32(1)])
-        createMockedFunction(market, "oiShortShares", "oiShortShares():(uint256)")
-            .returns([ethereum.Value.fromI32(1)])
-
-        // Periphery contract
-        createMockedFunction(Address.fromString(PERIPHERY_ADDRESS), "ois", "ois(address):(uint256,uint256)")
-            .withArgs([ethereum.Value.fromAddress(market)])
-            .returns([ethereum.Value.fromI32(1), ethereum.Value.fromI32(1)])
-        createMockedFunction(Address.fromString(PERIPHERY_ADDRESS), "cost", "cost(address,address,uint256):(uint256)")
-            .withArgs([ethereum.Value.fromAddress(market), ethereum.Value.fromAddress(sender), ethereum.Value.fromUnsignedBigInt(positionId)])
-            .returns([ethereum.Value.fromUnsignedBigInt(collateral)])
-        createMockedFunction(Address.fromString(PERIPHERY_ADDRESS), "value", "value(address,address,uint256):(uint256)")
-            .withArgs([ethereum.Value.fromAddress(market), ethereum.Value.fromAddress(sender), ethereum.Value.fromUnsignedBigInt(positionId)])
-            .returns([ethereum.Value.fromI32(1)])
-        createMockedFunction(Address.fromString(PERIPHERY_ADDRESS), "cost", "cost(address,address,uint256):(uint256)")
-            .withArgs([ethereum.Value.fromAddress(market), ethereum.Value.fromAddress(pcdHolder), ethereum.Value.fromUnsignedBigInt(positionId)])
-            .returns([ethereum.Value.fromUnsignedBigInt(collateral)])
-        createMockedFunction(Address.fromString(PERIPHERY_ADDRESS), "value", "value(address,address,uint256):(uint256)")
-            .withArgs([ethereum.Value.fromAddress(market), ethereum.Value.fromAddress(pcdHolder), ethereum.Value.fromUnsignedBigInt(positionId)])
-            .returns([ethereum.Value.fromI32(1)])
-
-        // TradingMining contract
-        createMockedFunction(tmAddress, "getCurrentEpoch", "getCurrentEpoch():(uint256)")
-            .returns([ethereum.Value.fromI32(epoch)])
-        createMockedFunction(tmAddress, "rewardToken1", "rewardToken1():(address)")
-            .returns([ethereum.Value.fromAddress(Address.zero())])
-        createMockedFunction(tmAddress, "rewardToken2", "rewardToken2():(address)")
-            .returns([ethereum.Value.fromAddress(Address.zero())])
-        createMockedFunction(tmAddress, "token1Percentage", "token1Percentage():(uint8)")
-            .returns([ethereum.Value.fromI32(0)])
-        createMockedFunction(tmAddress, "startTime", "startTime():(uint64)")
-            .returns([ethereum.Value.fromI32(0)])
-        createMockedFunction(tmAddress, "epochDuration", "epochDuration():(uint64)")
-            .returns([ethereum.Value.fromI32(0)])
-        createMockedFunction(tmAddress, "pcdHolderBonusPercentage", "pcdHolderBonusPercentage():(uint8)")
-            .returns([ethereum.Value.fromI32(0)])
-        createMockedFunction(tmAddress, "totalRewards", "totalRewards():(uint256)")
-            .returns([ethereum.Value.fromI32(0)])
-        createMockedFunction(tmAddress, "maxRewardPerEpochPerAddress", "maxRewardPerEpochPerAddress():(uint256)")
-            .returns([ethereum.Value.fromI32(0)])
-
-        // Market state contract
-        createMockedFunction(marketStateAddress, "marketState", "marketState(address):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,int256))")
-            .withArgs([ethereum.Value.fromAddress(market)])
-            .returns([ethereum.Value.fromTuple(changetype<ethereum.Tuple>([
-                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
-                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
-                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
-                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
-                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
-                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
-                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
-                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
-                ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(0)),
-                ethereum.Value.fromSignedBigInt(BigInt.fromI32(1))
-            ]))])
+        setupMarketMockedFunctions(zeroAddress, marketStateAddress, market)
+        setupTradingMiningMockedFunctions(tmAddress, epoch)
     })
     describe("Build event", () => {
 
