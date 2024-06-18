@@ -23,7 +23,7 @@ import { loadReferralProgram, loadReferralPosition } from "../../referral"
 import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS } from "../../utils/constants"
 
 // Export handlers for coverage report
-export { handleBuild }
+export { handleBuild, handleCacheRiskCalc, handleUpdate }
 
 const market = Address.fromString("0x0000000000000000000000000000000000000001")
 const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
