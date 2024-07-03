@@ -10,6 +10,20 @@ type Analytics @entity {
   totalVolume: BigInt!
 }
 
+type AnalyticsHourData @entity {
+  # factory address concatendated with date - for uniqueness
+  id: ID!
+  # unix timestamp for start of hour
+  periodStartUnix: Int!
+  totalUsers: BigInt!
+  totalTransactions: BigInt!
+  totalTokensLocked: BigInt!
+  totalVolumeBuilds: BigInt!
+  totalVolumeUnwinds: BigInt!
+  totalVolumeLiquidations: BigInt!
+  totalVolume: BigInt!
+}
+
 type Factory @entity {
   # factory address
   id: ID!
