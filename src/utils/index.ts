@@ -1,5 +1,5 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
-import { Market, Transaction, Position, Factory, Account, Analytics } from '../../generated/schema'
+import { Market, Transaction, Position, Factory, Account, Analytics, AnalyticsHourData } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
@@ -165,4 +165,30 @@ export function loadAnalytics(factory: string): Analytics {
   }
 
   return analytics
+}
+
+export function loadAnalyticsHourData(factory: string, eventTimestamp: BigInt): AnalyticsHourData {
+  let timestamp = eventTimestamp.toI32()
+  let hourIndex = timestamp / 3600 // get unique hour within unix history
+  let hourStartUnix = hourIndex * 3600 // want the rounded effect
+  let analyticsHourID = factory
+    .concat('-')
+    .concat(hourIndex.toString())
+
+  let analyticsHourData = AnalyticsHourData.load(analyticsHourID)
+
+  if (analyticsHourData === null) {
+    analyticsHourData = new AnalyticsHourData(analyticsHourID)
+    analyticsHourData.periodStartUnix = hourStartUnix
+
+    analyticsHourData.totalUsers = ZERO_BI
+    analyticsHourData.totalTransactions = ZERO_BI
+    analyticsHourData.totalTokensLocked = ZERO_BI
+    analyticsHourData.totalVolumeBuilds = ZERO_BI
+    analyticsHourData.totalVolumeUnwinds = ZERO_BI
+    analyticsHourData.totalVolumeLiquidations = ZERO_BI
+    analyticsHourData.totalVolume = ZERO_BI
+  }
+
+  return analyticsHourData
 }
