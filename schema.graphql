@@ -1,6 +1,6 @@
 type Analytics @entity {
   # factory address - for uniqueness
-  id: ID!
+  id: Bytes!
   totalUsers: BigInt!
   totalTransactions: BigInt!
   totalTokensLocked: BigInt!
@@ -12,7 +12,7 @@ type Analytics @entity {
 
 type AnalyticsHourData @entity {
   # factory address concatendated with date - for uniqueness
-  id: ID!
+  id: Bytes!
   # unix timestamp for start of hour
   periodStartUnix: Int!
   totalUsers: BigInt!

@@ -1,4 +1,4 @@
-import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { Market, Transaction, Position, Factory, Account, Analytics, AnalyticsHourData } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
@@ -98,7 +98,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
 
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
     position.initialDebt = stateContract.debt(marketAddress, sender, positionId)
-    
+
     let initialCollateral = stateContract.cost(marketAddress, sender, positionId)
     let initialDebt = stateContract.debt(marketAddress, sender, positionId)
     let initialNotional = initialCollateral.plus(initialDebt)
@@ -121,7 +121,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.currentOi = stateContract.oi(marketAddress, sender, positionId)
     position.currentDebt = stateContract.debt(marketAddress, sender, positionId)
     position.mint = ZERO_BI
-    
+
     position.createdAtTimestamp = event.block.timestamp
     position.createdAtBlockNumber = event.block.number
   }
@@ -148,7 +148,7 @@ export function loadAccount(accountAddress: Address): Account {
 }
 
 export function loadAnalytics(factory: string): Analytics {
-  let analyticsId = factory
+  let analyticsId = Bytes.fromHexString(factory);
   let analytics = Analytics.load(analyticsId)
 
   if (analytics === null) {
@@ -167,13 +167,12 @@ export function loadAnalytics(factory: string): Analytics {
   return analytics
 }
 
-export function loadAnalyticsHourData(factory: string, eventTimestamp: BigInt): AnalyticsHourData {
+export function loadAnalyticsHourData(factory: Bytes, eventTimestamp: BigInt): AnalyticsHourData {
   let timestamp = eventTimestamp.toI32()
   let hourIndex = timestamp / 3600 // get unique hour within unix history
   let hourStartUnix = hourIndex * 3600 // want the rounded effect
   let analyticsHourID = factory
-    .concat('-')
-    .concat(hourIndex.toString())
+    .concatI32(hourIndex)
 
   let analyticsHourData = AnalyticsHourData.load(analyticsHourID)
 

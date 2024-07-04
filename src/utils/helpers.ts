@@ -8,9 +8,9 @@ import { loadAnalyticsHourData } from '.';
 
 export function updateMarketState(marketAddress: string): MarketState {
     let marketState = MarketState.load(marketAddress)
-  
+
     if (marketState === null) {
-      marketState = new MarketState(marketAddress)
+        marketState = new MarketState(marketAddress)
     }
 
     let _marketStateStatus = stateContract.try_marketState(Address.fromString(marketAddress))
