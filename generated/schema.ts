@@ -4391,9 +4391,9 @@ export class TradingMiningEpochVolume extends Entity {
 }
 
 export class TotalSupplyHourData extends Entity {
-  constructor(id: string) {
+  constructor(id: Bytes) {
     super();
-    this.set("id", Value.fromString(id));
+    this.set("id", Value.fromBytes(id));
   }
 
   save(): void {
@@ -4401,36 +4401,36 @@ export class TotalSupplyHourData extends Entity {
     assert(id != null, "Cannot save TotalSupplyHourData entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type TotalSupplyHourData must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        id.kind == ValueKind.BYTES,
+        `Entities of type TotalSupplyHourData must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("TotalSupplyHourData", id.toString(), this);
+      store.set("TotalSupplyHourData", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: string): TotalSupplyHourData | null {
+  static loadInBlock(id: Bytes): TotalSupplyHourData | null {
     return changetype<TotalSupplyHourData | null>(
-      store.get_in_block("TotalSupplyHourData", id),
+      store.get_in_block("TotalSupplyHourData", id.toHexString()),
     );
   }
 
-  static load(id: string): TotalSupplyHourData | null {
+  static load(id: Bytes): TotalSupplyHourData | null {
     return changetype<TotalSupplyHourData | null>(
-      store.get("TotalSupplyHourData", id),
+      store.get("TotalSupplyHourData", id.toHexString()),
     );
   }
 
-  get id(): string {
+  get id(): Bytes {
     let value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
   }
 
   get periodStartUnix(): i32 {

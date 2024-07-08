@@ -507,7 +507,7 @@ type TradingMiningEpochVolume @entity {
 
 type TotalSupplyHourData @entity {
   # token address concatendated with date
-  id: ID!
+  id: Bytes!
   # unix timestamp for start of hour
   periodStartUnix: Int!
   # pointer to token
