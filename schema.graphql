@@ -310,7 +310,7 @@ type Liquidate @entity {
 
 type Account @entity {
   # account address
-  id: ID!
+  id: Bytes!
   # totalRealizedPnl
   realizedPnl:  BigInt!
   # numberOfUnwinds of the account
