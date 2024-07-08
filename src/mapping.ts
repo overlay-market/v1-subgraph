@@ -89,7 +89,7 @@ export function handleBuild(event: BuildEvent): void {
   let sender = loadAccount(event.params.sender)
 
   let marketAddress = Address.fromBytes(market.id)
-  let senderAddress = Address.fromString(sender.id)
+  let senderAddress = Address.fromBytes(sender.id)
 
   let positionId = event.params.positionId
   let id = market.id.concatI32(positionId.toI32())
@@ -254,7 +254,7 @@ export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event, event.address)
   let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
-  let senderAddress = Address.fromString(sender.id)
+  let senderAddress = Address.fromBytes(sender.id)
 
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
@@ -475,7 +475,7 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
 
-  let senderAddress = Address.fromString(sender.id)
+  let senderAddress = Address.fromBytes(sender.id)
 
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
@@ -556,7 +556,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let sender = loadAccount(event.params.sender)
   let owner = loadAccount(event.params.owner)
 
-  let ownerAddress = Address.fromString(owner.id)
+  let ownerAddress = Address.fromBytes(owner.id)
 
   let positionId = event.params.positionId
   let position = loadPosition(event, ownerAddress, market, positionId)
@@ -625,7 +625,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
       receipt.logs[liquidatorTransferIndex].topics.length > 1
     ) {
       let topics2address = ethereum.decode('address', receipt.logs[liquidatorTransferIndex].topics[2])!.toAddress()
-      if (topics2address.toHexString().toLowerCase() == sender.id.toLowerCase()) {
+      if (topics2address == Address.fromBytes(sender.id)) {
         const _transferAmount = receipt.logs[liquidatorTransferIndex].data
         transferLiquidatorAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
       } else {

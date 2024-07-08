@@ -96,7 +96,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
   if (position === null) {
     position = new Position(marketPositionId)
     position.positionId = positionId.toHexString()
-    position.owner = sender.toHexString()
+    position.owner = sender
     position.market = market.id
 
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
@@ -133,11 +133,10 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
 }
 
 export function loadAccount(accountAddress: Address): Account {
-  let accountId = accountAddress.toHexString()
-  let account = Account.load(accountId)
+  let account = Account.load(accountAddress)
 
   if (account === null) {
-    account = new Account(accountId)
+    account = new Account(accountAddress)
 
     account.realizedPnl = ZERO_BI
     account.numberOfUnwinds = ZERO_BI
