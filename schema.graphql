@@ -183,7 +183,7 @@ type Position @entity {
 
 type Transaction @entity {
   # txn hash
-  id: ID!
+  id: Bytes!
   # block txn was included in
   blockNumber: BigInt!
   # timestamp txn was confirmed
