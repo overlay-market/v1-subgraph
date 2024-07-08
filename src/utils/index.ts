@@ -19,7 +19,7 @@ export function loadTransaction(event: ethereum.Event): Transaction {
   return transaction as Transaction
 }
 
-export function loadFactory(factoryAddress: string): Factory {
+export function loadFactory(factoryAddress: Bytes): Factory {
   let factory = Factory.load(factoryAddress)
   if (factory === null) {
     factory = new Factory(factoryAddress)
@@ -46,7 +46,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     let marketContract = OverlayV1Market.bind(marketAddress)
 
     market.feedAddress = marketContract.feed().toHexString()
-    market.factory = marketContract.factory().toHexString()
+    market.factory = marketContract.factory()
 
     market.createdAtTimestamp = event.block.timestamp
     market.createdAtBlockNumber = event.block.number
@@ -150,12 +150,11 @@ export function loadAccount(accountAddress: Address): Account {
   return account
 }
 
-export function loadAnalytics(factory: string): Analytics {
-  let analyticsId = Bytes.fromHexString(factory);
-  let analytics = Analytics.load(analyticsId)
+export function loadAnalytics(factory: Bytes): Analytics {
+  let analytics = Analytics.load(factory)
 
   if (analytics === null) {
-    analytics = new Analytics(analyticsId)
+    analytics = new Analytics(factory)
 
 
     analytics.totalUsers = ZERO_BI

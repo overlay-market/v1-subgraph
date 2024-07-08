@@ -1,4 +1,4 @@
-import { ethereum, Address, BigInt, log } from "@graphprotocol/graph-ts"
+import { ethereum, Address, BigInt, log, Bytes } from "@graphprotocol/graph-ts"
 import { integer } from "@protofire/subgraph-toolkit";
 import {
   FeeRecipientUpdated,
@@ -31,7 +31,7 @@ import { updateAnalyticsHourData, updateMarketState } from "./utils/helpers";
 export function handleMarketDeployed(event: MarketDeployed): void {
 
   // load factory
-  let factory = loadFactory(FACTORY_ADDRESS.toLowerCase())
+  let factory = loadFactory(Address.fromString(FACTORY_ADDRESS))
 
   factory.marketCount = factory.marketCount.plus(ONE_BI)
 
@@ -97,7 +97,7 @@ export function handleBuild(event: BuildEvent): void {
 
   let transferFeeAmount = ZERO_BI
   let receipt = event.receipt
-  let factory = Factory.load(market.factory.toLowerCase())
+  let factory = Factory.load(market.factory)
 
   if (receipt && factory) {
     const logLength = receipt.logs.length
@@ -223,7 +223,7 @@ export function handleBuild(event: BuildEvent): void {
   build.feeAmount = transferFeeAmount
 
   // analytics update
-  let analytics = loadAnalytics(market.factory.toLowerCase())
+  let analytics = loadAnalytics(market.factory)
   if (sender.ovlVolumeTraded.equals(ZERO_BI)) {
     analytics.totalUsers = analytics.totalUsers.plus(ONE_BI)
   }
@@ -286,7 +286,7 @@ export function handleUnwind(event: UnwindEvent): void {
       ONE_18DEC_BI
     )
 
-  let factory = Factory.load(market.factory.toLowerCase())
+  let factory = Factory.load(market.factory)
   if (receipt && factory) {
     const logLength = receipt.logs.length
     log.warning("handleUnwind: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
@@ -391,7 +391,7 @@ export function handleUnwind(event: UnwindEvent): void {
   unwind.transaction = transaction.id
 
   // analytics update
-  let analytics = loadAnalytics(market.factory.toLowerCase())
+  let analytics = loadAnalytics(market.factory)
   analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
   analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
   analytics.totalVolumeUnwinds = analytics.totalVolumeUnwinds.plus(unwind.volume)
@@ -569,7 +569,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   // initialize variables
   let transferFeeAmount = ZERO_BI
   let transferLiquidatorAmount = ZERO_BI
-  let factory = Factory.load(market.factory.toLowerCase())
+  let factory = Factory.load(market.factory)
   if (receipt && factory) {
     const logLength = receipt.logs.length
     log.warning("handleLiquidate: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
@@ -703,7 +703,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.transferFeeAmount = transferFeeAmount
 
   // analytics update
-  let analytics = loadAnalytics(market.factory.toLowerCase())
+  let analytics = loadAnalytics(market.factory)
   analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
   analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
   analytics.totalVolumeLiquidations = analytics.totalVolumeLiquidations.plus(liquidate.volume)
@@ -733,8 +733,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
 
 export function handleFeeRecipientUpdated(event: FeeRecipientUpdated): void {
-  let factoryAddress = event.address.toHexString()
-  let factory = loadFactory(factoryAddress.toLowerCase())
+  let factoryAddress = event.address
+  let factory = loadFactory(factoryAddress)
   factory.feeRecipient = event.params.recipient.toHexString()
 
   factory.save()
