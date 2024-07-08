@@ -1431,9 +1431,9 @@ export class Position extends Entity {
 }
 
 export class Transaction extends Entity {
-  constructor(id: string) {
+  constructor(id: Bytes) {
     super();
-    this.set("id", Value.fromString(id));
+    this.set("id", Value.fromBytes(id));
   }
 
   save(): void {
@@ -1441,34 +1441,36 @@ export class Transaction extends Entity {
     assert(id != null, "Cannot save Transaction entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type Transaction must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        id.kind == ValueKind.BYTES,
+        `Entities of type Transaction must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("Transaction", id.toString(), this);
+      store.set("Transaction", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: string): Transaction | null {
+  static loadInBlock(id: Bytes): Transaction | null {
     return changetype<Transaction | null>(
-      store.get_in_block("Transaction", id),
+      store.get_in_block("Transaction", id.toHexString()),
     );
   }
 
-  static load(id: string): Transaction | null {
-    return changetype<Transaction | null>(store.get("Transaction", id));
+  static load(id: Bytes): Transaction | null {
+    return changetype<Transaction | null>(
+      store.get("Transaction", id.toHexString()),
+    );
   }
 
-  get id(): string {
+  get id(): Bytes {
     let value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
   }
 
   get blockNumber(): BigInt {
@@ -1524,13 +1526,17 @@ export class Transaction extends Entity {
   }
 
   get builds(): BuildLoader {
-    return new BuildLoader("Transaction", this.get("id")!.toString(), "builds");
+    return new BuildLoader(
+      "Transaction",
+      this.get("id")!.toBytes().toHexString(),
+      "builds",
+    );
   }
 
   get unwinds(): UnwindLoader {
     return new UnwindLoader(
       "Transaction",
-      this.get("id")!.toString(),
+      this.get("id")!.toBytes().toHexString(),
       "unwinds",
     );
   }
@@ -1538,7 +1544,7 @@ export class Transaction extends Entity {
   get liquidates(): LiquidateLoader {
     return new LiquidateLoader(
       "Transaction",
-      this.get("id")!.toString(),
+      this.get("id")!.toBytes().toHexString(),
       "liquidates",
     );
   }
@@ -1546,7 +1552,7 @@ export class Transaction extends Entity {
   get tokenTransfers(): TokenTransferLoader {
     return new TokenTransferLoader(
       "Transaction",
-      this.get("id")!.toString(),
+      this.get("id")!.toBytes().toHexString(),
       "tokenTransfers",
     );
   }
@@ -1723,17 +1729,17 @@ export class Build extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get transaction(): string {
+  get transaction(): Bytes {
     let value = this.get("transaction");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set transaction(value: string) {
-    this.set("transaction", Value.fromString(value));
+  set transaction(value: Bytes) {
+    this.set("transaction", Value.fromBytes(value));
   }
 }
 
@@ -2025,17 +2031,17 @@ export class Unwind extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get transaction(): string {
+  get transaction(): Bytes {
     let value = this.get("transaction");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set transaction(value: string) {
-    this.set("transaction", Value.fromString(value));
+  set transaction(value: Bytes) {
+    this.set("transaction", Value.fromBytes(value));
   }
 }
 
@@ -2264,17 +2270,17 @@ export class Liquidate extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get transaction(): string {
+  get transaction(): Bytes {
     let value = this.get("transaction");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set transaction(value: string) {
-    this.set("transaction", Value.fromString(value));
+  set transaction(value: Bytes) {
+    this.set("transaction", Value.fromBytes(value));
   }
 
   get volume(): BigInt {
@@ -2603,17 +2609,17 @@ export class TokenTransfer extends Entity {
     this.set("amount", Value.fromBigInt(value));
   }
 
-  get transaction(): string {
+  get transaction(): Bytes {
     let value = this.get("transaction");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set transaction(value: string) {
-    this.set("transaction", Value.fromString(value));
+  set transaction(value: Bytes) {
+    this.set("transaction", Value.fromBytes(value));
   }
 }
 
@@ -3526,17 +3532,17 @@ export class ERC721Transfer extends Entity {
     this.set("to", Value.fromString(value));
   }
 
-  get transaction(): string {
+  get transaction(): Bytes {
     let value = this.get("transaction");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set transaction(value: string) {
-    this.set("transaction", Value.fromString(value));
+  set transaction(value: Bytes) {
+    this.set("transaction", Value.fromBytes(value));
   }
 }
 
@@ -3827,17 +3833,17 @@ export class ReferralProgram extends Entity {
     this.set("createdAtBlockNumber", Value.fromBigInt(value));
   }
 
-  get latestUpdateTransaction(): string {
+  get latestUpdateTransaction(): Bytes {
     let value = this.get("latestUpdateTransaction");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set latestUpdateTransaction(value: string) {
-    this.set("latestUpdateTransaction", Value.fromString(value));
+  set latestUpdateTransaction(value: Bytes) {
+    this.set("latestUpdateTransaction", Value.fromBytes(value));
   }
 
   get totalRewards(): BigInt {
