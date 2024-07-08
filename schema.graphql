@@ -47,7 +47,7 @@ type Factory @entity {
 
 type Market @entity {
   # market contract address
-  id: ID!
+  id: Bytes!
   # feed contract address
   feedAddress: String!
   # factory contract address
@@ -127,7 +127,7 @@ type Market @entity {
 
 type MarketState @entity {
   # market address
-  id: ID!
+  id: Bytes!
   market: Market!
   bid: BigInt!
   ask: BigInt!
@@ -143,7 +143,7 @@ type MarketState @entity {
 
 type Position @entity {
   # market contract concat'd with position id
-  id: ID!
+  id: Bytes!
   # position id
   positionId: String!
   # owner of position
@@ -206,7 +206,7 @@ type Transaction @entity {
 
 type Build @entity {
   # market contract concat'd with position id
-  id: ID!
+  id: Bytes!
   # account performing action
   owner: Account!
   # position entitie
@@ -233,7 +233,7 @@ type Build @entity {
 
 type Unwind @entity {
   # market contract concat'd with position id concat'd with unwind number
-  id: ID!
+  id: Bytes!
   # account performing action
   owner: Account!
   # position id
@@ -278,7 +278,7 @@ type Unwind @entity {
 
 type Liquidate @entity {
   # market contract concat'd with position id
-  id: ID!
+  id: Bytes!
   # owner of the position
   owner: Account!
   # address performing the transaction
@@ -522,7 +522,7 @@ type TotalSupplyHourData @entity {
 
 type MarketHourData @entity {
   # market address concatendated with date
-  id: ID!
+  id: Bytes!
   # unix timestamp for start of hour
   periodStartUnix: Int!
   # pointer to market

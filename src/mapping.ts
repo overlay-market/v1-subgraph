@@ -38,7 +38,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   let marketAddress = event.params.market
   let feedAddress = event.params.feed
   let marketContract = OverlayV1Market.bind(event.params.market)
-  let market = new Market(marketAddress.toHexString()) as Market
+  let market = new Market(marketAddress) as Market
   let marketState = updateMarketState(market.id)
 
   market.feedAddress = feedAddress.toHexString()
@@ -88,11 +88,11 @@ export function handleBuild(event: BuildEvent): void {
   let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
 
-  let marketAddress = Address.fromString(market.id)
+  let marketAddress = Address.fromBytes(market.id)
   let senderAddress = Address.fromString(sender.id)
 
   let positionId = event.params.positionId
-  let id = market.id.concat('-').concat(positionId.toHexString())
+  let id = market.id.concatI32(positionId.toI32())
   let position = new Position(id) as Position
 
   let transferFeeAmount = ZERO_BI
@@ -254,7 +254,6 @@ export function handleUnwind(event: UnwindEvent): void {
   let market = loadMarket(event, event.address)
   let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
-  let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
 
   let positionId = event.params.positionId
@@ -268,7 +267,7 @@ export function handleUnwind(event: UnwindEvent): void {
   market.oiShort = marketState.oiShort
 
   let transaction = loadTransaction(event)
-  let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
+  let unwind = new Unwind(position.id.concatI32(unwindNumber.toI32())) as Unwind
 
   let receipt = event.receipt
   // initialize variables
@@ -476,7 +475,6 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
 
-  let marketAddress = Address.fromString(market.id)
   let senderAddress = Address.fromString(sender.id)
 
   let positionId = event.params.positionId
@@ -489,7 +487,7 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   market.oiShort = marketState.oiShort
 
   let transaction = loadTransaction(event)
-  let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
+  let unwind = new Unwind(position.id.concatI32(unwindNumber.toI32())) as Unwind
 
   // fraction of the position unwound BEFORE this transaction
   const fractionUnwound = position.fractionUnwound
@@ -558,8 +556,6 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let sender = loadAccount(event.params.sender)
   let owner = loadAccount(event.params.owner)
 
-  let marketAddress = Address.fromString(market.id)
-  let senderAddress = Address.fromString(sender.id)
   let ownerAddress = Address.fromString(owner.id)
 
   let positionId = event.params.positionId
