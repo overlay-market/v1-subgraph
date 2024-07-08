@@ -35,8 +35,8 @@ export function loadFactory(factoryAddress: Bytes): Factory {
   return factory
 }
 
-export function loadMarket(event: ethereum.Event, marketAddress: Address): Market {
-  let marketId = marketAddress.toHexString()
+export function loadMarket(event: ethereum.Event, marketId: Bytes): Market {
+  const marketAddress = Address.fromBytes(marketId);
   let market = Market.load(marketId)
 
   // if market doesn't exist, initialize
@@ -85,8 +85,8 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
 }
 
 export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
-  let marketPositionId = market.id.concat('-').concat(positionId.toHexString())
-  let marketAddress = Address.fromString(market.id)
+  let marketPositionId = market.id.concatI32(positionId.toI32())
+  let marketAddress = Address.fromBytes(market.id)
   let position = Position.load(marketPositionId)
 
   // create new Position if null
