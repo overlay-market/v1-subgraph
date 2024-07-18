@@ -4,9 +4,9 @@ import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Fa
 import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factory/OverlayV1State'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-export const FACTORY_ADDRESS = '0x3e27fae625f25291bfda517f74bf41dc40721da2' // movement-testnet
-export const PERIPHERY_ADDRESS = '0x602595adb927fb777e96ea554975ebbad17104c4' // movement-testnet
-export const OVL_ADDRESS = '0x7aee03680ccb1f94d52a76be010f63bdd9e99ef9' // movement-testnet
+export const FACTORY_ADDRESS = '0x1f34c87ded863fe3a3cd76fac8ada9608137c8c3' // movement-testnet
+export const PERIPHERY_ADDRESS = '0x7c269775d58c408d5feeb5e5d776e34302a3e580' // movement-testnet
+export const OVL_ADDRESS = '0x055616c6e3965f90a82120d675c17409b64db20e' // movement-testnet
 export const REFERRAL_ADDRESS = '0x1cee53AB89004b2a9E173edc6F51509f8eB32122' // not deployed on movement
 export const TRADING_MINING_ADDRESS = '0xFDf98Ac225Aa3B2788dcE96ffe55C2Bb3edCf4c9' // not deployed on movement-testnet
 
