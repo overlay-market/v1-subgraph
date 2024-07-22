@@ -3,6 +3,7 @@ import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import {
   TransferSingle as TransferSingleEvent,
   TransferBatch as TransferBatchEvent,
+  URI as URIEvent
 } from "../generated/PowerCard/PowerCard"
 import { Account, ERC1155Token, ERC1155TokenBalance, ERC1155Transfer } from "../generated/schema"
 import { loadAccount, loadTransaction } from "./utils"
@@ -29,6 +30,17 @@ export function handleTransferBatch(event: TransferBatchEvent): void {
   for (let i = 0; i < trasfersCount; i++) {
     handleTransferSingleInternal(from, to, tokenAddress, tokenIds[i], values[i], event, i)
   }
+}
+
+export function handleURIChange(event: URIEvent): void {
+  const tokenAddress = event.address
+  const tokenId = event.params.id
+
+  const erc1155Token = loadERC1155Token(tokenAddress, tokenId)
+
+  erc1155Token.tokenUri = event.params.value;
+
+  erc1155Token.save();
 }
 
 function handleTransferSingleInternal(from: Account, to: Account, tokenAddress: Address, tokenId: BigInt, value: BigInt, event: ethereum.Event, index: i32): void {
