@@ -12,8 +12,13 @@ import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
 import {
   TransferSingle as TransferSingleEvent,
   TransferBatch as TransferBatchEvent,
+  URI as URIEvent
 } from "../../../generated/PowerCard/PowerCard"
+import { handleTransferBatch, handleTransferSingle, handleURIChange } from "../../power-card"
 import { ZERO_ADDRESS } from "@protofire/subgraph-toolkit"
+
+// Export handlers for coverage report
+export { handleTransferSingle, handleTransferBatch, handleURIChange }
 
 const user1Address = Address.fromString("0x0000000000000000000000000000000000000011")
 const user2Address = Address.fromString("0x0000000000000000000000000000000000000012")
@@ -24,6 +29,8 @@ const zeroAddress = Address.fromString(ZERO_ADDRESS)
 
 const tokenIds = [BigInt.fromI32(1), BigInt.fromI32(2), BigInt.fromI32(3)]
 const amounts = [BigInt.fromI32(3), BigInt.fromI32(2), BigInt.fromI32(1)]
+
+const uri = "ipfs://example"
 
 let transferSingleEvent: TransferSingleEvent
 let transferBatchEvent: TransferBatchEvent
@@ -263,6 +270,22 @@ describe("Transfer Batch event", () => {
   })
 })
 
+describe("Change URI", () => {
+  beforeEach(() => {
+    handleURIChange(createURIEvent(tokenAddress, tokenId, uri))
+  })
+
+  afterEach(() => {
+    clearStore()
+  })
+
+  test("updates ERC1155Token tokenURI value", () => {
+    const erc155TokenId = tokenAddress.concatI32(tokenId.toI32()).toHexString()
+
+    assert.fieldEquals("ERC1155Token", erc155TokenId, "tokenUri", uri)
+  })
+})
+
 function singleTransfer(from: Address, to: Address): void {
   transferSingleEvent = createTransferSingleEvent(tokenAddress, from, to, tokenId, amount)
   handleTransferSingle(transferSingleEvent)
@@ -340,3 +363,21 @@ function createTransferBatchEvent(
   return event
 }
 
+function createURIEvent(
+  token: Address,
+  tokenId: BigInt,
+  value: string
+): URIEvent {
+  const event = changetype<URIEvent>(newMockEvent())
+
+  event.address = token
+  event.parameters = new Array()
+
+  event.parameters.push(
+    new ethereum.EventParam("value", ethereum.Value.fromString(value))
+  )
+  event.parameters.push(
+    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(tokenId))
+  )
+  return event
+}
