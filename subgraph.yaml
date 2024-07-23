@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0x1f34c87ded863fe3a3cd76fac8ada9608137c8c3"
       abi: OverlayV1Factory
-      startBlock: 7030589
+      startBlock: 167835
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -49,7 +49,7 @@ dataSources:
     source:
       address: "0x0000000000000000000000000000000000000000"
       abi: TokenStake
-      startBlock: 7030589
+      startBlock: 167835
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -85,7 +85,7 @@ dataSources:
     source:
       address: "0x055616c6e3965f90a82120d675c17409b64db20e"
       abi: OverlayV1Token
-      startBlock: 7030589
+      startBlock: 167832
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -107,7 +107,7 @@ dataSources:
     source:
       address: "0x0000000000000000000000000000000000000000"
       abi: PlanckCat
-      startBlock: 7030589
+      startBlock: 167835
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -129,7 +129,7 @@ dataSources:
     source:
       address: "0x0000000000000000000000000000000000000000"
       abi: ReferralList
-      startBlock: 7030589
+      startBlock: 167835
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -161,7 +161,7 @@ dataSources:
     source:
       address: "0x0000000000000000000000000000000000000000"
       abi: TradingMining
-      startBlock: 7030589
+      startBlock: 167835
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
