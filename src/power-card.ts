@@ -17,6 +17,9 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
   const value = event.params.value
 
   handleTransferSingleInternal(from, to, tokenAddress, tokenId, value, event, 0)
+
+  from.save()
+  to.save()
 }
 
 export function handleTransferBatch(event: TransferBatchEvent): void {
@@ -30,6 +33,9 @@ export function handleTransferBatch(event: TransferBatchEvent): void {
   for (let i = 0; i < trasfersCount; i++) {
     handleTransferSingleInternal(from, to, tokenAddress, tokenIds[i], values[i], event, i)
   }
+
+  from.save()
+  to.save()
 }
 
 export function handleURIChange(event: URIEvent): void {
