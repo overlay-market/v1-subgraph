@@ -24,7 +24,7 @@ import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount, lo
 import { updateReferralRewards } from "./referral";
 import { updateTraderEpochVolume } from "./trading-mining";
 import { updateMarketHourData } from "./temporal-data-logger";
-import { updateMarketState } from "./utils/helpers";
+import { updateAnalyticsHourData, updateMarketState } from "./utils/helpers";
 
 // TODO: rename or separate this file into multiple files
 
@@ -232,6 +232,8 @@ export function handleBuild(event: BuildEvent): void {
   analytics.totalVolumeBuilds = analytics.totalVolumeBuilds.plus(initialNotional)
   analytics.totalVolume = analytics.totalVolume.plus(initialNotional)
 
+  updateAnalyticsHourData(analytics, event.block.timestamp)
+
   sender.numberOfOpenPositions = sender.numberOfOpenPositions.plus(ONE_BI)
 
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
@@ -394,6 +396,8 @@ export function handleUnwind(event: UnwindEvent): void {
   analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
   analytics.totalVolumeUnwinds = analytics.totalVolumeUnwinds.plus(unwind.volume)
   analytics.totalVolume = analytics.totalVolume.plus(unwind.volume)
+
+  updateAnalyticsHourData(analytics, event.block.timestamp)
 
   // position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
   position.currentDebt = position.currentDebt.times(ONE_18DEC_BI.minus(unwind.fraction)).div(ONE_18DEC_BI)
@@ -704,6 +708,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
   analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
   analytics.totalVolumeLiquidations = analytics.totalVolumeLiquidations.plus(liquidate.volume)
   analytics.totalVolume = analytics.totalVolume.plus(liquidate.volume)
+
+  updateAnalyticsHourData(analytics, event.block.timestamp)
 
   market.totalVolume = market.totalVolume.plus(liquidate.volume)
   market.totalMint = market.totalMint.plus(event.params.mint)
