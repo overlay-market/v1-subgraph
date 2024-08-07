@@ -1,6 +1,6 @@
 type Analytics @entity {
   # factory address - for uniqueness
-  id: ID!
+  id: Bytes!
   totalUsers: BigInt!
   totalTransactions: BigInt!
   totalTokensLocked: BigInt!
@@ -12,7 +12,7 @@ type Analytics @entity {
 
 type AnalyticsHourData @entity {
   # factory address concatendated with date - for uniqueness
-  id: ID!
+  id: Bytes!
   # unix timestamp for start of hour
   periodStartUnix: Int!
   totalUsers: BigInt!
@@ -26,7 +26,7 @@ type AnalyticsHourData @entity {
 
 type Factory @entity {
   # factory address
-  id: ID!
+  id: Bytes!
   # amount of markets created
   marketCount: BigInt!
   # amount of transactions all time
@@ -47,7 +47,7 @@ type Factory @entity {
 
 type Market @entity {
   # market contract address
-  id: ID!
+  id: Bytes!
   # feed contract address
   feedAddress: String!
   # factory contract address
@@ -90,6 +90,10 @@ type Market @entity {
   oiLong: BigInt!
   # total current oi short
   oiShort: BigInt!
+  # oi long shares
+  oiLongShares: BigInt!
+  # oi short shares
+  oiShortShares: BigInt!
   # if market is shut down
   isShutdown: Boolean!
   # fees and tx count:
@@ -111,6 +115,8 @@ type Market @entity {
   totalVolume: BigInt!  
   # positive means net minting | negative means net burning
   totalMint: BigInt!
+  # used in dataIsValid function
+  dpUpperLimit: BigInt!
   # derived fields
   marketHourData: [MarketHourData!]! @derivedFrom(field: "market")
   # positions held in market
@@ -121,7 +127,7 @@ type Market @entity {
 
 type MarketState @entity {
   # market address
-  id: ID!
+  id: Bytes!
   market: Market!
   bid: BigInt!
   ask: BigInt!
@@ -137,7 +143,7 @@ type MarketState @entity {
 
 type Position @entity {
   # market contract concat'd with position id
-  id: ID!
+  id: Bytes!
   # position id
   positionId: String!
   # owner of position
@@ -183,7 +189,7 @@ type Position @entity {
 
 type Transaction @entity {
   # txn hash
-  id: ID!
+  id: Bytes!
   # block txn was included in
   blockNumber: BigInt!
   # timestamp txn was confirmed
@@ -200,7 +206,7 @@ type Transaction @entity {
 
 type Build @entity {
   # market contract concat'd with position id
-  id: ID!
+  id: Bytes!
   # account performing action
   owner: Account!
   # position entitie
@@ -227,7 +233,7 @@ type Build @entity {
 
 type Unwind @entity {
   # market contract concat'd with position id concat'd with unwind number
-  id: ID!
+  id: Bytes!
   # account performing action
   owner: Account!
   # position id
@@ -252,6 +258,8 @@ type Unwind @entity {
   pnl: BigInt!
   # Fee amount of this unwind
   feeAmount: BigInt!
+  # funding payment of this unwind
+  fundingPayment: BigInt!
   # fraction of initial collateral of this unwind
   size: BigInt!
   # volume = transferAmount + (initialDebt * fractionOfPosition) 
@@ -270,7 +278,7 @@ type Unwind @entity {
 
 type Liquidate @entity {
   # market contract concat'd with position id
-  id: ID!
+  id: Bytes!
   # owner of the position
   owner: Account!
   # address performing the transaction
@@ -279,6 +287,8 @@ type Liquidate @entity {
   position: Position!
   # fraction of the original position
   fractionOfPosition: BigInt!
+  # funding payment of this liquidation
+  fundingPayment: BigInt!
   # liquidate size = initialCollateral * fractionOfPosition
   size: BigInt!
   # current position oi
@@ -310,7 +320,7 @@ type Liquidate @entity {
 
 type Account @entity {
   # account address
-  id: ID!
+  id: Bytes!
   # totalRealizedPnl
   realizedPnl:  BigInt!
   # numberOfUnwinds of the account
@@ -497,7 +507,7 @@ type TradingMiningEpochVolume @entity {
 
 type TotalSupplyHourData @entity {
   # token address concatendated with date
-  id: ID!
+  id: Bytes!
   # unix timestamp for start of hour
   periodStartUnix: Int!
   # pointer to token
@@ -512,7 +522,7 @@ type TotalSupplyHourData @entity {
 
 type MarketHourData @entity {
   # market address concatendated with date
-  id: ID!
+  id: Bytes!
   # unix timestamp for start of hour
   periodStartUnix: Int!
   # pointer to market

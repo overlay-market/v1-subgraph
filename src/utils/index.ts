@@ -1,15 +1,15 @@
-import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { Market, Transaction, Position, Factory, Account, Analytics, AnalyticsHourData } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
-import { ZERO_BI, ZERO_BD, stateContract, factoryContract } from './constants'
+import { ZERO_BI, ZERO_BD, stateContract, factoryContract, ADDRESS_ZERO } from './constants'
 
 export function loadTransaction(event: ethereum.Event): Transaction {
-  let transaction = Transaction.load(event.transaction.hash.toHexString())
+  let transaction = Transaction.load(event.transaction.hash)
 
   if (transaction === null) {
-    transaction = new Transaction(event.transaction.hash.toHexString())
+    transaction = new Transaction(event.transaction.hash)
     transaction.blockNumber = event.block.number
     transaction.timestamp = event.block.timestamp
     transaction.gasLimit = event.transaction.gasLimit
@@ -19,7 +19,7 @@ export function loadTransaction(event: ethereum.Event): Transaction {
   return transaction as Transaction
 }
 
-export function loadFactory(factoryAddress: string): Factory {
+export function loadFactory(factoryAddress: Bytes): Factory {
   let factory = Factory.load(factoryAddress)
   if (factory === null) {
     factory = new Factory(factoryAddress)
@@ -28,15 +28,15 @@ export function loadFactory(factoryAddress: string): Factory {
     factory.totalVolumeOVL = ZERO_BD
     factory.totalFeesOVL = ZERO_BD
     factory.totalValueLockedOVL = ZERO_BD
-    factory.feeRecipient = factoryContract.feeRecipient().toHexString()
-    factory.owner = factoryContract.deployer().toHexString()
+    factory.feeRecipient = factoryContract.try_feeRecipient().reverted ? ADDRESS_ZERO : factoryContract.try_feeRecipient().value.toHexString()
+    factory.owner = factoryContract.try_deployer().reverted ? ADDRESS_ZERO : factoryContract.try_deployer().value.toHexString()
   }
 
   return factory
 }
 
-export function loadMarket(event: ethereum.Event, marketAddress: Address): Market {
-  let marketId = marketAddress.toHexString()
+export function loadMarket(event: ethereum.Event, marketId: Bytes): Market {
+  const marketAddress = Address.fromBytes(marketId);
   let market = Market.load(marketId)
 
   // if market doesn't exist, initialize
@@ -46,7 +46,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     let marketContract = OverlayV1Market.bind(marketAddress)
 
     market.feedAddress = marketContract.feed().toHexString()
-    market.factory = marketContract.factory().toHexString()
+    market.factory = marketContract.factory()
 
     market.createdAtTimestamp = event.block.timestamp
     market.createdAtBlockNumber = event.block.number
@@ -67,6 +67,8 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
     market.oiLong = stateContract.ois(marketAddress).value0
     market.oiShort = stateContract.ois(marketAddress).value1
+    market.oiLongShares = marketContract.oiLongShares()
+    market.oiShortShares = marketContract.oiShortShares()
     market.isShutdown = false
     market.totalBuildFees = ZERO_BI
     market.numberOfBuilds = ZERO_BI
@@ -77,6 +79,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     market.totalFees = ZERO_BI
     market.totalVolume = ZERO_BI
     market.totalMint = ZERO_BI
+    market.dpUpperLimit = marketContract.dpUpperLimit()
 
     MarketTemplate.create(marketAddress)
   }
@@ -85,20 +88,20 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
 }
 
 export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
-  let marketPositionId = market.id.concat('-').concat(positionId.toHexString())
-  let marketAddress = Address.fromString(market.id)
+  let marketPositionId = market.id.concatI32(positionId.toI32())
+  let marketAddress = Address.fromBytes(market.id)
   let position = Position.load(marketPositionId)
 
   // create new Position if null
   if (position === null) {
     position = new Position(marketPositionId)
     position.positionId = positionId.toHexString()
-    position.owner = sender.toHexString()
+    position.owner = sender
     position.market = market.id
 
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
     position.initialDebt = stateContract.debt(marketAddress, sender, positionId)
-    
+
     let initialCollateral = stateContract.cost(marketAddress, sender, positionId)
     let initialDebt = stateContract.debt(marketAddress, sender, positionId)
     let initialNotional = initialCollateral.plus(initialDebt)
@@ -121,7 +124,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.currentOi = stateContract.oi(marketAddress, sender, positionId)
     position.currentDebt = stateContract.debt(marketAddress, sender, positionId)
     position.mint = ZERO_BI
-    
+
     position.createdAtTimestamp = event.block.timestamp
     position.createdAtBlockNumber = event.block.number
   }
@@ -130,11 +133,10 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
 }
 
 export function loadAccount(accountAddress: Address): Account {
-  let accountId = accountAddress.toHexString()
-  let account = Account.load(accountId)
+  let account = Account.load(accountAddress)
 
   if (account === null) {
-    account = new Account(accountId)
+    account = new Account(accountAddress)
 
     account.realizedPnl = ZERO_BI
     account.numberOfUnwinds = ZERO_BI
@@ -147,12 +149,11 @@ export function loadAccount(accountAddress: Address): Account {
   return account
 }
 
-export function loadAnalytics(factory: string): Analytics {
-  let analyticsId = factory
-  let analytics = Analytics.load(analyticsId)
+export function loadAnalytics(factory: Bytes): Analytics {
+  let analytics = Analytics.load(factory)
 
   if (analytics === null) {
-    analytics = new Analytics(analyticsId)
+    analytics = new Analytics(factory)
 
 
     analytics.totalUsers = ZERO_BI
@@ -167,13 +168,12 @@ export function loadAnalytics(factory: string): Analytics {
   return analytics
 }
 
-export function loadAnalyticsHourData(factory: string, eventTimestamp: BigInt): AnalyticsHourData {
+export function loadAnalyticsHourData(factory: Bytes, eventTimestamp: BigInt): AnalyticsHourData {
   let timestamp = eventTimestamp.toI32()
   let hourIndex = timestamp / 3600 // get unique hour within unix history
   let hourStartUnix = hourIndex * 3600 // want the rounded effect
   let analyticsHourID = factory
-    .concat('-')
-    .concat(hourIndex.toString())
+    .concatI32(hourIndex)
 
   let analyticsHourData = AnalyticsHourData.load(analyticsHourID)
 

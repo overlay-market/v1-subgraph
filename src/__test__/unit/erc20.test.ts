@@ -14,10 +14,10 @@ import {
     Transfer as TransferEvent,
 } from "../../../generated/OverlayV1Token/OverlayV1Token"
 import { ERC20Token } from "../../../generated/schema"
-import { handleTransfer, handleTransferOVL, handleTransferNIP } from "../../erc20"
+import { handleTransfer, handleTransferOVL } from "../../erc20"
 
 // Export handlers for coverage report
-export { handleTransfer, handleTransferOVL, handleTransferNIP }
+export { handleTransfer, handleTransferOVL }
 
 const from = Address.fromString("0x0000000000000000000000000000000000000001")
 const to = Address.fromString("0x0000000000000000000000000000000000000002")
@@ -252,45 +252,6 @@ describe("Transfer event", () => {
         assert.entityCount("Account", 1)
         assert.entityCount("Transaction", 1)
     })
-
-    test("NIP handler works", () => {
-        clearStore()
-
-        // Mock the call to the OVL contract
-        const expectedName = "NIP Token"
-        const expectedSymbol = "NIP"
-        createMockedFunction(address, "name", "name():(string)")
-            .returns([ethereum.Value.fromString(expectedName)])
-        createMockedFunction(address, "symbol", "symbol():(string)")
-            .returns([ethereum.Value.fromString(expectedSymbol)])
-
-
-        const initialMintEvent = createTransferEvent(
-            address,
-            Address.zero(),
-            to,
-            value
-        )
-        handleTransferNIP(initialMintEvent)
-
-        assert.entityCount("ERC20Token", 1)
-
-        const id = initialMintEvent.address.toHexString()
-
-        assert.fieldEquals("ERC20Token", id,
-            "name",
-            expectedName
-        )
-        assert.fieldEquals("ERC20Token", id,
-            "symbol",
-            expectedSymbol
-        )
-
-        assert.entityCount("TokenTransfer", 1)
-        assert.entityCount("TokenPosition", 1)
-        assert.entityCount("Account", 1)
-        assert.entityCount("Transaction", 1)
-    })
 })
 
 function createTransferEvent(
@@ -300,19 +261,19 @@ function createTransferEvent(
     value: BigInt
 ): TransferEvent {
     const event = changetype<TransferEvent>(newMockEvent())
-  
+
     event.address = token
     event.parameters = new Array()
-  
+
     event.parameters.push(
-      new ethereum.EventParam("from", ethereum.Value.fromAddress(from))
+        new ethereum.EventParam("from", ethereum.Value.fromAddress(from))
     )
     event.parameters.push(
-      new ethereum.EventParam("to", ethereum.Value.fromAddress(to))
+        new ethereum.EventParam("to", ethereum.Value.fromAddress(to))
     )
     event.parameters.push(
-      new ethereum.EventParam("value", ethereum.Value.fromUnsignedBigInt(value))
+        new ethereum.EventParam("value", ethereum.Value.fromUnsignedBigInt(value))
     )
-  
+
     return event
 }

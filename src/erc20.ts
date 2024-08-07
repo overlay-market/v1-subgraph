@@ -4,7 +4,6 @@ import {
     Transfer as TransferEvent,
     OverlayV1Token as OverlayV1TokenContract
 } from "../generated/OverlayV1Token/OverlayV1Token"
-import { NIP as NIPContract } from "../generated/NIP/NIP"
 import { ERC20Token, TokenPosition, TokenTransfer, TotalSupplyHourData } from "../generated/schema"
 import { loadTransaction, loadAccount } from "./utils"
 import { ZERO_BI, ADDRESS_ZERO } from "./utils/constants"
@@ -63,18 +62,6 @@ export function handleTransferOVL(event: TransferEvent): void {
     handleTransfer(event, token)
 }
 
-export function handleTransferNIP(event: TransferEvent): void {
-    let token = ERC20Token.load(event.address)
-    if (token == null) {
-        const contract = NIPContract.bind(event.address)
-        token = new ERC20Token(event.address)
-        token.totalSupply = ZERO_BI
-        token.name = contract.name()
-        token.symbol = contract.symbol()
-    }
-    handleTransfer(event, token)
-}
-
 function loadTokenPosition(token: Address, owner: Address): TokenPosition {
     const account = loadAccount(owner)
     account.save() // ensure account exists
@@ -94,41 +81,38 @@ function updateTotalSupplyHourData(token: ERC20Token, event: TransferEvent): voi
     let timestamp = event.block.timestamp.toI32()
     let hourIndex = timestamp / 3600 // get unique hour within unix history
     let hourStartUnix = hourIndex * 3600 // want the rounded effect
-    let tokenHourID = token.id
-      .toHexString()
-      .concat('-')
-      .concat(hourIndex.toString())
+    let tokenHourID = token.id.concatI32(hourIndex)
     let totalSupplyHourData = TotalSupplyHourData.load(tokenHourID)
     let totalSupply = token.totalSupply
-  
+
     if (totalSupplyHourData === null) {
-      totalSupplyHourData = new TotalSupplyHourData(tokenHourID)
-      totalSupplyHourData.periodStartUnix = hourStartUnix
-      totalSupplyHourData.token = token.id
-      totalSupplyHourData.minted = ZERO_BI
-      totalSupplyHourData.burnt = ZERO_BI
-      totalSupplyHourData.open = totalSupply
-      totalSupplyHourData.high = totalSupply
-      totalSupplyHourData.low = totalSupply
-      totalSupplyHourData.close = totalSupply
+        totalSupplyHourData = new TotalSupplyHourData(tokenHourID)
+        totalSupplyHourData.periodStartUnix = hourStartUnix
+        totalSupplyHourData.token = token.id
+        totalSupplyHourData.minted = ZERO_BI
+        totalSupplyHourData.burnt = ZERO_BI
+        totalSupplyHourData.open = totalSupply
+        totalSupplyHourData.high = totalSupply
+        totalSupplyHourData.low = totalSupply
+        totalSupplyHourData.close = totalSupply
     }
 
     const from = event.params.from.toHexString()
     const amount = event.params.value
     if (from == ADDRESS_ZERO) {
-      totalSupplyHourData.minted = totalSupplyHourData.minted.plus(amount)
+        totalSupplyHourData.minted = totalSupplyHourData.minted.plus(amount)
     } else { // can do just else because updateTotalSupplyHourData is called only when minting or burning tokens
-      totalSupplyHourData.burnt = totalSupplyHourData.burnt.plus(amount)
+        totalSupplyHourData.burnt = totalSupplyHourData.burnt.plus(amount)
     }
-  
+
     if (totalSupply.gt(totalSupplyHourData.high)) {
-      totalSupplyHourData.high = totalSupply
+        totalSupplyHourData.high = totalSupply
     }
-  
+
     if (totalSupply.lt(totalSupplyHourData.low)) {
-      totalSupplyHourData.low = totalSupply
+        totalSupplyHourData.low = totalSupply
     }
-  
+
     totalSupplyHourData.close = totalSupply
     totalSupplyHourData.save()
 }
