@@ -26,7 +26,7 @@ export function handleAllowKOL(event: AllowKOL): void {
 
 export function handleAddAffiliateOrKOL(event: AddAffiliateOrKOL): void {
     const traderReferralPosition = loadReferralPosition(event.address, event.params.trader)
-    traderReferralPosition.affiliatedTo = event.params.affiliate.toHexString();
+    traderReferralPosition.affiliatedTo = event.params.affiliate;
     traderReferralPosition.save()
     const affiliateReferralPosition = loadReferralPosition(event.address, event.params.affiliate)
     affiliateReferralPosition.accountsReferred = affiliateReferralPosition.accountsReferred + 1
@@ -89,7 +89,7 @@ export function updateReferralRewards(event: ethereum.Event, owner: Address, tra
 
     if (affiliatedTo) {
         const referralProgram = loadReferralProgram(event, Address.fromString(REFERRAL_ADDRESS))
-        const affiliateReferralPosition = loadReferralPosition(Address.fromString(REFERRAL_ADDRESS), Address.fromString(affiliatedTo))
+        const affiliateReferralPosition = loadReferralPosition(Address.fromString(REFERRAL_ADDRESS), Address.fromBytes(affiliatedTo))
         const tier = affiliateReferralPosition.tier
 
         const traderDiscount = transferFeeAmount.times(referralProgram.traderDiscount[tier]).div(BPS_BASE_BI)
@@ -110,33 +110,33 @@ export function updateReferralRewards(event: ethereum.Event, owner: Address, tra
 
 export function loadReferralProgram(event: ethereum.Event, referralAddress: Address): ReferralProgram {
     let referralProgram = ReferralProgram.load(referralAddress)
-  
+
     // create new referralProgram if null
     if (referralProgram === null) {
-      referralProgram = new ReferralProgram(referralAddress)
-      let referralContract = ReferralList.bind(referralAddress)
+        referralProgram = new ReferralProgram(referralAddress)
+        let referralContract = ReferralList.bind(referralAddress)
 
-      referralProgram.createdAtTimestamp = event.block.timestamp
-      referralProgram.createdAtBlockNumber = event.block.number
+        referralProgram.createdAtTimestamp = event.block.timestamp
+        referralProgram.createdAtBlockNumber = event.block.number
 
-      referralProgram.rewardToken = referralContract.rewardToken();
+        referralProgram.rewardToken = referralContract.rewardToken();
 
-      referralProgram.affiliateComission = [ZERO_BI, ZERO_BI, ZERO_BI];
-      referralProgram.affiliateComission[Tier.AFFILIATE] = referralContract.tierAffiliateComission(Tier.AFFILIATE);
-      referralProgram.affiliateComission[Tier.KOL] = referralContract.tierAffiliateComission(Tier.KOL);
-      
-      referralProgram.traderDiscount = [ZERO_BI, ZERO_BI, ZERO_BI];
-      referralProgram.traderDiscount[Tier.AFFILIATE] = referralContract.tierTraderDiscount(Tier.AFFILIATE);
-      referralProgram.traderDiscount[Tier.KOL] = referralContract.tierTraderDiscount(Tier.KOL);
+        referralProgram.affiliateComission = [ZERO_BI, ZERO_BI, ZERO_BI];
+        referralProgram.affiliateComission[Tier.AFFILIATE] = referralContract.tierAffiliateComission(Tier.AFFILIATE);
+        referralProgram.affiliateComission[Tier.KOL] = referralContract.tierAffiliateComission(Tier.KOL);
 
-      referralProgram.totalRewards = ZERO_BI;
-      referralProgram.totalAirdropped = ZERO_BI;
-      let transaction = loadTransaction(event)
-      transaction.save()
+        referralProgram.traderDiscount = [ZERO_BI, ZERO_BI, ZERO_BI];
+        referralProgram.traderDiscount[Tier.AFFILIATE] = referralContract.tierTraderDiscount(Tier.AFFILIATE);
+        referralProgram.traderDiscount[Tier.KOL] = referralContract.tierTraderDiscount(Tier.KOL);
 
-      referralProgram.latestUpdateTransaction = transaction.id;
+        referralProgram.totalRewards = ZERO_BI;
+        referralProgram.totalAirdropped = ZERO_BI;
+        let transaction = loadTransaction(event)
+        transaction.save()
+
+        referralProgram.latestUpdateTransaction = transaction.id;
     }
-  
+
     return referralProgram
 }
 

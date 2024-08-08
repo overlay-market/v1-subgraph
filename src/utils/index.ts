@@ -6,10 +6,10 @@ import { integer } from '@protofire/subgraph-toolkit'
 import { ZERO_BI, ZERO_BD, stateContract, factoryContract, ADDRESS_ZERO } from './constants'
 
 export function loadTransaction(event: ethereum.Event): Transaction {
-  let transaction = Transaction.load(event.transaction.hash.toHexString())
+  let transaction = Transaction.load(event.transaction.hash)
 
   if (transaction === null) {
-    transaction = new Transaction(event.transaction.hash.toHexString())
+    transaction = new Transaction(event.transaction.hash)
     transaction.blockNumber = event.block.number
     transaction.timestamp = event.block.timestamp
     transaction.gasLimit = event.transaction.gasLimit
@@ -19,7 +19,7 @@ export function loadTransaction(event: ethereum.Event): Transaction {
   return transaction as Transaction
 }
 
-export function loadFactory(factoryAddress: string): Factory {
+export function loadFactory(factoryAddress: Bytes): Factory {
   let factory = Factory.load(factoryAddress)
   if (factory === null) {
     factory = new Factory(factoryAddress)
@@ -35,8 +35,8 @@ export function loadFactory(factoryAddress: string): Factory {
   return factory
 }
 
-export function loadMarket(event: ethereum.Event, marketAddress: Address): Market {
-  let marketId = marketAddress.toHexString()
+export function loadMarket(event: ethereum.Event, marketId: Bytes): Market {
+  const marketAddress = Address.fromBytes(marketId);
   let market = Market.load(marketId)
 
   // if market doesn't exist, initialize
@@ -46,7 +46,7 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
     let marketContract = OverlayV1Market.bind(marketAddress)
 
     market.feedAddress = marketContract.feed().toHexString()
-    market.factory = marketContract.factory().toHexString()
+    market.factory = marketContract.factory()
 
     market.createdAtTimestamp = event.block.timestamp
     market.createdAtBlockNumber = event.block.number
@@ -88,15 +88,15 @@ export function loadMarket(event: ethereum.Event, marketAddress: Address): Marke
 }
 
 export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
-  let marketPositionId = market.id.concat('-').concat(positionId.toHexString())
-  let marketAddress = Address.fromString(market.id)
+  let marketPositionId = market.id.concatI32(positionId.toI32())
+  let marketAddress = Address.fromBytes(market.id)
   let position = Position.load(marketPositionId)
 
   // create new Position if null
   if (position === null) {
     position = new Position(marketPositionId)
     position.positionId = positionId.toHexString()
-    position.owner = sender.toHexString()
+    position.owner = sender
     position.market = market.id
 
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
@@ -133,11 +133,10 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
 }
 
 export function loadAccount(accountAddress: Address): Account {
-  let accountId = accountAddress.toHexString()
-  let account = Account.load(accountId)
+  let account = Account.load(accountAddress)
 
   if (account === null) {
-    account = new Account(accountId)
+    account = new Account(accountAddress)
 
     account.realizedPnl = ZERO_BI
     account.numberOfUnwinds = ZERO_BI
@@ -150,12 +149,11 @@ export function loadAccount(accountAddress: Address): Account {
   return account
 }
 
-export function loadAnalytics(factory: string): Analytics {
-  let analyticsId = Bytes.fromHexString(factory);
-  let analytics = Analytics.load(analyticsId)
+export function loadAnalytics(factory: Bytes): Analytics {
+  let analytics = Analytics.load(factory)
 
   if (analytics === null) {
-    analytics = new Analytics(analyticsId)
+    analytics = new Analytics(factory)
 
 
     analytics.totalUsers = ZERO_BI
