@@ -513,6 +513,7 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   unwind.value = ZERO_BI
   unwind.timestamp = transaction.timestamp
   unwind.transaction = transaction.id
+  unwind.fundingPayment = ZERO_BI
 
   position.currentOi = ZERO_BI
   position.currentDebt = ZERO_BI
