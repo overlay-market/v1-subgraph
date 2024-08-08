@@ -93,6 +93,17 @@ describe("Market events", () => {
             assert.entityCount("Market", 1)
         })
 
+        test("creates Build entity with correct attributes", () => {
+            const marketId = market.concatI32(positionId.toI32()).toHexString()
+
+            assert.entityCount("Build", 1)
+            assert.fieldEquals("Build", marketId, "owner", sender.toHexString())
+            assert.fieldEquals("Build", marketId, "currentOi", oi.toString())
+            assert.fieldEquals("Build", marketId, "currentDebt", debt.toString())
+            assert.fieldEquals("Build", marketId, "isLong", isLong.toString())
+            assert.fieldEquals("Build", marketId, "price", price.toString())
+        })
+
         describe("Trading Mining", () => {
 
             test("creates TradingMiningEpochVolume entity", () => {
