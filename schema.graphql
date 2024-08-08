@@ -558,7 +558,7 @@ type ERC1155Token @entity {
 }
 
 type ERC1155Transfer @entity {
-  id: Bytes!
+  id: Bytes! # transaction hash + log index + index of transaction in a batch
   token: ERC1155Token!
   from: Account!
   to: Account!

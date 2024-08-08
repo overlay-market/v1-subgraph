@@ -64,7 +64,7 @@ describe("Transfer Single event", () => {
     })
 
     test("creates ERC1155Transfer entity with correct data", () => {
-      const transferId = transferSingleEvent.transaction.hash.concatI32(0).toHexString()
+      const transferId = transferSingleEvent.transaction.hash.concatI32(transferSingleEvent.logIndex.toI32()).concatI32(0).toHexString()
 
       assert.fieldEquals("ERC1155Transfer", transferId, "token", tokenAddress.concatI32(tokenId.toI32()).toHexString())
       assert.fieldEquals("ERC1155Transfer", transferId, "from", zeroAddress.toHexString())
@@ -103,7 +103,7 @@ describe("Transfer Single event", () => {
     })
 
     test("creates ERC1155Transfer entity with correct data", () => {
-      const transferId = transferSingleEvent.transaction.hash.concatI32(0).toHexString()
+      const transferId = transferSingleEvent.transaction.hash.concatI32(transferSingleEvent.logIndex.toI32()).concatI32(0).toHexString()
 
       assert.fieldEquals("ERC1155Transfer", transferId, "token", tokenAddress.concatI32(tokenId.toI32()).toHexString())
       assert.fieldEquals("ERC1155Transfer", transferId, "from", user1Address.toHexString())
@@ -132,7 +132,7 @@ describe("Transfer Single event", () => {
     })
 
     test("creates ERC1155Transfer entity with correct data", () => {
-      const transferId = transferSingleEvent.transaction.hash.concatI32(0).toHexString()
+      const transferId = transferSingleEvent.transaction.hash.concatI32(transferSingleEvent.logIndex.toI32()).concatI32(0).toHexString()
 
       assert.fieldEquals("ERC1155Transfer", transferId, "token", tokenAddress.concatI32(tokenId.toI32()).toHexString())
       assert.fieldEquals("ERC1155Transfer", transferId, "from", user1Address.toHexString())
@@ -178,7 +178,7 @@ describe("Transfer Batch event", () => {
 
     test("creates ERC1155Transfer entities with correct data", () => {
       for (let i = 0; i < tokenIds.length; i++) {
-        const transferId = transferBatchEvent.transaction.hash.concatI32(i).toHexString()
+        const transferId = transferSingleEvent.transaction.hash.concatI32(transferSingleEvent.logIndex.toI32()).concatI32(i).toHexString()
 
         assert.fieldEquals("ERC1155Transfer", transferId, "token", tokenAddress.concatI32(tokenIds[i].toI32()).toHexString())
         assert.fieldEquals("ERC1155Transfer", transferId, "from", zeroAddress.toHexString())
@@ -224,7 +224,7 @@ describe("Transfer Batch event", () => {
 
     test("creates ERC1155Transfer entities with correct data", () => {
       for (let i = 0; i < tokenIds.length; i++) {
-        const transferId = transferBatchEvent.transaction.hash.concatI32(i).toHexString()
+        const transferId = transferSingleEvent.transaction.hash.concatI32(transferSingleEvent.logIndex.toI32()).concatI32(i).toHexString()
 
         assert.fieldEquals("ERC1155Transfer", transferId, "token", tokenAddress.concatI32(tokenIds[i].toI32()).toHexString())
         assert.fieldEquals("ERC1155Transfer", transferId, "from", user1Address.toHexString())
@@ -258,7 +258,7 @@ describe("Transfer Batch event", () => {
 
     test("creates ERC1155Transfer entity with correct data", () => {
       for (let i = 0; i < tokenIds.length; i++) {
-        const transferId = transferBatchEvent.transaction.hash.concatI32(i).toHexString()
+        const transferId = transferBatchEvent.transaction.hash.concatI32(transferBatchEvent.logIndex.toI32()).concatI32(i).toHexString()
 
         assert.fieldEquals("ERC1155Transfer", transferId, "token", tokenAddress.concatI32(tokenIds[i].toI32()).toHexString())
         assert.fieldEquals("ERC1155Transfer", transferId, "from", user1Address.toHexString())

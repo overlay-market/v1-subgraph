@@ -134,7 +134,7 @@ function loadERC1155Token(tokenAddress: Address, tokenId: BigInt): ERC1155Token 
 }
 
 function createERC1155Transfer(from: Account, to: Account, tokenAddress: Address, tokenId: BigInt, value: BigInt, event: ethereum.Event, index: i32): void {
-  const transferId = event.transaction.hash.concatI32(index);
+  const transferId = event.transaction.hash.concatI32(event.logIndex.toI32()).concatI32(index);
   const transfer = new ERC1155Transfer(transferId);
 
   transfer.token = loadERC1155Token(tokenAddress, tokenId).id;
