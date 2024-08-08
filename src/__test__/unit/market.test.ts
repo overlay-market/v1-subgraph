@@ -23,7 +23,7 @@ import { handleBuild, handleLiquidate, handleUnwind, handleEmergencyWithdraw, ha
 import { loadAccount } from "../../utils"
 import { loadTradingMining } from "../../trading-mining"
 import { loadReferralProgram, loadReferralPosition } from "../../referral"
-import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS, ADDRESS_ZERO } from "../../utils/constants"
+import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS, ADDRESS_ZERO, ONE_18DEC_BI } from "../../utils/constants"
 import { setupMarketMockedFunctions, setupTradingMiningMockedFunctions } from "./shared/mockedFunctions"
 import { MARKET_COLLATERAL, MARKET_PCD_HOLDER, MARKET_POSITION_ID, MARKET_SENDER } from "./shared/constants"
 
@@ -284,6 +284,48 @@ describe("Market events", () => {
         })
     })
 
+    describe("EmergencyWithdraw event", () => {
+        beforeEach(() => {
+            // Create a Build event to set up the initial position
+            const buildEvent = createBuildEvent(market, sender, positionId, oi, debt, isLong, price, oi, oiSharesAfterBuild)
+            handleBuild(buildEvent)
+
+            // Now create an EmergencyWithdraw event to test
+            const emergencyWithdrawEvent = createEmergencyWithdrawEvent(market, sender, positionId, collateral)
+            handleEmergencyWithdraw(emergencyWithdrawEvent)
+        })
+
+        afterEach(() => {
+            clearStore()
+        })
+
+        test("creates an Unwound and withdraws Position collateral", () => {
+            const _positionId = market.concatI32(positionId.toI32())
+            const unwindId = _positionId.concatI32(0).toHexString()
+
+            assert.entityCount("Unwind", 1)
+            assert.fieldEquals("Unwind", unwindId, "position", _positionId.toHexString())
+            assert.fieldEquals("Unwind", unwindId, "owner", sender.toHexString())
+            assert.fieldEquals("Unwind", unwindId, "size", collateral.toString())
+            assert.fieldEquals("Unwind", unwindId, "transferAmount", collateral.toString())
+            assert.fieldEquals("Unwind", unwindId, "currentOi", oi.toString())
+            assert.fieldEquals("Unwind", unwindId, "currentDebt", debt.toString())
+            assert.fieldEquals("Unwind", unwindId, "isLong", isLong.toString())
+            assert.fieldEquals("Unwind", unwindId, "price", "0")
+            assert.fieldEquals("Unwind", unwindId, "fraction", ONE_18DEC_BI.toString())
+            assert.fieldEquals("Unwind", unwindId, "fractionOfPosition", ONE_18DEC_BI.toString())
+            assert.fieldEquals("Unwind", unwindId, "volume", "0")
+            assert.fieldEquals("Unwind", unwindId, "mint", "0")
+            assert.fieldEquals("Unwind", unwindId, "fundingPayment", "0")
+            assert.fieldEquals("Unwind", unwindId, "collateral", "0")
+            assert.fieldEquals("Unwind", unwindId, "value", "0")
+
+            assert.fieldEquals("Position", _positionId.toHexString(), "currentOi", "0")
+            assert.fieldEquals("Position", _positionId.toHexString(), "currentDebt", "0")
+            assert.fieldEquals("Position", _positionId.toHexString(), "fractionUnwound", ONE_18DEC_BI.toString())
+        })
+    })
+
     describe("CacheRiskCalc event", () => {
         beforeEach(() => {
             const event = createCacheRiskCalcEvent(market, dpUpperLimit)
@@ -425,6 +467,24 @@ function createLiquidateEvent(
     event.parameters.push(new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price)))
     event.parameters.push(new ethereum.EventParam("oiAfterLiquidate", ethereum.Value.fromUnsignedBigInt(oiAfterLiquidate)))
     event.parameters.push(new ethereum.EventParam("oiSharesAfterLiquidate", ethereum.Value.fromUnsignedBigInt(oiSharesAfterLiquidate)))
+
+    return event
+}
+
+function createEmergencyWithdrawEvent(
+    market: Address,
+    sender: Address,
+    positionId: BigInt,
+    collateral: BigInt
+): EmergencyWithdrawEvent {
+    const event = changetype<EmergencyWithdrawEvent>(newMockEvent())
+
+    event.address = market
+    event.parameters = new Array()
+
+    event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)))
+    event.parameters.push(new ethereum.EventParam("positionId", ethereum.Value.fromUnsignedBigInt(positionId)))
+    event.parameters.push(new ethereum.EventParam("collateral", ethereum.Value.fromUnsignedBigInt(collateral)))
 
     return event
 }
