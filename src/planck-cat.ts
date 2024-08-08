@@ -1,4 +1,4 @@
-import { Address, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts'
 
 import {
     Transfer as TransferEvent,
@@ -8,6 +8,8 @@ import { ERC721Token, ERC721NFT, ERC721Transfer } from "../generated/schema"
 import { loadAccount, loadTransaction } from "./utils"
 import { ZERO_BI, ADDRESS_ZERO } from "./utils/constants"
 
+const ADDRESS_ZERO_AS_BYTES = Bytes.fromHexString(ADDRESS_ZERO);
+
 export function handleTransfer(event: TransferEvent): void {
     const token = loadErc721Token(event.address)
     const from = loadAccount(event.params.from)
@@ -15,8 +17,8 @@ export function handleTransfer(event: TransferEvent): void {
     const tokenId = event.params.tokenId
 
     // If minting or burning, update total supply
-    if (from.id == ADDRESS_ZERO || to.id == ADDRESS_ZERO) {
-        token.totalSupply = from.id == ADDRESS_ZERO
+    if (from.id == ADDRESS_ZERO_AS_BYTES || to.id == ADDRESS_ZERO_AS_BYTES) {
+        token.totalSupply = from.id == ADDRESS_ZERO_AS_BYTES
             ? token.totalSupply.plus(BigInt.fromI32(1))
             : token.totalSupply.minus(BigInt.fromI32(1))
         token.save()
@@ -36,9 +38,9 @@ export function handleTransfer(event: TransferEvent): void {
     nft.owner = to.id
 
     // Update balances, but exclude zero address
-    if (from.id != ADDRESS_ZERO)
+    if (from.id != ADDRESS_ZERO_AS_BYTES)
         from.planckCatBalance = from.planckCatBalance.minus(BigInt.fromI32(1))
-    if (to.id != ADDRESS_ZERO)
+    if (to.id != ADDRESS_ZERO_AS_BYTES)
         to.planckCatBalance = to.planckCatBalance.plus(BigInt.fromI32(1))
 
     from.save()
@@ -68,7 +70,7 @@ function loadNft(contract: Address, tokenId: BigInt): ERC721NFT {
         nft.contract = contract
         nft.tokenId = tokenId
         nft.tokenUri = nftContract.tokenURI(tokenId)
-        nft.owner = ADDRESS_ZERO
+        nft.owner = ADDRESS_ZERO_AS_BYTES
     }
     return nft
 }

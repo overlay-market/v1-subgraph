@@ -160,7 +160,7 @@ describe("Market events", () => {
                 const affiliate = Address.fromString("0x0000000000000000000000000000000000000123")
 
                 const ownerReferralPosition = loadReferralPosition(referralAddress, sender)
-                ownerReferralPosition.affiliatedTo = affiliate.toHexString();
+                ownerReferralPosition.affiliatedTo = affiliate;
                 ownerReferralPosition.save()
 
                 const affiliateReferralPosition = loadReferralPosition(referralAddress, affiliate)
