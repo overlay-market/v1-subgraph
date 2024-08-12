@@ -53,9 +53,9 @@ function handleTransferSingleInternal(from: Account, to: Account, tokenAddress: 
   const erc1155TokenBalanceFrom = loadERC1155TokenBalance(tokenAddress, tokenId, from)
   const erc1155TokenBalanceTo = loadERC1155TokenBalance(tokenAddress, tokenId, to)
 
-  if (from.id == ADDRESS_ZERO) {
+  if (from.id == Address.fromString(ADDRESS_ZERO)) {
     handleMinted(to, tokenAddress, tokenId, value);
-  } else if (to.id == ADDRESS_ZERO) {
+  } else if (to.id == Address.fromString(ADDRESS_ZERO)) {
     handleBurnt(from, tokenAddress, tokenId, value);
   } else {
     erc1155TokenBalanceFrom.amount = erc1155TokenBalanceFrom.amount.minus(value);
@@ -95,7 +95,7 @@ function handleMinted(owner: Account, tokenAddress: Address, tokenId: BigInt, va
 }
 
 function loadERC1155TokenBalance(tokenAddress: Address, tokenId: BigInt, owner: Account): ERC1155TokenBalance {
-  let erc1155TokenBalanceId = tokenAddress.concatI32(tokenId.toI32()).concat(Address.fromHexString(owner.id));
+  let erc1155TokenBalanceId = tokenAddress.concatI32(tokenId.toI32()).concat(owner.id);
   let erc1155TokenBalance = ERC1155TokenBalance.load(erc1155TokenBalanceId);
   if (erc1155TokenBalance === null) {
     erc1155TokenBalance = new ERC1155TokenBalance(erc1155TokenBalanceId)

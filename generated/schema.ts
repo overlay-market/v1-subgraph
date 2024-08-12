@@ -2530,7 +2530,7 @@ export class Account extends Entity {
   get erc1155Tokens(): ERC1155TokenBalanceLoader {
     return new ERC1155TokenBalanceLoader(
       "Account",
-      this.get("id")!.toString(),
+      this.get("id")!.toBytes().toHexString(),
       "erc1155Tokens",
     );
   }
@@ -4763,17 +4763,17 @@ export class ERC1155TokenBalance extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
-  get owner(): string {
+  get owner(): Bytes {
     let value = this.get("owner");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set owner(value: string) {
-    this.set("owner", Value.fromString(value));
+  set owner(value: Bytes) {
+    this.set("owner", Value.fromBytes(value));
   }
 
   get token(): Bytes {
@@ -4981,30 +4981,30 @@ export class ERC1155Transfer extends Entity {
     this.set("token", Value.fromBytes(value));
   }
 
-  get from(): string {
+  get from(): Bytes {
     let value = this.get("from");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set from(value: string) {
-    this.set("from", Value.fromString(value));
+  set from(value: Bytes) {
+    this.set("from", Value.fromBytes(value));
   }
 
-  get to(): string {
+  get to(): Bytes {
     let value = this.get("to");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set to(value: string) {
-    this.set("to", Value.fromString(value));
+  set to(value: Bytes) {
+    this.set("to", Value.fromBytes(value));
   }
 
   get amount(): BigInt {
@@ -5020,17 +5020,17 @@ export class ERC1155Transfer extends Entity {
     this.set("amount", Value.fromBigInt(value));
   }
 
-  get transaction(): string {
+  get transaction(): Bytes {
     let value = this.get("transaction");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set transaction(value: string) {
-    this.set("transaction", Value.fromString(value));
+  set transaction(value: Bytes) {
+    this.set("transaction", Value.fromBytes(value));
   }
 }
 
