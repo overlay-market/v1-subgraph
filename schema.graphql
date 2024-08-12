@@ -26,7 +26,7 @@ type AnalyticsHourData @entity {
 
 type Factory @entity {
   # factory address
-  id: ID!
+  id: Bytes!
   # amount of markets created
   marketCount: BigInt!
   # amount of transactions all time
@@ -47,7 +47,7 @@ type Factory @entity {
 
 type Market @entity {
   # market contract address
-  id: ID!
+  id: Bytes!
   # feed contract address
   feedAddress: String!
   # factory contract address
@@ -127,7 +127,7 @@ type Market @entity {
 
 type MarketState @entity {
   # market address
-  id: ID!
+  id: Bytes!
   market: Market!
   bid: BigInt!
   ask: BigInt!
@@ -143,7 +143,7 @@ type MarketState @entity {
 
 type Position @entity {
   # market contract concat'd with position id
-  id: ID!
+  id: Bytes!
   # position id
   positionId: String!
   # owner of position
@@ -189,7 +189,7 @@ type Position @entity {
 
 type Transaction @entity {
   # txn hash
-  id: ID!
+  id: Bytes!
   # block txn was included in
   blockNumber: BigInt!
   # timestamp txn was confirmed
@@ -206,7 +206,7 @@ type Transaction @entity {
 
 type Build @entity {
   # market contract concat'd with position id
-  id: ID!
+  id: Bytes!
   # account performing action
   owner: Account!
   # position entitie
@@ -233,7 +233,7 @@ type Build @entity {
 
 type Unwind @entity {
   # market contract concat'd with position id concat'd with unwind number
-  id: ID!
+  id: Bytes!
   # account performing action
   owner: Account!
   # position id
@@ -278,7 +278,7 @@ type Unwind @entity {
 
 type Liquidate @entity {
   # market contract concat'd with position id
-  id: ID!
+  id: Bytes!
   # owner of the position
   owner: Account!
   # address performing the transaction
@@ -320,7 +320,7 @@ type Liquidate @entity {
 
 type Account @entity {
   # account address
-  id: ID!
+  id: Bytes!
   # totalRealizedPnl
   realizedPnl:  BigInt!
   # numberOfUnwinds of the account
@@ -341,6 +341,7 @@ type Account @entity {
   tradingMiningEpochVolumes: [TradingMiningEpochVolume!]! @derivedFrom(field: "trader")
   tokens: [TokenPosition!]! @derivedFrom(field: "owner")
   nfts: [ERC721NFT!]! @derivedFrom(field: "owner")
+  erc1155Tokens: [ERC1155TokenBalance!]! @derivedFrom(field: "owner")
 }
 
 type TokenTransfer @entity(immutable: true) {
@@ -507,7 +508,7 @@ type TradingMiningEpochVolume @entity {
 
 type TotalSupplyHourData @entity {
   # token address concatendated with date
-  id: ID!
+  id: Bytes!
   # unix timestamp for start of hour
   periodStartUnix: Int!
   # pointer to token
@@ -522,7 +523,7 @@ type TotalSupplyHourData @entity {
 
 type MarketHourData @entity {
   # market address concatendated with date
-  id: ID!
+  id: Bytes!
   # unix timestamp for start of hour
   periodStartUnix: Int!
   # pointer to market
@@ -537,4 +538,30 @@ type MarketHourData @entity {
   oiLong: BigInt!
   oiShort: BigInt!
   fundingRate: BigInt!
+}
+
+type ERC1155TokenBalance @entity {
+  id: Bytes! # contract address + tokenId + owner
+  owner: Account!
+  token: ERC1155Token!
+  amount: BigInt!
+  burnt: BigInt!
+}
+
+type ERC1155Token @entity {
+  id: Bytes! # contract address + tokenId
+  address: String!
+  tokenId: BigInt!
+  totalSupply: BigInt!
+  totalBurnt: BigInt!
+  tokenUri: String!
+}
+
+type ERC1155Transfer @entity {
+  id: Bytes! # transaction hash + log index + index of transaction in a batch
+  token: ERC1155Token!
+  from: Account!
+  to: Account!
+  amount: BigInt!
+  transaction: Transaction!
 }

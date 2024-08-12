@@ -61,7 +61,7 @@ describe("Market Factory events", () => {
     describe("Fee Recipient Updated event", () => {
         beforeEach(() => {
             // initializing factory
-            loadFactory(factoryAddress.toString())
+            loadFactory(factoryAddress)
             // imitating an event
             const event = createFeeRecipientUpdatedEvent(factoryAddress, user, recipientAddress)
             handleFeeRecipientUpdated(event)
@@ -82,7 +82,7 @@ describe("Market Factory events", () => {
 
     describe("Param Updated event", () => {
         beforeEach(() => {
-            loadFactory(factoryAddress.toString())
+            loadFactory(factoryAddress)
             const event = createParamUpdatedEvent(factoryAddress, user, market, paramNameValue, paramValue)
             handleParamUpdated(event)
         })
@@ -98,7 +98,7 @@ describe("Market Factory events", () => {
 
     describe("Emergency Shutdown event", () => {
         beforeEach(() => {
-            loadFactory(factoryAddress.toString())
+            loadFactory(factoryAddress)
             const event = createEmergencyShutdownEvent(factoryAddress, user, market)
             handleEmergencyShutdown(event)
         })
