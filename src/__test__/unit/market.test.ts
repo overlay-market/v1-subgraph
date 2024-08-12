@@ -15,12 +15,15 @@ import {
     Build as BuildEvent,
     CacheRiskCalc as CacheRiskCalcEvent,
     Update as UpdateEvent,
+    Liquidate as LiquidateEvent,
+    Unwind as UnwindEvent,
+    EmergencyWithdraw as EmergencyWithdrawEvent,
 } from "../../../generated/templates/OverlayV1Market/OverlayV1Market"
-import { handleBuild, handleCacheRiskCalc, handleUpdate } from "../../mapping"
+import { handleBuild, handleLiquidate, handleUnwind, handleEmergencyWithdraw, handleCacheRiskCalc, handleUpdate } from "../../mapping"
 import { loadAccount } from "../../utils"
 import { loadTradingMining } from "../../trading-mining"
 import { loadReferralProgram, loadReferralPosition } from "../../referral"
-import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS, ADDRESS_ZERO } from "../../utils/constants"
+import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS, ADDRESS_ZERO, ONE_18DEC_BI } from "../../utils/constants"
 import { setupMarketMockedFunctions, setupTradingMiningMockedFunctions } from "./shared/mockedFunctions"
 import { MARKET_COLLATERAL, MARKET_PCD_HOLDER, MARKET_POSITION_ID, MARKET_SENDER } from "./shared/constants"
 
@@ -45,6 +48,15 @@ const isLong = true
 const price = BigInt.fromI32(100)
 const oiAfterBuild = BigInt.fromI32(51)
 const oiSharesAfterBuild = BigInt.fromI32(1)
+
+// Unwind event parameters
+const oiAfterUnwind = BigInt.fromI32(25)
+const oiSharesAfterUnwind = BigInt.fromI32(1)
+const fraction = BigInt.fromI32(5)
+
+// Liquidate event parameters
+const oiAfterLiquidate = BigInt.fromI32(0)
+const oiSharesAfterLiquidate = BigInt.fromI32(0)
 
 // CacheRiskCalc event parameters
 const dpUpperLimit = BigInt.fromI32(100)
@@ -83,6 +95,17 @@ describe("Market events", () => {
 
         test("creates Market entity", () => {
             assert.entityCount("Market", 1)
+        })
+
+        test("creates Build entity with correct attributes", () => {
+            const marketId = market.concatI32(positionId.toI32()).toHexString()
+
+            assert.entityCount("Build", 1)
+            assert.fieldEquals("Build", marketId, "owner", sender.toHexString())
+            assert.fieldEquals("Build", marketId, "currentOi", oi.toString())
+            assert.fieldEquals("Build", marketId, "currentDebt", debt.toString())
+            assert.fieldEquals("Build", marketId, "isLong", isLong.toString())
+            assert.fieldEquals("Build", marketId, "price", price.toString())
         })
 
         describe("Trading Mining", () => {
@@ -206,6 +229,103 @@ describe("Market events", () => {
 
     })
 
+    describe("Unwind event", () => {
+        beforeEach(() => {
+            // Create a Build event to set up the initial position
+            const buildEvent = createBuildEvent(market, sender, positionId, oi, debt, isLong, price, oi, oiSharesAfterBuild)
+            handleBuild(buildEvent)
+
+            // Now create an Unwind event to test
+            const unwindEvent = createUnwindEvent(market, sender, positionId, fraction, BigInt.fromI32(10), price, oiAfterUnwind, oiSharesAfterUnwind)
+            handleUnwind(unwindEvent)
+        })
+
+        afterEach(() => {
+            clearStore()
+        })
+
+        test("creates Unwind entity with correct attributes", () => {
+            const unwindId = market.concatI32(positionId.toI32()).concatI32(0).toHexString()
+
+            assert.entityCount("Unwind", 1)
+            assert.fieldEquals("Unwind", unwindId, "owner", sender.toHexString())
+            assert.fieldEquals("Unwind", unwindId, "currentOi", oi.toString())
+            assert.fieldEquals("Unwind", unwindId, "currentDebt", debt.toString())
+            assert.fieldEquals("Unwind", unwindId, "isLong", isLong.toString())
+            assert.fieldEquals("Unwind", unwindId, "price", price.toString())
+        })
+    })
+
+    describe("Liquidate event", () => {
+        beforeEach(() => {
+            // Create a Build event to set up the initial position
+            const buildEvent = createBuildEvent(market, sender, positionId, oi, debt, isLong, price, oi, oiSharesAfterBuild)
+            handleBuild(buildEvent)
+
+            // Now create a Liquidate event to test
+            const liquidateEvent = createLiquidateEvent(market, zeroAddress, sender, positionId, BigInt.fromI32(10), price, oiAfterLiquidate, oiSharesAfterLiquidate)
+            handleLiquidate(liquidateEvent)
+        })
+
+        afterEach(() => {
+            clearStore()
+        })
+
+        test("creates Liquidate entity with correct attributes", () => {
+            const liquidateId = market.concatI32(positionId.toI32()).toHexString();
+
+            assert.entityCount("Liquidate", 1)
+            assert.fieldEquals("Liquidate", liquidateId, "owner", sender.toHexString())
+            assert.fieldEquals("Liquidate", liquidateId, "sender", zeroAddress.toHexString())
+            assert.fieldEquals("Liquidate", liquidateId, "currentOi", oi.toString())
+            assert.fieldEquals("Liquidate", liquidateId, "currentDebt", debt.toString())
+            assert.fieldEquals("Liquidate", liquidateId, "isLong", isLong.toString())
+            assert.fieldEquals("Liquidate", liquidateId, "price", price.toString())
+        })
+    })
+
+    describe("EmergencyWithdraw event", () => {
+        beforeEach(() => {
+            // Create a Build event to set up the initial position
+            const buildEvent = createBuildEvent(market, sender, positionId, oi, debt, isLong, price, oi, oiSharesAfterBuild)
+            handleBuild(buildEvent)
+
+            // Now create an EmergencyWithdraw event to test
+            const emergencyWithdrawEvent = createEmergencyWithdrawEvent(market, sender, positionId, collateral)
+            handleEmergencyWithdraw(emergencyWithdrawEvent)
+        })
+
+        afterEach(() => {
+            clearStore()
+        })
+
+        test("creates an Unwound and withdraws Position collateral", () => {
+            const _positionId = market.concatI32(positionId.toI32())
+            const unwindId = _positionId.concatI32(0).toHexString()
+
+            assert.entityCount("Unwind", 1)
+            assert.fieldEquals("Unwind", unwindId, "position", _positionId.toHexString())
+            assert.fieldEquals("Unwind", unwindId, "owner", sender.toHexString())
+            assert.fieldEquals("Unwind", unwindId, "size", collateral.toString())
+            assert.fieldEquals("Unwind", unwindId, "transferAmount", collateral.toString())
+            assert.fieldEquals("Unwind", unwindId, "currentOi", oi.toString())
+            assert.fieldEquals("Unwind", unwindId, "currentDebt", debt.toString())
+            assert.fieldEquals("Unwind", unwindId, "isLong", isLong.toString())
+            assert.fieldEquals("Unwind", unwindId, "price", "0")
+            assert.fieldEquals("Unwind", unwindId, "fraction", ONE_18DEC_BI.toString())
+            assert.fieldEquals("Unwind", unwindId, "fractionOfPosition", ONE_18DEC_BI.toString())
+            assert.fieldEquals("Unwind", unwindId, "volume", "0")
+            assert.fieldEquals("Unwind", unwindId, "mint", "0")
+            assert.fieldEquals("Unwind", unwindId, "fundingPayment", "0")
+            assert.fieldEquals("Unwind", unwindId, "collateral", "0")
+            assert.fieldEquals("Unwind", unwindId, "value", "0")
+
+            assert.fieldEquals("Position", _positionId.toHexString(), "currentOi", "0")
+            assert.fieldEquals("Position", _positionId.toHexString(), "currentDebt", "0")
+            assert.fieldEquals("Position", _positionId.toHexString(), "fractionUnwound", ONE_18DEC_BI.toString())
+        })
+    })
+
     describe("CacheRiskCalc event", () => {
         beforeEach(() => {
             const event = createCacheRiskCalcEvent(market, dpUpperLimit)
@@ -295,6 +415,76 @@ function createBuildEvent(
     event.parameters.push(
         new ethereum.EventParam("oiSharesAfterBuild", ethereum.Value.fromUnsignedBigInt(oiSharesAfterBuild))
     )
+
+    return event
+}
+
+function createUnwindEvent(
+    market: Address,
+    sender: Address,
+    positionId: BigInt,
+    fraction: BigInt,
+    mint: BigInt,
+    price: BigInt,
+    oiAfterUnwind: BigInt,
+    oiSharesAfterUnwind: BigInt
+): UnwindEvent {
+    const event = changetype<UnwindEvent>(newMockEvent())
+
+    event.address = market
+    event.parameters = new Array()
+
+    event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)))
+    event.parameters.push(new ethereum.EventParam("positionId", ethereum.Value.fromUnsignedBigInt(positionId)))
+    event.parameters.push(new ethereum.EventParam("fraction", ethereum.Value.fromUnsignedBigInt(fraction)))
+    event.parameters.push(new ethereum.EventParam("mint", ethereum.Value.fromUnsignedBigInt(mint)))
+    event.parameters.push(new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price)))
+    event.parameters.push(new ethereum.EventParam("oiAfterUnwind", ethereum.Value.fromUnsignedBigInt(oiAfterUnwind)))
+    event.parameters.push(new ethereum.EventParam("oiSharesAfterUnwind", ethereum.Value.fromUnsignedBigInt(oiSharesAfterUnwind)))
+
+    return event
+}
+
+function createLiquidateEvent(
+    market: Address,
+    sender: Address,
+    owner: Address,
+    positionId: BigInt,
+    mint: BigInt,
+    price: BigInt,
+    oiAfterLiquidate: BigInt,
+    oiSharesAfterLiquidate: BigInt
+): LiquidateEvent {
+    const event = changetype<LiquidateEvent>(newMockEvent())
+
+    event.address = market
+    event.parameters = new Array()
+
+    event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)))
+    event.parameters.push(new ethereum.EventParam("owner", ethereum.Value.fromAddress(owner)))
+    event.parameters.push(new ethereum.EventParam("positionId", ethereum.Value.fromUnsignedBigInt(positionId)))
+    event.parameters.push(new ethereum.EventParam("mint", ethereum.Value.fromUnsignedBigInt(mint)))
+    event.parameters.push(new ethereum.EventParam("price", ethereum.Value.fromUnsignedBigInt(price)))
+    event.parameters.push(new ethereum.EventParam("oiAfterLiquidate", ethereum.Value.fromUnsignedBigInt(oiAfterLiquidate)))
+    event.parameters.push(new ethereum.EventParam("oiSharesAfterLiquidate", ethereum.Value.fromUnsignedBigInt(oiSharesAfterLiquidate)))
+
+    return event
+}
+
+function createEmergencyWithdrawEvent(
+    market: Address,
+    sender: Address,
+    positionId: BigInt,
+    collateral: BigInt
+): EmergencyWithdrawEvent {
+    const event = changetype<EmergencyWithdrawEvent>(newMockEvent())
+
+    event.address = market
+    event.parameters = new Array()
+
+    event.parameters.push(new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender)))
+    event.parameters.push(new ethereum.EventParam("positionId", ethereum.Value.fromUnsignedBigInt(positionId)))
+    event.parameters.push(new ethereum.EventParam("collateral", ethereum.Value.fromUnsignedBigInt(collateral)))
 
     return event
 }
