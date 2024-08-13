@@ -33,19 +33,23 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   // load factory
   let factory = loadFactory(Address.fromString(FACTORY_ADDRESS))
 
+  // adding a new market to the count
   factory.marketCount = factory.marketCount.plus(ONE_BI)
 
+  // vars that will be used to populate the information for a new market
   let marketAddress = event.params.market
   let feedAddress = event.params.feed
   let marketContract = OverlayV1Market.bind(event.params.market)
   let market = new Market(marketAddress) as Market
   let marketState = updateMarketState(market.id)
 
+  // basic info about the market
   market.feedAddress = feedAddress.toHexString()
   market.factory = factory.id
   market.createdAtTimestamp = event.block.timestamp
   market.createdAtBlockNumber = event.block.number
 
+  // all params
   market.k = marketContract.params(integer.fromNumber(0))
   market.lmbda = marketContract.params(integer.fromNumber(1))
   market.delta = marketContract.params(integer.fromNumber(2))
@@ -84,74 +88,84 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 }
 
 export function handleBuild(event: BuildEvent): void {
+  // Load the market entity using the market address from the event
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
+  // Load the account entity corresponding to the sender of the transaction
   let sender = loadAccount(event.params.sender)
 
+  // Convert market ID and sender ID to Address type for further usage
   let marketAddress = Address.fromBytes(market.id)
   let senderAddress = Address.fromBytes(sender.id)
 
+  // Retrieve the position ID from the event and create a unique ID for the position entity
   let positionId = event.params.positionId
   let id = market.id.concatI32(positionId.toI32())
   let position = new Position(id) as Position
 
+  // Initialize transfer fee amount to zero
   let transferFeeAmount = ZERO_BI
+
+  // Retrieve the transaction receipt and load the factory entity associated with the market
   let receipt = event.receipt
   let factory = Factory.load(market.factory)
 
+  // This block of code is to get `transferFeeAmount` from the logs
+  // Build transactions generate 3 (sometimes 4) relevant logs:
+  // 1. Build: The main event log indicating the build action.
+  // 2. (Optional) Approve: This is emitted only for the first Build in the market.
+  // 3. Transfer from user to smart contract: The transfer of collateral from the user to the market contract.
+  // 4. Transfer from smart contract to fee recipient: The transfer of the fee amount from the market contract to the fee recipient.
+
+  // All code below is to find the second Transfer function (from the smart contract to the fee recipient) and extract the `transferFeeAmount` value.
+
   if (receipt && factory) {
-    const logLength = receipt.logs.length
-    log.warning("handleBuild: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
-      event.transaction.hash.toHexString(),
-      event.transactionLogIndex.toI32().toString(),
-      event.logIndex.toI32().toString(),
-      event.transaction.index.toI32().toString(),
-      logLength.toString(),
-      receipt.logs[0].logIndex.toI32().toString(),
-      receipt.logs[0].transactionIndex.toI32().toString(),
-      receipt.logs[0].transactionLogIndex.toI32().toString(),
-    ])
+    // Initialize the index for the Build event log
     let buildIndex = 0
+
+    // Iterate over the logs to find the log corresponding to the Build event
     for (let i = 0; i < receipt.logs.length; i++) {
       if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
         buildIndex = i
         break
       }
     }
+
+    // Check if the next log is not an ERC20 transfer event, adjust the index if necessary
+    // The first Build event on each market emits an Approve event after the Build event,
+    // which might shift the position of the subsequent Transfer logs.
     if (receipt.logs[buildIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
       buildIndex += 1
     }
+
+    // Calculate the index for the transfer event log from the smart contract to the fee recipient
     let index = +buildIndex + 2
-    log.warning("handleBuild: indexes: tx {}, buildIndex: {}, index: {}", [
-      event.transaction.hash.toHexString(),
-      buildIndex.toString(),
-      index.toString()
-    ])
+
+    // Further adjust the index if the next log is not an ERC20 transfer event
+    // This adjustment is a precautionary step, though it is rare for this to happen.
     if (receipt.logs[buildIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
+      log.warning("IT HAPPENS", [])
       index += 1
     }
+
+    // Extract the first topic (event signature) and the address of the log at the calculated index
     const _topic0 = receipt.logs[index].topics[0]
     const _address = receipt.logs[index].address
-    // find the log that matches the ERC20 transfer to the owner
+
+    // Verify that the log is an ERC20 Transfer event and matches the OVL token address
     if (
       _topic0.equals(TRANSFER_SIG) &&
       _address.toHexString() == OVL_ADDRESS &&
       receipt.logs[index].topics.length > 1
     ) {
+      // Decode the recipient address from the log's topics
       let topics2address = ethereum.decode('address', receipt.logs[index].topics[2])!.toAddress()
-      log.warning("handleBuild: 1 stage receipt found: tx: {}, 2address: {}, feeRecipient: {}", [
-        event.transaction.hash.toHexString(),
-        topics2address.toHexString(),
-        factory.feeRecipient.toLowerCase()
-      ])
+
+      // Check if the recipient is the fee recipient and decode the transfer amount
       if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
         const _transferAmount = receipt.logs[index].data
         transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
-        log.warning("handleBuild: 2 stage receipt found: tx{},  transferFeeAmount: {}", [
-          event.transaction.hash.toHexString(),
-          transferFeeAmount.toHexString()
-        ])
       } else {
+        // Log an error if the recipient does not match the expected fee recipient
         log.error("handleBuild: 2nd if: transaction: {}, buildIndex: {}, index {}", [
           event.transaction.hash.toHexString(),
           buildIndex.toString(),
@@ -159,6 +173,7 @@ export function handleBuild(event: BuildEvent): void {
         ])
       }
     } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
       log.error("handleBuild: 1st if: transaction: {}, buildIndex: {}, index {}", [
         event.transaction.hash.toHexString(),
         buildIndex.toString(),
@@ -166,6 +181,7 @@ export function handleBuild(event: BuildEvent): void {
       ])
     }
   } else {
+    // Log an error if the receipt or factory is missing
     log.error("handleBuild: receipt && factory: tx {}, {}, {}", [
       event.transaction.hash.toHexString(),
       !receipt ? "no receipt" : "receipt found",
@@ -173,16 +189,19 @@ export function handleBuild(event: BuildEvent): void {
     ])
   }
 
+  // Initialize the Position entity with data from the event and calculations
   position.owner = sender.id
   position.positionId = positionId.toHexString()
   position.market = market.id
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
 
+  // Calculate initial collateral and notional using the state contract
   let initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
   let initialNotional = initialCollateral.plus(event.params.debt)
   position.initialCollateral = initialCollateral
   position.initialNotional = initialNotional
+  // Calculate the leverage for the position
   position.leverage = (initialNotional.toBigDecimal()).div(initialCollateral.toBigDecimal())
   position.isLong = event.params.isLong
   position.entryPrice = event.params.price
@@ -195,6 +214,7 @@ export function handleBuild(event: BuildEvent): void {
   position.numberOfUniwnds = BigInt.fromI32(0)
   position.fractionUnwound = BigInt.fromI32(0)
 
+  // Update the open interest in the market based on the position's side (long/short)
   if (position.isLong) {
     market.oiLong = event.params.oiAfterBuild
     market.oiLongShares = event.params.oiSharesAfterBuild
@@ -202,14 +222,18 @@ export function handleBuild(event: BuildEvent): void {
     market.oiShort = event.params.oiAfterBuild
     market.oiShortShares = event.params.oiSharesAfterBuild
   }
+
+  // Update market-level metrics with the calculated fee and notional
   market.totalBuildFees = market.totalBuildFees.plus(transferFeeAmount)
   market.numberOfBuilds = market.numberOfBuilds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
   market.totalVolume = market.totalVolume.plus(initialNotional)
 
+  // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
-  let build = new Build(position.id) as Build
 
+  // Create a new Build entity to track this specific build event
+  let build = new Build(position.id) as Build
   build.position = position.id
   build.owner = sender.id
   build.currentOi = event.params.oi
@@ -217,12 +241,13 @@ export function handleBuild(event: BuildEvent): void {
   build.isLong = event.params.isLong
   build.price = event.params.price
   build.collateral = initialCollateral
+  // Calculate the current value of the position using the state contract
   build.value = stateContract.value(marketAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
   build.feeAmount = transferFeeAmount
 
-  // analytics update
+  // Update the analytics entity to reflect the new build and market activity
   let analytics = loadAnalytics(market.factory)
   if (sender.ovlVolumeTraded.equals(ZERO_BI)) {
     analytics.totalUsers = analytics.totalUsers.plus(ONE_BI)
@@ -232,16 +257,23 @@ export function handleBuild(event: BuildEvent): void {
   analytics.totalVolumeBuilds = analytics.totalVolumeBuilds.plus(initialNotional)
   analytics.totalVolume = analytics.totalVolume.plus(initialNotional)
 
+  // Update hourly analytics data for this market
   updateAnalyticsHourData(analytics, event.block.timestamp)
 
+  // Increment the sender's open positions count
   sender.numberOfOpenPositions = sender.numberOfOpenPositions.plus(ONE_BI)
 
+  // Update referral rewards and trader epoch volume for the sender
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
   updateTraderEpochVolume(event.params.sender, initialNotional)
+
+  // Update the sender's total traded volume
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(initialNotional)
 
+  // Update hourly market data with the new position's notional
   updateMarketHourData(market, event.block.timestamp, initialNotional, ZERO_BI)
 
+  // Save all the updated and new entities
   position.save()
   market.save()
   build.save()
