@@ -608,7 +608,6 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
 
 export function handleCacheRiskCalc(event: CacheRiskCalcEvent): void {
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
 
   market.dpUpperLimit = event.params.newDpUpperLimit
 
@@ -617,7 +616,6 @@ export function handleCacheRiskCalc(event: CacheRiskCalcEvent): void {
 
 export function handleUpdate(event: UpdateEvent): void {
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
 
   market.oiLong = event.params.oiLong
   market.oiShort = event.params.oiShort
@@ -627,7 +625,6 @@ export function handleUpdate(event: UpdateEvent): void {
 
 export function handleLiquidate(event: LiquidateEvent): void {
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
   let sender = loadAccount(event.params.sender)
   let owner = loadAccount(event.params.owner)
 
