@@ -529,60 +529,76 @@ export function handleUnwind(event: UnwindEvent): void {
 
 
 export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
+  // Load the market entity using the market address from the event
   let market = loadMarket(event, event.address)
+  // Update the market state by retrieving fresh data from the state contract
   let marketState = updateMarketState(market.id)
+  // Load the account entity corresponding to the sender of the transaction
   let sender = loadAccount(event.params.sender)
 
+  // Convert the sender's ID to an Address type for further usage
   let senderAddress = Address.fromBytes(sender.id)
 
+  // Retrieve the position ID from the event and load the corresponding position entity
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
+  // Track the current number of unwinds for this position
   let unwindNumber = position.numberOfUniwnds
 
+  // Increment the number of unwinds for this position
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
+  // Update the market's open interest values based on the current market state
   market.oiLong = marketState.oiLong
   market.oiShort = marketState.oiShort
 
+  // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
+  // Create a new Unwind entity to represent this emergency withdrawal
   let unwind = new Unwind(position.id.concatI32(unwindNumber.toI32())) as Unwind
 
-  // fraction of the position unwound BEFORE this transaction
+  // Calculate the fraction of the position that was unwound before this transaction
   const fractionUnwound = position.fractionUnwound
-  // this unwind size = intialCollateral * (1 - fractionUnwound) * unwindFraction
+  // Calculate the fraction of the position being unwound in this transaction
   const fractionOfPosition = (ONE_18DEC_BI.minus(fractionUnwound)).times(ONE_18DEC_BI).div(ONE_18DEC_BI)
 
+  // Assign values to the Unwind entity based on the event and position data
   unwind.position = position.id
   unwind.owner = sender.id
-  unwind.size = event.params.collateral
-  unwind.transferAmount = event.params.collateral
-  unwind.pnl = ZERO_BI
-  unwind.feeAmount = ZERO_BI
-  unwind.currentOi = position.currentOi
-  unwind.currentDebt = position.currentDebt
-  unwind.isLong = position.isLong
-  unwind.price = ZERO_BI
-  unwind.fraction = ONE_18DEC_BI
-  unwind.fractionOfPosition = fractionOfPosition
-  unwind.volume = ZERO_BI
-  unwind.mint = ZERO_BI
-  unwind.unwindNumber = unwindNumber
-  unwind.collateral = ZERO_BI
-  unwind.value = ZERO_BI
-  unwind.timestamp = transaction.timestamp
-  unwind.transaction = transaction.id
+  unwind.size = event.params.collateral // The size of the unwind is the collateral being withdrawn
+  unwind.transferAmount = event.params.collateral // The transfer amount is the same as the withdrawn collateral
+  unwind.pnl = ZERO_BI // PnL is zero since it's an emergency withdrawal
+  unwind.feeAmount = ZERO_BI // No fees are charged during an emergency withdrawal
+  unwind.currentOi = position.currentOi // Open interest at the time of the emergency withdrawal
+  unwind.currentDebt = position.currentDebt // Debt at the time of the emergency withdrawal
+  unwind.isLong = position.isLong // Whether the position was long or short
+  unwind.price = ZERO_BI // Price is not applicable in an emergency withdrawal
+  unwind.fraction = ONE_18DEC_BI // The entire position is unwound
+  unwind.fractionOfPosition = fractionOfPosition // Fraction of the original position unwound
+  unwind.volume = ZERO_BI // No trading volume associated with an emergency withdrawal
+  unwind.mint = ZERO_BI // No minting occurs in an emergency withdrawal
+  unwind.unwindNumber = unwindNumber // The current unwind number for this position
+  unwind.collateral = ZERO_BI // Collateral is set to zero since it's withdrawn
+  unwind.value = ZERO_BI // Value is set to zero as the position is closed
+  unwind.timestamp = transaction.timestamp // Timestamp of the transaction
+  unwind.transaction = transaction.id // ID of the transaction
   unwind.fundingPayment = ZERO_BI
 
+  // Reset the position's open interest and debt to zero since the position is fully unwound
   position.currentOi = ZERO_BI
   position.currentDebt = ZERO_BI
 
+  // Increment the total number of unwinds in the market
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
 
+  // Set the fraction unwound to 1, indicating the entire position has been unwound
   position.fractionUnwound = ONE_18DEC_BI
 
+  // Update the sender's metrics: increment unwinds and decrement open positions
   sender.numberOfUnwinds = sender.numberOfUnwinds.plus(ONE_BI)
   sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
 
+  // Save the updated entities to the subgraph store
   position.save()
   market.save()
   unwind.save()
