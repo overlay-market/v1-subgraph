@@ -624,56 +624,70 @@ export function handleUpdate(event: UpdateEvent): void {
 }
 
 export function handleLiquidate(event: LiquidateEvent): void {
+  // Load the market entity using the market address from the event
   let market = loadMarket(event, event.address)
+  // Load the account entity corresponding to the sender (liquidator) of the transaction
   let sender = loadAccount(event.params.sender)
+  // Load the account entity corresponding to the owner of the liquidated position
   let owner = loadAccount(event.params.owner)
 
+  // Convert the owner's ID to an Address type for further usage
   let ownerAddress = Address.fromBytes(owner.id)
 
+  // Retrieve the position ID from the event and load the corresponding position entity
   let positionId = event.params.positionId
   let position = loadPosition(event, ownerAddress, market, positionId)
 
+  // Retrieve the transaction receipt and initialize variables for fee and liquidator amounts
   let receipt = event.receipt
-  // initialize variables
   let transferFeeAmount = ZERO_BI
   let transferLiquidatorAmount = ZERO_BI
   let factory = Factory.load(market.factory)
+
+  // This block of code is to get `transferFeeAmount` and `transferLiquidatorAmount` from the logs
+  // Liquidate transaction consists of 4 relevant logs:
+  // Liquidate, (Approve for the first Liquidate in the market), Transfer from SC to liquidator, Transfer from SC to fee recipient
+  // The code below adjusts the index to correctly identify the transfer logs
+
   if (receipt && factory) {
-    const logLength = receipt.logs.length
-    log.warning("handleLiquidate: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
-      event.transaction.hash.toHexString(),
-      event.transactionLogIndex.toI32().toString(),
-      event.logIndex.toI32().toString(),
-      event.transaction.index.toI32().toString(),
-      logLength.toString(),
-      receipt.logs[0].logIndex.toI32().toString(),
-      receipt.logs[0].transactionIndex.toI32().toString(),
-      receipt.logs[0].transactionLogIndex.toI32().toString(),
-    ])
+    // Initialize the index for the Liquidate event log
     let liquidateIndex = 0
+
+    // Iterate over the logs to find the log corresponding to the Liquidate event
     for (let i = 0; i < receipt.logs.length; i++) {
       if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
         liquidateIndex = i
         break
       }
     }
+
+    // Check if the next log is not an ERC20 transfer event, adjust index if necessary
+    // The first Liquidate event on each market emits an Approve event after the Liquidate event
     if (receipt.logs[liquidateIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
       liquidateIndex += 1
     }
+
+    // Calculate the index for the fee transfer event log
     const feeIndex = +liquidateIndex + 3
     let _topic0 = receipt.logs[feeIndex].topics[0]
     let _address = receipt.logs[feeIndex].address
-    // find the log that matches the ERC20 transfer to the feeRecipient
+
+    // Find the log that matches the ERC20 transfer to the feeRecipient
     if (
       _topic0.equals(TRANSFER_SIG) &&
       _address.toHexString() == OVL_ADDRESS &&
       receipt.logs[feeIndex].topics.length > 1
     ) {
+      // Decode the recipient address from the log's topics
       let topics2address = ethereum.decode('address', receipt.logs[feeIndex].topics[2])!.toAddress()
+
+      // Check if the recipient is the fee recipient and decode the transfer amount
       if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
         const _transferAmount = receipt.logs[feeIndex].data
+        // Save the transferFeeAmount from the ERC20 Transfer event
         transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
       } else {
+        // Log an error if the recipient does not match the expected fee recipient
         log.error("handleLiquidate: 2nd if: transaction: {}, liquidateIndex: {}, feeIndex {}", [
           event.transaction.hash.toHexString(),
           liquidateIndex.toString(),
@@ -681,26 +695,35 @@ export function handleLiquidate(event: LiquidateEvent): void {
         ])
       }
     } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
       log.error("handleLiquidate: 1st if: transaction: {}, liquidateIndex: {}, feeIndex {}", [
         event.transaction.hash.toHexString(),
         liquidateIndex.toString(),
         feeIndex.toString()
       ])
     }
+
+    // Calculate the index for the liquidator transfer event log
     const liquidatorTransferIndex = +liquidateIndex + 2
     _topic0 = receipt.logs[liquidatorTransferIndex].topics[0]
     _address = receipt.logs[liquidatorTransferIndex].address
-    // find the log that matches the ERC20 transfer to the sender
+
+    // Find the log that matches the ERC20 transfer to the sender (liquidator)
     if (
       _topic0.equals(TRANSFER_SIG) &&
       _address.toHexString() == OVL_ADDRESS &&
       receipt.logs[liquidatorTransferIndex].topics.length > 1
     ) {
+      // Decode the recipient address from the log's topics
       let topics2address = ethereum.decode('address', receipt.logs[liquidatorTransferIndex].topics[2])!.toAddress()
+
+      // Check if the recipient is the sender (liquidator) and decode the transfer amount
       if (topics2address == Address.fromBytes(sender.id)) {
         const _transferAmount = receipt.logs[liquidatorTransferIndex].data
+        // Save the transferLiquidatorAmount from the ERC20 Transfer event
         transferLiquidatorAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
       } else {
+        // Log an error if the recipient does not match the expected sender (liquidator)
         log.error("handleLiquidate: 2nd if: transaction: {}, liquidateIndex: {}, liquidatorTransferIndex {}", [
           event.transaction.hash.toHexString(),
           liquidateIndex.toString(),
@@ -708,6 +731,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
         ])
       }
     } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
       log.error("handleLiquidate: 1st if: transaction: {}, liquidateIndex: {}, liquidatorTransferIndex {}", [
         event.transaction.hash.toHexString(),
         liquidateIndex.toString(),
@@ -715,17 +739,24 @@ export function handleLiquidate(event: LiquidateEvent): void {
       ])
     }
   }
+
+  // Calculate the fraction of the position that is being liquidated
   const fractionOfPosition = ONE_18DEC_BI.minus(position.fractionUnwound)
+  // Calculate the size of the liquidated position
   const liquidateSize = position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI)
 
+  // Update the owner's realized PnL by subtracting the liquidated position's size
   owner.realizedPnl = owner.realizedPnl.minus(liquidateSize)
 
+  // Update the position with the liquidation information
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
   position.fractionUnwound = ONE_18DEC_BI
 
+  // Initialize a variable to hold the amount of open interest unwound
   let oiUnwound: BigInt; // used later for fundingPayment calculations
 
+  // Update the market's open interest and open interest shares based on the position's side (long/short)
   if (position.isLong) {
     oiUnwound = market.oiLong.minus(event.params.oiAfterLiquidate)
     market.oiLong = event.params.oiAfterLiquidate
@@ -735,19 +766,26 @@ export function handleLiquidate(event: LiquidateEvent): void {
     market.oiShort = event.params.oiAfterLiquidate
     market.oiShortShares = event.params.oiSharesAfterLiquidate
   }
+
+  // Update market-level metrics with the calculated fee and notional
   market.totalLiquidateFees = market.totalLiquidateFees.plus(transferFeeAmount)
   market.numberOfLiquidates = market.numberOfLiquidates.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
 
+  // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
+  // Create a new Liquidate entity to track this specific liquidation event
   let liquidate = new Liquidate(position.id) as Liquidate
 
+  // Calculate the funding payment for the liquidation operation
   // funding = exitPrice * (oiUnwound - oiInitial * fractionUnwound)
   // oiUnwound = oiBeforeUnwind - oiAfterUnwind
   const fundingPayment = event.params.price.times(
     oiUnwound.minus(fractionOfPosition)
   )
   liquidate.fundingPayment = fundingPayment
+
+  // Assign values to the Liquidate entity based on the event and calculations
   liquidate.position = position.id
   liquidate.owner = owner.id
   liquidate.sender = sender.id
@@ -763,33 +801,39 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.fractionOfPosition = fractionOfPosition
   liquidate.size = liquidateSize
   liquidate.liquidationFee = transferLiquidatorAmount
-  // marginToBurn  = feeRecipientAmount / (1/ MaintenanceMarginBurnRate - 1) 
+  // marginToBurn = feeRecipientAmount / (1 / MaintenanceMarginBurnRate - 1)
   const marginToBurn = transferFeeAmount.times(ONE_18DEC_BI).div(ONE_18DEC_BI.times(ONE_18DEC_BI).div(market.maintenanceMarginBurnRate).minus(ONE_18DEC_BI))
   // volume = transferFeeAmount + initialDebt * fractionOfPosition / ONE + transferLiquidatorAmount
   liquidate.volume = transferFeeAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI)).plus(transferLiquidatorAmount)
   liquidate.marginToBurn = marginToBurn
   liquidate.transferFeeAmount = transferFeeAmount
 
-  // analytics update
+  // Update the analytics entity to reflect the new liquidation and market activity
   let analytics = loadAnalytics(market.factory)
   analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
   analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
   analytics.totalVolumeLiquidations = analytics.totalVolumeLiquidations.plus(liquidate.volume)
   analytics.totalVolume = analytics.totalVolume.plus(liquidate.volume)
 
+  // Update hourly analytics data for this market
   updateAnalyticsHourData(analytics, event.block.timestamp)
 
+  // Update market-level metrics with the new liquidation's volume and mint amount
   market.totalVolume = market.totalVolume.plus(liquidate.volume)
   market.totalMint = market.totalMint.plus(event.params.mint)
 
+  // Set the position's open interest and debt to zero after liquidation
   position.currentOi = ZERO_BI
   position.currentDebt = ZERO_BI
 
+  // Update the owner's metrics: increment liquidated positions and decrement open positions
   owner.numberOfLiquidatedPositions = owner.numberOfLiquidatedPositions.plus(ONE_BI)
   owner.numberOfOpenPositions = owner.numberOfOpenPositions.minus(ONE_BI)
 
+  // Update hourly market data with the new liquidation's volume and mint amount
   updateMarketHourData(market, event.block.timestamp, liquidate.volume, event.params.mint)
 
+  // Save all the updated and new entities
   position.save()
   market.save()
   liquidate.save()
