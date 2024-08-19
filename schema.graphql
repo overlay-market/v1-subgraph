@@ -211,20 +211,16 @@ type Build @entity {
   owner: Account!
   # position entitie
   position: Position!
-  # current position oi
-  currentOi: BigInt!
-  # current position debt
-  currentDebt: BigInt!
-  # position side taken
-  isLong: Boolean!
+  # position oi in the moment of build
+  oi: BigInt!
+  # position debt in the moment of build
+  debt: BigInt!
   # price at time of build
   price: BigInt!
   # Fee amount of this build
   feeAmount: BigInt!
   # current collateral backing position
   collateral: BigInt!
-  # current value of position
-  value: BigInt!
   # timestamp of transaction
   timestamp: BigInt!
   # transaction the position was built in

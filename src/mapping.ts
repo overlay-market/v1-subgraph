@@ -104,6 +104,8 @@ export function handleBuild(event: BuildEvent): void {
 
   // Initialize transfer fee amount to zero
   let transferFeeAmount = ZERO_BI
+  // How much OVL user sent to the market (initialCollateral + transferFee)
+  let userTransferAmount = ZERO_BI
 
   // Retrieve the transaction receipt and load the factory entity associated with the market
   let receipt = event.receipt
@@ -148,13 +150,13 @@ export function handleBuild(event: BuildEvent): void {
     }
 
     // Extract the first topic (event signature) and the address of the log at the calculated index
-    const _topic0 = receipt.logs[index].topics[0]
-    const _address = receipt.logs[index].address
+    const _topic0Fee = receipt.logs[index].topics[0]
+    const _addressFee = receipt.logs[index].address
 
     // Verify that the log is an ERC20 Transfer event and matches the OVL token address
     if (
-      _topic0.equals(TRANSFER_SIG) &&
-      _address.toHexString() == OVL_ADDRESS &&
+      _topic0Fee.equals(TRANSFER_SIG) &&
+      _addressFee.toHexString() == OVL_ADDRESS &&
       receipt.logs[index].topics.length > 1
     ) {
       // Decode the recipient address from the log's topics
@@ -164,6 +166,41 @@ export function handleBuild(event: BuildEvent): void {
       if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
         const _transferAmount = receipt.logs[index].data
         transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+      } else {
+        // Log an error if the recipient does not match the expected fee recipient
+        log.error("handleBuild: 2nd if: transaction: {}, buildIndex: {}, index {}", [
+          event.transaction.hash.toHexString(),
+          buildIndex.toString(),
+          index.toString()
+        ])
+      }
+    } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
+      log.error("handleBuild: 1st if: transaction: {}, buildIndex: {}, index {}", [
+        event.transaction.hash.toHexString(),
+        buildIndex.toString(),
+        index.toString()
+      ])
+    }
+
+    index--
+
+    // Extract the first topic (event signature) and the address of the log at the calculated index
+    const _topic0Main = receipt.logs[index].topics[0]
+    const _addressMain = receipt.logs[index].address
+
+    if (
+      _topic0Main.equals(TRANSFER_SIG) &&
+      _addressMain.toHexString() == OVL_ADDRESS &&
+      receipt.logs[index].topics.length > 1
+    ) {
+      // Decode the recipient address from the log's topics
+      let topics2address = ethereum.decode('address', receipt.logs[index].topics[2])!.toAddress()
+
+      // Check if the recipient is the fee recipient and decode the transfer amount
+      if (topics2address.toHexString().toLowerCase() == market.id.toHexString().toLowerCase()) {
+        const _transferAmount = receipt.logs[index].data
+        userTransferAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
       } else {
         // Log an error if the recipient does not match the expected fee recipient
         log.error("handleBuild: 2nd if: transaction: {}, buildIndex: {}, index {}", [
@@ -197,7 +234,10 @@ export function handleBuild(event: BuildEvent): void {
   position.initialDebt = event.params.debt
 
   // Calculate initial collateral and notional using the state contract
-  let initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
+  let initialCollateral = userTransferAmount.minus(transferFeeAmount)
+  if (initialCollateral.equals(new BigInt(0))) {
+    initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
+  }
   let initialNotional = initialCollateral.plus(event.params.debt)
   position.initialCollateral = initialCollateral
   position.initialNotional = initialNotional
@@ -236,13 +276,10 @@ export function handleBuild(event: BuildEvent): void {
   let build = new Build(position.id) as Build
   build.position = position.id
   build.owner = sender.id
-  build.currentOi = event.params.oi
-  build.currentDebt = event.params.debt
-  build.isLong = event.params.isLong
+  build.oi = event.params.oi
+  build.debt = event.params.debt
   build.price = event.params.price
   build.collateral = initialCollateral
-  // Calculate the current value of the position using the state contract
-  build.value = stateContract.value(marketAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
   build.feeAmount = transferFeeAmount
