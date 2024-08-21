@@ -322,8 +322,6 @@ export function handleBuild(event: BuildEvent): void {
 export function handleUnwind(event: UnwindEvent): void {
   // Load the market entity using the market address from the event
   let market = loadMarket(event, event.address)
-  // Update the market state by retrieving fresh data from the state contract
-  let marketState = updateMarketState(market.id)
   // Load the account entity corresponding to the sender of the transaction
   let sender = loadAccount(event.params.sender)
   // Convert the sender's ID to an Address type for further usage
@@ -339,9 +337,6 @@ export function handleUnwind(event: UnwindEvent): void {
   position.mint = position.mint.plus(event.params.mint)
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
-  // Update the market's open interest values based on the current market state
-  market.oiLong = marketState.oiLong
-  market.oiShort = marketState.oiShort
 
   // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
@@ -468,39 +463,6 @@ export function handleUnwind(event: UnwindEvent): void {
     }
   }
 
-  // Assign calculated values to the Unwind entity based on the event and calculations
-  unwind.position = position.id
-  unwind.owner = sender.id
-  unwind.size = unwindSize
-  unwind.transferAmount = transferAmount
-  unwind.pnl = pnl
-  unwind.feeAmount = transferFeeAmount
-  unwind.currentOi = position.currentOi // TODO remove
-  unwind.currentDebt = position.currentDebt
-  unwind.isLong = position.isLong
-  unwind.price = event.params.price
-  unwind.fraction = event.params.fraction
-  unwind.fractionOfPosition = fractionOfPosition
-  unwind.volume = transferAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI))
-  unwind.mint = event.params.mint
-  unwind.unwindNumber = unwindNumber
-  unwind.collateral = ZERO_BI
-  unwind.value = ZERO_BI
-  unwind.timestamp = transaction.timestamp
-  unwind.transaction = transaction.id
-
-  // Analytics update: update overall metrics
-  let analytics = loadAnalytics(market.factory)
-  analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
-  analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
-  analytics.totalVolumeUnwinds = analytics.totalVolumeUnwinds.plus(unwind.volume)
-  analytics.totalVolume = analytics.totalVolume.plus(unwind.volume)
-
-  updateAnalyticsHourData(analytics, event.block.timestamp)
-
-  // Update the position's current debt and open interest
-  position.currentDebt = position.currentDebt.times(ONE_18DEC_BI.minus(unwind.fraction)).div(ONE_18DEC_BI)
-
   // Calculate the amount of open interest unwound
   let oiUnwound: BigInt; // used later for fundingPayment calculations
 
@@ -513,6 +475,36 @@ export function handleUnwind(event: UnwindEvent): void {
     market.oiShort = event.params.oiAfterUnwind
     market.oiShortShares = event.params.oiSharesAfterUnwind
   }
+
+  // Assign calculated values to the Unwind entity based on the event and calculations
+  unwind.position = position.id
+  unwind.owner = sender.id
+  unwind.size = unwindSize
+  unwind.transferAmount = transferAmount
+  unwind.pnl = pnl
+  unwind.feeAmount = transferFeeAmount
+  unwind.oiUnwound = oiUnwound
+  unwind.price = event.params.price
+  unwind.fraction = event.params.fraction
+  unwind.fractionOfPosition = fractionOfPosition
+  unwind.volume = transferAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI))
+  unwind.mint = event.params.mint
+  unwind.unwindNumber = unwindNumber
+  unwind.timestamp = transaction.timestamp
+  unwind.transaction = transaction.id
+
+  // Analytics update: update overall metrics
+  let analytics = loadAnalytics(market.factory)
+  analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
+  analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
+  analytics.totalVolumeUnwinds = analytics.totalVolumeUnwinds.plus(unwind.volume)
+  analytics.totalVolume = analytics.totalVolume.plus(unwind.volume)
+
+  updateAnalyticsHourData(analytics, event.block.timestamp)
+
+  position.currentOi = position.currentOi.minus(oiUnwound)
+  // Update the position's current debt and open interest
+  position.currentDebt = position.currentDebt.times(ONE_18DEC_BI.minus(unwind.fraction)).div(ONE_18DEC_BI)
 
   // Update market-level metrics with the calculated fee and notional
   market.totalUnwindFees = market.totalUnwindFees.plus(transferFeeAmount)
@@ -535,9 +527,9 @@ export function handleUnwind(event: UnwindEvent): void {
   // funding = exitPrice * (oiUnwound - oiInitial * fractionUnwound)
   const fundingPayment = event.params.price.times(
     oiUnwound.minus(
-      position.initialOi.times(fractionOfPosition)
+      position.initialOi.times(fractionOfPosition).div(ONE_18DEC_BI)
     )
-  )
+  ).div(ONE_18DEC_BI)
   unwind.fundingPayment = fundingPayment
 
   // Update the sender's metrics: increment unwinds, update realized PnL, and decrement open positions if fully unwound

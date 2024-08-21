@@ -1625,8 +1625,8 @@ export class Build extends Entity {
     this.set("position", Value.fromBytes(value));
   }
 
-  get currentOi(): BigInt {
-    let value = this.get("currentOi");
+  get oi(): BigInt {
+    let value = this.get("oi");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -1634,12 +1634,12 @@ export class Build extends Entity {
     }
   }
 
-  set currentOi(value: BigInt) {
-    this.set("currentOi", Value.fromBigInt(value));
+  set oi(value: BigInt) {
+    this.set("oi", Value.fromBigInt(value));
   }
 
-  get currentDebt(): BigInt {
-    let value = this.get("currentDebt");
+  get debt(): BigInt {
+    let value = this.get("debt");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -1647,21 +1647,8 @@ export class Build extends Entity {
     }
   }
 
-  set currentDebt(value: BigInt) {
-    this.set("currentDebt", Value.fromBigInt(value));
-  }
-
-  get isLong(): boolean {
-    let value = this.get("isLong");
-    if (!value || value.kind == ValueKind.NULL) {
-      return false;
-    } else {
-      return value.toBoolean();
-    }
-  }
-
-  set isLong(value: boolean) {
-    this.set("isLong", Value.fromBoolean(value));
+  set debt(value: BigInt) {
+    this.set("debt", Value.fromBigInt(value));
   }
 
   get price(): BigInt {
@@ -1701,19 +1688,6 @@ export class Build extends Entity {
 
   set collateral(value: BigInt) {
     this.set("collateral", Value.fromBigInt(value));
-  }
-
-  get value(): BigInt {
-    let value = this.get("value");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set value(value: BigInt) {
-    this.set("value", Value.fromBigInt(value));
   }
 
   get timestamp(): BigInt {
@@ -1823,8 +1797,8 @@ export class Unwind extends Entity {
     this.set("unwindNumber", Value.fromBigInt(value));
   }
 
-  get currentOi(): BigInt {
-    let value = this.get("currentOi");
+  get oiUnwound(): BigInt {
+    let value = this.get("oiUnwound");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -1832,21 +1806,8 @@ export class Unwind extends Entity {
     }
   }
 
-  set currentOi(value: BigInt) {
-    this.set("currentOi", Value.fromBigInt(value));
-  }
-
-  get currentDebt(): BigInt {
-    let value = this.get("currentDebt");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set currentDebt(value: BigInt) {
-    this.set("currentDebt", Value.fromBigInt(value));
+  set oiUnwound(value: BigInt) {
+    this.set("oiUnwound", Value.fromBigInt(value));
   }
 
   get isLong(): boolean {
@@ -1990,32 +1951,6 @@ export class Unwind extends Entity {
 
   set mint(value: BigInt) {
     this.set("mint", Value.fromBigInt(value));
-  }
-
-  get collateral(): BigInt {
-    let value = this.get("collateral");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set collateral(value: BigInt) {
-    this.set("collateral", Value.fromBigInt(value));
-  }
-
-  get value(): BigInt {
-    let value = this.get("value");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set value(value: BigInt) {
-    this.set("value", Value.fromBigInt(value));
   }
 
   get timestamp(): BigInt {
