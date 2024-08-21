@@ -561,7 +561,6 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   // Load the market entity using the market address from the event
   let market = loadMarket(event, event.address)
   // Update the market state by retrieving fresh data from the state contract
-  let marketState = updateMarketState(market.id)
   // Load the account entity corresponding to the sender of the transaction
   let sender = loadAccount(event.params.sender)
 
@@ -578,8 +577,11 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
   // Update the market's open interest values based on the current market state
-  market.oiLong = marketState.oiLong
-  market.oiShort = marketState.oiShort
+  if (position.isLong) {
+    market.oiLong = market.oiLong.minus(position.currentOi)
+  } else {
+    market.oiShort = market.oiShort.minus(position.currentOi)
+  }
 
   // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
@@ -598,17 +600,13 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   unwind.transferAmount = event.params.collateral // The transfer amount is the same as the withdrawn collateral
   unwind.pnl = ZERO_BI // PnL is zero since it's an emergency withdrawal
   unwind.feeAmount = ZERO_BI // No fees are charged during an emergency withdrawal
-  unwind.currentOi = position.currentOi // Open interest at the time of the emergency withdrawal
-  unwind.currentDebt = position.currentDebt // Debt at the time of the emergency withdrawal
-  unwind.isLong = position.isLong // Whether the position was long or short
+  unwind.oiUnwound = position.currentOi // Open interest at the time of the emergency withdrawal
   unwind.price = ZERO_BI // Price is not applicable in an emergency withdrawal
   unwind.fraction = ONE_18DEC_BI // The entire position is unwound
   unwind.fractionOfPosition = fractionOfPosition // Fraction of the original position unwound
   unwind.volume = ZERO_BI // No trading volume associated with an emergency withdrawal
   unwind.mint = ZERO_BI // No minting occurs in an emergency withdrawal
   unwind.unwindNumber = unwindNumber // The current unwind number for this position
-  unwind.collateral = ZERO_BI // Collateral is set to zero since it's withdrawn
-  unwind.value = ZERO_BI // Value is set to zero as the position is closed
   unwind.timestamp = transaction.timestamp // Timestamp of the transaction
   unwind.transaction = transaction.id // ID of the transaction
   unwind.fundingPayment = ZERO_BI
