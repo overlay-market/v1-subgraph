@@ -808,8 +808,10 @@ export function handleLiquidate(event: LiquidateEvent): void {
   // funding = exitPrice * (oiUnwound - oiInitial * fractionUnwound)
   // oiUnwound = oiBeforeUnwind - oiAfterUnwind
   const fundingPayment = event.params.price.times(
-    oiUnwound.minus(fractionOfPosition)
+    oiUnwound.minus(
+      position.initialOi.times(fractionOfPosition).div(ONE_18DEC_BI)
   )
+  ).div(ONE_18DEC_BI)
   liquidate.fundingPayment = fundingPayment
 
   // Assign values to the Liquidate entity based on the event and calculations
