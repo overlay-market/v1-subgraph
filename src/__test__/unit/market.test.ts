@@ -98,7 +98,7 @@ describe("Market events", () => {
         })
 
         test("creates Build entity with correct attributes", () => {
-            const marketId = market.concatI32(positionId.toI32()).toHexString()
+            const marketId = market.toHexString().concat('-').concat(positionId.toHexString())
 
             assert.entityCount("Build", 1)
             assert.fieldEquals("Build", marketId, "owner", sender.toHexString())
@@ -244,7 +244,7 @@ describe("Market events", () => {
         })
 
         test("creates Unwind entity with correct attributes", () => {
-            const unwindId = market.concatI32(positionId.toI32()).concatI32(0).toHexString()
+            const unwindId = market.toHexString().concat('-').concat(positionId.toHexString()).concat('-').concat('0')
 
             assert.entityCount("Unwind", 1)
             assert.fieldEquals("Unwind", unwindId, "owner", sender.toHexString())
@@ -269,7 +269,7 @@ describe("Market events", () => {
         })
 
         test("creates Liquidate entity with correct attributes", () => {
-            const liquidateId = market.concatI32(positionId.toI32()).toHexString();
+            const liquidateId = market.toHexString().concat('-').concat(positionId.toHexString())
 
             assert.entityCount("Liquidate", 1)
             assert.fieldEquals("Liquidate", liquidateId, "owner", sender.toHexString())
@@ -297,11 +297,11 @@ describe("Market events", () => {
         })
 
         test("creates an Unwound and withdraws Position collateral", () => {
-            const _positionId = market.concatI32(positionId.toI32())
-            const unwindId = _positionId.concatI32(0).toHexString()
+            const _positionId = market.toHexString().concat('-').concat(positionId.toHexString())
+            const unwindId = _positionId.concat('-0')
 
             assert.entityCount("Unwind", 1)
-            assert.fieldEquals("Unwind", unwindId, "position", _positionId.toHexString())
+            assert.fieldEquals("Unwind", unwindId, "position", _positionId)
             assert.fieldEquals("Unwind", unwindId, "owner", sender.toHexString())
             assert.fieldEquals("Unwind", unwindId, "size", collateral.toString())
             assert.fieldEquals("Unwind", unwindId, "transferAmount", collateral.toString())
@@ -312,9 +312,9 @@ describe("Market events", () => {
             assert.fieldEquals("Unwind", unwindId, "mint", "0")
             assert.fieldEquals("Unwind", unwindId, "fundingPayment", "0")
 
-            assert.fieldEquals("Position", _positionId.toHexString(), "currentOi", "0")
-            assert.fieldEquals("Position", _positionId.toHexString(), "currentDebt", "0")
-            assert.fieldEquals("Position", _positionId.toHexString(), "fractionUnwound", ONE_18DEC_BI.toString())
+            assert.fieldEquals("Position", _positionId, "currentOi", "0")
+            assert.fieldEquals("Position", _positionId, "currentDebt", "0")
+            assert.fieldEquals("Position", _positionId, "fractionUnwound", ONE_18DEC_BI.toString())
         })
     })
 

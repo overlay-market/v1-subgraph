@@ -99,7 +99,7 @@ export function handleBuild(event: BuildEvent): void {
 
   // Retrieve the position ID from the event and create a unique ID for the position entity
   let positionId = event.params.positionId
-  let id = market.id.concatI32(positionId.toI32())
+  let id = market.id.toHexString().concat('-').concat(positionId.toHexString())
   let position = new Position(id) as Position
 
   // Initialize transfer fee amount to zero
@@ -341,7 +341,7 @@ export function handleUnwind(event: UnwindEvent): void {
   // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
   // Create a new Unwind entity to represent this unwind operation
-  let unwind = new Unwind(position.id.concatI32(unwindNumber.toI32())) as Unwind
+  let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
 
   // Initialize variables for the PnL, transfer amount, and fee amount
   let transferAmount = ZERO_BI
@@ -586,7 +586,7 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
   // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
   // Create a new Unwind entity to represent this emergency withdrawal
-  let unwind = new Unwind(position.id.concatI32(unwindNumber.toI32())) as Unwind
+  let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
 
   // Calculate the fraction of the position that was unwound before this transaction
   const fractionUnwound = position.fractionUnwound
@@ -810,7 +810,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   const fundingPayment = event.params.price.times(
     oiUnwound.minus(
       position.initialOi.times(fractionOfPosition).div(ONE_18DEC_BI)
-  )
+    )
   ).div(ONE_18DEC_BI)
   liquidate.fundingPayment = fundingPayment
 

@@ -143,7 +143,7 @@ type MarketState @entity {
 
 type Position @entity {
   # market contract concat'd with position id
-  id: Bytes!
+  id: ID!
   # position id
   positionId: String!
   # owner of position
@@ -206,7 +206,7 @@ type Transaction @entity {
 
 type Build @entity {
   # market contract concat'd with position id
-  id: Bytes!
+  id: ID!
   # account performing action
   owner: Account!
   # position entitie
@@ -229,7 +229,7 @@ type Build @entity {
 
 type Unwind @entity {
   # market contract concat'd with position id concat'd with unwind number
-  id: Bytes!
+  id: ID!
   # account performing action
   owner: Account!
   # position id
@@ -266,7 +266,7 @@ type Unwind @entity {
 
 type Liquidate @entity {
   # market contract concat'd with position id
-  id: Bytes!
+  id: ID!
   # owner of the position
   owner: Account!
   # address performing the transaction

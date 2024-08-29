@@ -89,7 +89,7 @@ export function loadMarket(event: ethereum.Event, marketId: Bytes): Market {
 }
 
 export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
-  let marketPositionId = market.id.concatI32(positionId.toI32())
+  let marketPositionId = market.id.toHexString().concat('-').concat(positionId.toHexString())
   let marketAddress = Address.fromBytes(market.id)
   let position = Position.load(marketPositionId)
 
