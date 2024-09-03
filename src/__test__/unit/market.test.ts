@@ -102,8 +102,6 @@ describe("Market events", () => {
 
             assert.entityCount("Build", 1)
             assert.fieldEquals("Build", marketId, "owner", sender.toHexString())
-            assert.fieldEquals("Build", marketId, "oi", oi.toString())
-            assert.fieldEquals("Build", marketId, "debt", debt.toString())
             assert.fieldEquals("Build", marketId, "price", price.toString())
         })
 
@@ -274,9 +272,6 @@ describe("Market events", () => {
             assert.entityCount("Liquidate", 1)
             assert.fieldEquals("Liquidate", liquidateId, "owner", sender.toHexString())
             assert.fieldEquals("Liquidate", liquidateId, "sender", zeroAddress.toHexString())
-            assert.fieldEquals("Liquidate", liquidateId, "currentOi", oi.toString())
-            assert.fieldEquals("Liquidate", liquidateId, "currentDebt", debt.toString())
-            assert.fieldEquals("Liquidate", liquidateId, "isLong", isLong.toString())
             assert.fieldEquals("Liquidate", liquidateId, "price", price.toString())
         })
     })

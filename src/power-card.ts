@@ -113,9 +113,6 @@ function loadERC1155TokenBalance(tokenAddress: Address, tokenId: BigInt, owner: 
 
 function loadERC1155Token(tokenAddress: Address, tokenId: BigInt): ERC1155Token {
   let erc1155TokenId = tokenAddress.concatI32(tokenId.toI32());
-
-  log.info(erc1155TokenId.toHexString(), [])
-
   let erc1155Token = ERC1155Token.load(erc1155TokenId);
 
   if (erc1155Token === null) {

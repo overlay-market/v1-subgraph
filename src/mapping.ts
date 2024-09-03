@@ -276,10 +276,7 @@ export function handleBuild(event: BuildEvent): void {
   let build = new Build(position.id) as Build
   build.position = position.id
   build.owner = sender.id
-  build.oi = event.params.oi
-  build.debt = event.params.debt
   build.price = event.params.price
-  build.collateral = initialCollateral
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
   build.feeAmount = transferFeeAmount
@@ -818,13 +815,8 @@ export function handleLiquidate(event: LiquidateEvent): void {
   liquidate.position = position.id
   liquidate.owner = owner.id
   liquidate.sender = sender.id
-  liquidate.currentOi = position.currentOi
-  liquidate.currentDebt = position.currentDebt
-  liquidate.isLong = position.isLong
   liquidate.price = event.params.price
   liquidate.mint = event.params.mint
-  liquidate.collateral = ZERO_BI
-  liquidate.value = ZERO_BI
   liquidate.timestamp = transaction.timestamp
   liquidate.transaction = transaction.id
   liquidate.fractionOfPosition = fractionOfPosition
