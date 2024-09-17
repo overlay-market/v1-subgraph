@@ -102,6 +102,8 @@ export function handleBuild(event: BuildEvent): void {
   let position = new Position(id) as Position
   
   let transferFeeAmount = ZERO_BI
+  // How much OVL user sent to the market (initialCollateral + transferFee)
+  let userTransferAmount = ZERO_BI
   let receipt = event.receipt
   let factory = Factory.load(market.factory.toLowerCase())
 
@@ -136,12 +138,12 @@ export function handleBuild(event: BuildEvent): void {
     if (receipt.logs[buildIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
       index += 1
     }
-    const _topic0 = receipt.logs[index].topics[0]
-    const _address = receipt.logs[index].address
+    const _topic0Fee = receipt.logs[index].topics[0]
+    const _addressFee = receipt.logs[index].address
     // find the log that matches the ERC20 transfer to the owner
     if (
-      _topic0.equals(TRANSFER_SIG) &&
-      _address.toHexString() == OVL_ADDRESS &&
+      _topic0Fee.equals(TRANSFER_SIG) &&
+      _addressFee.toHexString() == OVL_ADDRESS &&
       receipt.logs[index].topics.length > 1
     ) {
       let topics2address = ethereum.decode('address', receipt.logs[index].topics[2])!.toAddress()
@@ -171,6 +173,41 @@ export function handleBuild(event: BuildEvent): void {
         index.toString()
       ])
     }
+
+    index--
+
+    // Extract the first topic (event signature) and the address of the log at the calculated index
+    const _topic0Main = receipt.logs[index].topics[0]
+    const _addressMain = receipt.logs[index].address
+
+    if (
+      _topic0Main.equals(TRANSFER_SIG) &&
+      _addressMain.toHexString() == OVL_ADDRESS &&
+      receipt.logs[index].topics.length > 1
+    ) {
+      // Decode the recipient address from the log's topics
+      let topics2address = ethereum.decode('address', receipt.logs[index].topics[2])!.toAddress()
+
+      // Check if the recipient is the fee recipient and decode the transfer amount
+      if (topics2address.toHexString().toLowerCase() == market.id.toLowerCase()) {
+        const _transferAmount = receipt.logs[index].data
+        userTransferAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+      } else {
+        // Log an error if the recipient does not match the expected fee recipient
+        log.error("handleBuild: 2nd if: transaction: {}, buildIndex: {}, index {}", [
+          event.transaction.hash.toHexString(),
+          buildIndex.toString(),
+          index.toString()
+        ])
+      }
+    } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
+      log.error("handleBuild: 1st if: transaction: {}, buildIndex: {}, index {}", [
+        event.transaction.hash.toHexString(),
+        buildIndex.toString(),
+        index.toString()
+      ])
+    }
   } else {
     log.error("handleBuild: receipt && factory: tx {}, {}, {}", [
       event.transaction.hash.toHexString(),
@@ -185,7 +222,10 @@ export function handleBuild(event: BuildEvent): void {
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
 
-  let initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
+  let initialCollateral = userTransferAmount.minus(transferFeeAmount)
+  if (initialCollateral.equals(new BigInt(0))) {
+    initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
+  }
   let initialNotional = initialCollateral.plus(event.params.debt)
   position.initialCollateral = initialCollateral
   position.initialNotional = initialNotional
