@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: arbitrum-sepolia
+    network: berachain-bartio
     source:
-      address: "0xed2817a1B52936cc9d6895C69df90d80d44F7dea"
+      address: "0xbe048017966c2787f548de1df5834449ec4c4f50"
       abi: OverlayV1Factory
-      startBlock: 45021636
+      startBlock: 2643295
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -44,48 +44,12 @@ dataSources:
           handler: handleEmergencyShutdown
       file: ./src/mapping.ts
   - kind: ethereum
-    name: TokenStake
-    network: arbitrum-sepolia
-    source:
-      address: "0x0000000000000000000000000000000000000000"
-      abi: TokenStake
-      startBlock: 45021636
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - RewardsClaimed
-        - TokensStaked
-        - TokensWithdrawn
-        - StakingPosition
-        - Staking
-      abis:
-        - name: TokenStake
-          file: ./abis/TokenStake.json
-      eventHandlers:
-        - event: RewardTokensDepositedByAdmin(uint256)
-          handler: handleRewardTokensDepositedByAdmin
-        - event: RewardTokensWithdrawnByAdmin(uint256)
-          handler: handleRewardTokensWithdrawnByAdmin
-        - event: RewardsClaimed(indexed address,uint256)
-          handler: handleRewardsClaimed
-        - event: TokensStaked(indexed address,uint256)
-          handler: handleTokensStaked
-        - event: TokensWithdrawn(indexed address,uint256)
-          handler: handleTokensWithdrawn
-        - event: UpdatedRewardRatio(uint256,uint256,uint256,uint256)
-          handler: handleUpdatedRewardRatio
-        - event: UpdatedTimeUnit(uint256,uint256)
-          handler: handleUpdatedTimeUnit
-      file: ./src/token-stake.ts
-  - kind: ethereum
     name: OverlayV1Token
-    network: arbitrum-sepolia
+    network: berachain-bartio
     source:
-      address: "0x17148E389cE87A35f7a5c44976682E66F4307313"
+      address: "0x97576e088f0d05ef68cac2eec63d017fe90952a0"
       abi: OverlayV1Token
-      startBlock: 45021636
+      startBlock: 1838307
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -102,86 +66,8 @@ dataSources:
           handler: handleTransferOVL
       file: ./src/erc20.ts
   - kind: ethereum
-    name: PlanckCat
-    network: arbitrum-sepolia
-    source:
-      address: "0x0000000000000000000000000000000000000000"
-      abi: PlanckCat
-      startBlock: 45021636
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - ERC721Transfer
-        - ERC721NFT
-        - ERC721Token
-      abis:
-        - name: PlanckCat
-          file: ./abis/PlanckCat.json
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleTransfer
-      file: ./src/planck-cat.ts
-  - kind: ethereum
-    name: ReferralList
-    network: arbitrum-sepolia
-    source:
-      address: "0x0000000000000000000000000000000000000000"
-      abi: ReferralList
-      startBlock: 45021636
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - addEvents
-      abis:
-        - name: ReferralList
-          file: ./abis/ReferralList.json
-      eventHandlers:
-        - event: AllowAffiliate(address)
-          handler: handleAllowAffiliate
-        - event: AllowKOL(address)
-          handler: handleAllowKOL
-        - event: AddAffiliateOrKOL(address,address)
-          handler: handleAddAffiliateOrKOL
-        - event: SetRewardToken(address)
-          handler: handleSetRewardToken
-        - event: SetAffiliateComission(uint8,uint48)
-          handler: handleSetAffiliateComission
-        - event: SetTraderDiscount(uint8,uint48)
-          handler: handleSetTraderDiscount
-        - event: ClaimRewards(indexed address,uint256)
-          handler: handleClaimRewards
-      file: ./src/referral.ts
-  - kind: ethereum
-    name: TradingMining
-    network: arbitrum-sepolia
-    source:
-      address: "0x0000000000000000000000000000000000000000"
-      abi: TradingMining
-      startBlock: 45021636
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - addEvents
-      abis:
-        - name: TradingMining
-          file: ./abis/TradingMining.json
-      eventHandlers:
-        - event: RewardTokensUpdated(indexed address,uint8)
-          handler: handleRewardTokensUpdated
-        - event: TotalRewardsUpdated(uint256)
-          handler: handleTotalRewardsUpdated
-        - event: PcdHolderBonusPercentageUpdated(uint8)
-          handler: handlePcdHolderBonusPercentageUpdated
-      file: ./src/trading-mining.ts
-  - kind: ethereum
     name: PowerCard
-    network: arbitrum-sepolia
+    network: berachain-bartio
     source:
       address: "0x07e70171D6a764a9370546Eb39Bc74A0E34424a0"
       abi: PowerCard
@@ -206,7 +92,7 @@ dataSources:
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: arbitrum-sepolia
+    network: berachain-bartio
     source:
       abi: OverlayV1Market
     mapping:
