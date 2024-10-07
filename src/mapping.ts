@@ -33,19 +33,23 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   // load factory
   let factory = loadFactory(Address.fromString(FACTORY_ADDRESS))
 
+  // adding a new market to the count
   factory.marketCount = factory.marketCount.plus(ONE_BI)
 
+  // vars that will be used to populate the information for a new market
   let marketAddress = event.params.market
   let feedAddress = event.params.feed
   let marketContract = OverlayV1Market.bind(event.params.market)
   let market = new Market(marketAddress) as Market
   let marketState = updateMarketState(market.id)
 
+  // basic info about the market
   market.feedAddress = feedAddress.toHexString()
   market.factory = factory.id
   market.createdAtTimestamp = event.block.timestamp
   market.createdAtBlockNumber = event.block.number
 
+  // all params
   market.k = marketContract.params(integer.fromNumber(0))
   market.lmbda = marketContract.params(integer.fromNumber(1))
   market.delta = marketContract.params(integer.fromNumber(2))
@@ -84,74 +88,86 @@ export function handleMarketDeployed(event: MarketDeployed): void {
 }
 
 export function handleBuild(event: BuildEvent): void {
+  // Load the market entity using the market address from the event
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
+  // Load the account entity corresponding to the sender of the transaction
   let sender = loadAccount(event.params.sender)
 
+  // Convert market ID and sender ID to Address type for further usage
   let marketAddress = Address.fromBytes(market.id)
   let senderAddress = Address.fromBytes(sender.id)
 
+  // Retrieve the position ID from the event and create a unique ID for the position entity
   let positionId = event.params.positionId
-  let id = market.id.concatI32(positionId.toI32())
+  let id = market.id.toHexString().concat('-').concat(positionId.toHexString())
   let position = new Position(id) as Position
 
+  // Initialize transfer fee amount to zero
   let transferFeeAmount = ZERO_BI
+  // How much OVL user sent to the market (initialCollateral + transferFee)
+  let userTransferAmount = ZERO_BI
+
+  // Retrieve the transaction receipt and load the factory entity associated with the market
   let receipt = event.receipt
   let factory = Factory.load(market.factory)
 
+  // This block of code is to get `transferFeeAmount` from the logs
+  // Build transactions generate 3 (sometimes 4) relevant logs:
+  // 1. Build: The main event log indicating the build action.
+  // 2. (Optional) Approve: This is emitted only for the first Build in the market.
+  // 3. Transfer from user to smart contract: The transfer of collateral from the user to the market contract.
+  // 4. Transfer from smart contract to fee recipient: The transfer of the fee amount from the market contract to the fee recipient.
+
+  // All code below is to find the second Transfer function (from the smart contract to the fee recipient) and extract the `transferFeeAmount` value.
+
   if (receipt && factory) {
-    const logLength = receipt.logs.length
-    log.warning("handleBuild: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
-      event.transaction.hash.toHexString(),
-      event.transactionLogIndex.toI32().toString(),
-      event.logIndex.toI32().toString(),
-      event.transaction.index.toI32().toString(),
-      logLength.toString(),
-      receipt.logs[0].logIndex.toI32().toString(),
-      receipt.logs[0].transactionIndex.toI32().toString(),
-      receipt.logs[0].transactionLogIndex.toI32().toString(),
-    ])
+    // Initialize the index for the Build event log
     let buildIndex = 0
+
+    // Iterate over the logs to find the log corresponding to the Build event
     for (let i = 0; i < receipt.logs.length; i++) {
       if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
         buildIndex = i
         break
       }
     }
+
+    // Check if the next log is not an ERC20 transfer event, adjust the index if necessary
+    // The first Build event on each market emits an Approve event after the Build event,
+    // which might shift the position of the subsequent Transfer logs.
     if (receipt.logs[buildIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
       buildIndex += 1
     }
+
+    // Calculate the index for the transfer event log from the smart contract to the fee recipient
     let index = +buildIndex + 2
-    log.warning("handleBuild: indexes: tx {}, buildIndex: {}, index: {}", [
-      event.transaction.hash.toHexString(),
-      buildIndex.toString(),
-      index.toString()
-    ])
+
+    // Further adjust the index if the next log is not an ERC20 transfer event
+    // This adjustment is a precautionary step, though it is rare for this to happen.
     if (receipt.logs[buildIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
+      log.warning("IT HAPPENS", [])
       index += 1
     }
-    const _topic0 = receipt.logs[index].topics[0]
-    const _address = receipt.logs[index].address
-    // find the log that matches the ERC20 transfer to the owner
+
+    // Extract the first topic (event signature) and the address of the log at the calculated index
+    const _topic0Fee = receipt.logs[index].topics[0]
+    const _addressFee = receipt.logs[index].address
+
+    // Verify that the log is an ERC20 Transfer event and matches the OVL token address
     if (
-      _topic0.equals(TRANSFER_SIG) &&
-      _address.toHexString() == OVL_ADDRESS &&
+      _topic0Fee.equals(TRANSFER_SIG) &&
+      _addressFee.toHexString() == OVL_ADDRESS &&
       receipt.logs[index].topics.length > 1
     ) {
+      // Decode the recipient address from the log's topics
       let topics2address = ethereum.decode('address', receipt.logs[index].topics[2])!.toAddress()
-      log.warning("handleBuild: 1 stage receipt found: tx: {}, 2address: {}, feeRecipient: {}", [
-        event.transaction.hash.toHexString(),
-        topics2address.toHexString(),
-        factory.feeRecipient.toLowerCase()
-      ])
+
+      // Check if the recipient is the fee recipient and decode the transfer amount
       if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
         const _transferAmount = receipt.logs[index].data
         transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
-        log.warning("handleBuild: 2 stage receipt found: tx{},  transferFeeAmount: {}", [
-          event.transaction.hash.toHexString(),
-          transferFeeAmount.toHexString()
-        ])
       } else {
+        // Log an error if the recipient does not match the expected fee recipient
         log.error("handleBuild: 2nd if: transaction: {}, buildIndex: {}, index {}", [
           event.transaction.hash.toHexString(),
           buildIndex.toString(),
@@ -159,6 +175,42 @@ export function handleBuild(event: BuildEvent): void {
         ])
       }
     } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
+      log.error("handleBuild: 1st if: transaction: {}, buildIndex: {}, index {}", [
+        event.transaction.hash.toHexString(),
+        buildIndex.toString(),
+        index.toString()
+      ])
+    }
+
+    index--
+
+    // Extract the first topic (event signature) and the address of the log at the calculated index
+    const _topic0Main = receipt.logs[index].topics[0]
+    const _addressMain = receipt.logs[index].address
+
+    if (
+      _topic0Main.equals(TRANSFER_SIG) &&
+      _addressMain.toHexString() == OVL_ADDRESS &&
+      receipt.logs[index].topics.length > 1
+    ) {
+      // Decode the recipient address from the log's topics
+      let topics2address = ethereum.decode('address', receipt.logs[index].topics[2])!.toAddress()
+
+      // Check if the recipient is the fee recipient and decode the transfer amount
+      if (topics2address.toHexString().toLowerCase() == market.id.toHexString().toLowerCase()) {
+        const _transferAmount = receipt.logs[index].data
+        userTransferAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+      } else {
+        // Log an error if the recipient does not match the expected fee recipient
+        log.error("handleBuild: 2nd if: transaction: {}, buildIndex: {}, index {}", [
+          event.transaction.hash.toHexString(),
+          buildIndex.toString(),
+          index.toString()
+        ])
+      }
+    } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
       log.error("handleBuild: 1st if: transaction: {}, buildIndex: {}, index {}", [
         event.transaction.hash.toHexString(),
         buildIndex.toString(),
@@ -166,6 +218,7 @@ export function handleBuild(event: BuildEvent): void {
       ])
     }
   } else {
+    // Log an error if the receipt or factory is missing
     log.error("handleBuild: receipt && factory: tx {}, {}, {}", [
       event.transaction.hash.toHexString(),
       !receipt ? "no receipt" : "receipt found",
@@ -173,16 +226,22 @@ export function handleBuild(event: BuildEvent): void {
     ])
   }
 
+  // Initialize the Position entity with data from the event and calculations
   position.owner = sender.id
   position.positionId = positionId.toHexString()
   position.market = market.id
   position.initialOi = event.params.oi
   position.initialDebt = event.params.debt
 
-  let initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
+  // Calculate initial collateral and notional using the state contract
+  let initialCollateral = userTransferAmount.minus(transferFeeAmount)
+  if (initialCollateral.equals(new BigInt(0))) {
+    initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
+  }
   let initialNotional = initialCollateral.plus(event.params.debt)
   position.initialCollateral = initialCollateral
   position.initialNotional = initialNotional
+  // Calculate the leverage for the position
   position.leverage = (initialNotional.toBigDecimal()).div(initialCollateral.toBigDecimal())
   position.isLong = event.params.isLong
   position.entryPrice = event.params.price
@@ -195,6 +254,7 @@ export function handleBuild(event: BuildEvent): void {
   position.numberOfUniwnds = BigInt.fromI32(0)
   position.fractionUnwound = BigInt.fromI32(0)
 
+  // Update the open interest in the market based on the position's side (long/short)
   if (position.isLong) {
     market.oiLong = event.params.oiAfterBuild
     market.oiLongShares = event.params.oiSharesAfterBuild
@@ -202,27 +262,26 @@ export function handleBuild(event: BuildEvent): void {
     market.oiShort = event.params.oiAfterBuild
     market.oiShortShares = event.params.oiSharesAfterBuild
   }
+
+  // Update market-level metrics with the calculated fee and notional
   market.totalBuildFees = market.totalBuildFees.plus(transferFeeAmount)
   market.numberOfBuilds = market.numberOfBuilds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
   market.totalVolume = market.totalVolume.plus(initialNotional)
 
+  // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
-  let build = new Build(position.id) as Build
 
+  // Create a new Build entity to track this specific build event
+  let build = new Build(position.id) as Build
   build.position = position.id
   build.owner = sender.id
-  build.currentOi = event.params.oi
-  build.currentDebt = event.params.debt
-  build.isLong = event.params.isLong
   build.price = event.params.price
-  build.collateral = initialCollateral
-  build.value = stateContract.value(marketAddress, senderAddress, positionId)
   build.timestamp = transaction.timestamp
   build.transaction = transaction.id
   build.feeAmount = transferFeeAmount
 
-  // analytics update
+  // Update the analytics entity to reflect the new build and market activity
   let analytics = loadAnalytics(market.factory)
   if (sender.ovlVolumeTraded.equals(ZERO_BI)) {
     analytics.totalUsers = analytics.totalUsers.plus(ONE_BI)
@@ -232,16 +291,23 @@ export function handleBuild(event: BuildEvent): void {
   analytics.totalVolumeBuilds = analytics.totalVolumeBuilds.plus(initialNotional)
   analytics.totalVolume = analytics.totalVolume.plus(initialNotional)
 
+  // Update hourly analytics data for this market
   updateAnalyticsHourData(analytics, event.block.timestamp)
 
+  // Increment the sender's open positions count
   sender.numberOfOpenPositions = sender.numberOfOpenPositions.plus(ONE_BI)
 
+  // Update referral rewards and trader epoch volume for the sender
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
   updateTraderEpochVolume(event.params.sender, initialNotional)
+
+  // Update the sender's total traded volume
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(initialNotional)
 
+  // Update hourly market data with the new position's notional
   updateMarketHourData(market, event.block.timestamp, initialNotional, ZERO_BI)
 
+  // Save all the updated and new entities
   position.save()
   market.save()
   build.save()
@@ -251,32 +317,37 @@ export function handleBuild(event: BuildEvent): void {
 }
 
 export function handleUnwind(event: UnwindEvent): void {
+  // Load the market entity using the market address from the event
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
+  // Load the account entity corresponding to the sender of the transaction
   let sender = loadAccount(event.params.sender)
+  // Convert the sender's ID to an Address type for further usage
   let senderAddress = Address.fromBytes(sender.id)
 
+  // Retrieve the position ID from the event and load the corresponding position entity
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
+  // Track the current number of unwinds for this position
   let unwindNumber = position.numberOfUniwnds
 
+  // Increment the number of unwinds for this position
   position.mint = position.mint.plus(event.params.mint)
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
-  market.oiLong = marketState.oiLong
-  market.oiShort = marketState.oiShort
 
+  // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
-  let unwind = new Unwind(position.id.concatI32(unwindNumber.toI32())) as Unwind
+  // Create a new Unwind entity to represent this unwind operation
+  let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
 
-  let receipt = event.receipt
-  // initialize variables
+  // Initialize variables for the PnL, transfer amount, and fee amount
   let transferAmount = ZERO_BI
   let transferFeeAmount = ZERO_BI
   let pnl = ZERO_BI
-  // fraction of the position unwound BEFORE this transaction
+
+  // Fraction of the position unwound BEFORE this transaction
   const fractionUnwound = position.fractionUnwound
-  // this unwind size = intialCollateral * (1 - fractionUnwound) * unwindFraction
+  // This unwind size = initialCollateral * (1 - fractionUnwound) * unwindFraction
   const fractionOfPosition = (ONE_18DEC_BI.minus(fractionUnwound)).times(event.params.fraction).div(ONE_18DEC_BI)
   const unwindSize = position.initialCollateral
     .times(
@@ -285,49 +356,59 @@ export function handleUnwind(event: UnwindEvent): void {
       ONE_18DEC_BI
     )
 
+  // Retrieve the transaction receipt and load the factory entity associated with the market
+  let receipt = event.receipt
   let factory = Factory.load(market.factory)
+
+  // This block of code is to get `transferAmount` and `transferFeeAmount` from the logs
+  // Unwind transaction consists of 4 relevant logs:
+  // Unwind, (Approve for the first Unwind in the market), Transfer from SC to user, Transfer from SC to fee recipient
+  // The code below adjusts the index to correctly identify the transfer logs
+
   if (receipt && factory) {
-    const logLength = receipt.logs.length
-    log.warning("handleUnwind: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
-      event.transaction.hash.toHexString(),
-      event.transactionLogIndex.toI32().toString(),
-      event.logIndex.toI32().toString(),
-      event.transaction.index.toI32().toString(),
-      logLength.toString(),
-      receipt.logs[0].logIndex.toI32().toString(),
-      receipt.logs[0].transactionIndex.toI32().toString(),
-      receipt.logs[0].transactionLogIndex.toI32().toString(),
-    ])
+    // Initialize the index for the Unwind event log
     let unwindIndex = 0
+
+    // Iterate over the logs to find the log corresponding to the Unwind event
     for (let i = 0; i < receipt.logs.length; i++) {
       if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
         unwindIndex = i
         break
       }
     }
+
+    // Check if the next log is not an ERC20 transfer event, adjust index if necessary
+    // The first Unwind event on each market emits an Approve event after the Unwind event
     if (receipt.logs[unwindIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
       unwindIndex += 1
     }
+
+    // Calculate the index for the transfer event log (user transfer)
     const userTransferIndex = +unwindIndex + 2
     const feeIndex = +unwindIndex + 3
+
+    // Extract the first topic and address of the user transfer log
     const _topic0user = receipt.logs[userTransferIndex].topics[0]
     const _addressuser = receipt.logs[userTransferIndex].address
-    // find the log that matches the ERC20 transfer to the owner
+
+    // Find the log that matches the ERC20 transfer to the owner
     if (
       _topic0user.equals(TRANSFER_SIG) &&
       _addressuser.toHexString() == OVL_ADDRESS &&
       receipt.logs[userTransferIndex].topics.length > 1
     ) {
+      // Decode the recipient address from the log's topics
       let topics2address = ethereum.decode('address', receipt.logs[userTransferIndex].topics[2])!.toAddress()
+
+      // Check if the recipient is the sender and decode the transfer amount
       if (topics2address == event.params.sender) {
         const _transferAmount = receipt.logs[userTransferIndex].data
-        // save transferAmount from the ERC20 Transfer event
+        // Save transferAmount from the ERC20 Transfer event
         transferAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
-        // calculate pnl = tranferAmount - unwindSize
-        pnl = transferAmount.minus(
-          unwindSize
-        )
+        // Calculate PnL = transferAmount - unwindSize
+        pnl = transferAmount.minus(unwindSize)
       } else {
+        // Log an error if the recipient does not match the expected sender
         log.error("handleUnwind: 2nd if: transaction: {}, unwindIndex: {}, userTransferIndex {}", [
           event.transaction.hash.toHexString(),
           unwindIndex.toString(),
@@ -335,25 +416,34 @@ export function handleUnwind(event: UnwindEvent): void {
         ])
       }
     } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
       log.error("handleUnwind: 1st if: transaction: {}, unwindIndex: {}, userTransferIndex {}", [
         event.transaction.hash.toHexString(),
         unwindIndex.toString(),
         userTransferIndex.toString()
       ])
     }
+
+    // Extract the first topic and address of the fee transfer log
     const _topic0 = receipt.logs[feeIndex].topics[0]
     const _address = receipt.logs[feeIndex].address
-    // find the log that matches the ERC20 transfer to the owner
+
+    // Find the log that matches the ERC20 transfer to the fee recipient
     if (
       _topic0.equals(TRANSFER_SIG) &&
       _address.toHexString() == OVL_ADDRESS &&
       receipt.logs[feeIndex].topics.length > 1
     ) {
+      // Decode the recipient address from the log's topics
       let topics2address = ethereum.decode('address', receipt.logs[feeIndex].topics[2])!.toAddress()
+
+      // Check if the recipient is the fee recipient and decode the transfer amount
       if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
         const _transferAmount = receipt.logs[feeIndex].data
+        // Save the transferFeeAmount from the ERC20 Transfer event
         transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
       } else {
+        // Log an error if the recipient does not match the expected fee recipient
         log.error("handleUnwind: 2nd if: transaction: {}, unwindIndex: {}, feeIndex {}", [
           event.transaction.hash.toHexString(),
           unwindIndex.toString(),
@@ -361,6 +451,7 @@ export function handleUnwind(event: UnwindEvent): void {
         ])
       }
     } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
       log.error("handleUnwind: 1st if: transaction: {}, unwindIndex: {}, feeIndex {}", [
         event.transaction.hash.toHexString(),
         unwindIndex.toString(),
@@ -369,38 +460,7 @@ export function handleUnwind(event: UnwindEvent): void {
     }
   }
 
-  unwind.position = position.id
-  unwind.owner = sender.id
-  unwind.size = unwindSize
-  unwind.transferAmount = transferAmount
-  unwind.pnl = pnl
-  unwind.feeAmount = transferFeeAmount
-  unwind.currentOi = position.currentOi // TODO remove
-  unwind.currentDebt = position.currentDebt
-  unwind.isLong = position.isLong
-  unwind.price = event.params.price
-  unwind.fraction = event.params.fraction
-  unwind.fractionOfPosition = fractionOfPosition
-  unwind.volume = transferAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI))
-  unwind.mint = event.params.mint
-  unwind.unwindNumber = unwindNumber
-  unwind.collateral = ZERO_BI
-  unwind.value = ZERO_BI
-  unwind.timestamp = transaction.timestamp
-  unwind.transaction = transaction.id
-
-  // analytics update
-  let analytics = loadAnalytics(market.factory)
-  analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
-  analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
-  analytics.totalVolumeUnwinds = analytics.totalVolumeUnwinds.plus(unwind.volume)
-  analytics.totalVolume = analytics.totalVolume.plus(unwind.volume)
-
-  updateAnalyticsHourData(analytics, event.block.timestamp)
-
-  // position.currentOi = stateContract.oi(marketAddress, senderAddress, positionId)
-  position.currentDebt = position.currentDebt.times(ONE_18DEC_BI.minus(unwind.fraction)).div(ONE_18DEC_BI)
-
+  // Calculate the amount of open interest unwound
   let oiUnwound: BigInt; // used later for fundingPayment calculations
 
   if (position.isLong) {
@@ -413,24 +473,44 @@ export function handleUnwind(event: UnwindEvent): void {
     market.oiShortShares = event.params.oiSharesAfterUnwind
   }
 
+  // Assign calculated values to the Unwind entity based on the event and calculations
+  unwind.position = position.id
+  unwind.owner = sender.id
+  unwind.size = unwindSize
+  unwind.transferAmount = transferAmount
+  unwind.pnl = pnl
+  unwind.feeAmount = transferFeeAmount
+  unwind.oiUnwound = oiUnwound
+  unwind.price = event.params.price
+  unwind.fraction = event.params.fraction
+  unwind.fractionOfPosition = fractionOfPosition
+  unwind.volume = transferAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI))
+  unwind.mint = event.params.mint
+  unwind.unwindNumber = unwindNumber
+  unwind.timestamp = transaction.timestamp
+  unwind.transaction = transaction.id
+
+  // Analytics update: update overall metrics
+  let analytics = loadAnalytics(market.factory)
+  analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
+  analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
+  analytics.totalVolumeUnwinds = analytics.totalVolumeUnwinds.plus(unwind.volume)
+  analytics.totalVolume = analytics.totalVolume.plus(unwind.volume)
+
+  updateAnalyticsHourData(analytics, event.block.timestamp)
+
+  position.currentOi = position.currentOi.minus(oiUnwound)
+  // Update the position's current debt and open interest
+  position.currentDebt = position.currentDebt.times(ONE_18DEC_BI.minus(unwind.fraction)).div(ONE_18DEC_BI)
+
+  // Update market-level metrics with the calculated fee and notional
   market.totalUnwindFees = market.totalUnwindFees.plus(transferFeeAmount)
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
   market.totalVolume = market.totalVolume.plus(unwind.volume)
   market.totalMint = market.totalMint.plus(event.params.mint)
 
-  log.warning("fractionUnwound: {}, {}, {}", [
-    fractionUnwound.toString(),
-    event.params.fraction.toString(),
-    ONE_18DEC_BI
-      .minus(
-        (ONE_18DEC_BI.minus(fractionUnwound))
-          .times
-          (ONE_18DEC_BI.minus(event.params.fraction))
-          .div(ONE_18DEC_BI)
-      ).toString()
-  ])
-
+  // Calculate the updated fraction unwound for the position
   position.fractionUnwound =
     ONE_18DEC_BI
       .minus(
@@ -440,28 +520,31 @@ export function handleUnwind(event: UnwindEvent): void {
           .div(ONE_18DEC_BI)
       )
 
+  // Calculate the funding payment for the unwind operation
   // funding = exitPrice * (oiUnwound - oiInitial * fractionUnwound)
-  // oiUnwound = oiBeforeUnwind - oiAfterUnwind
-
   const fundingPayment = event.params.price.times(
     oiUnwound.minus(
-      position.initialOi.times(fractionOfPosition)
+      position.initialOi.times(fractionOfPosition).div(ONE_18DEC_BI)
     )
-  )
+  ).div(ONE_18DEC_BI)
   unwind.fundingPayment = fundingPayment
 
+  // Update the sender's metrics: increment unwinds, update realized PnL, and decrement open positions if fully unwound
   sender.numberOfUnwinds = sender.numberOfUnwinds.plus(ONE_BI)
   sender.realizedPnl = sender.realizedPnl.plus(pnl)
   if (event.params.fraction == ONE_18DEC_BI) {
     sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
   }
 
+  // Update referral rewards and trader epoch volume for the sender
   updateReferralRewards(event, event.params.sender, transferFeeAmount)
   updateTraderEpochVolume(event.params.sender, unwind.volume)
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(unwind.volume)
 
+  // Update hourly market data with the new position's notional
   updateMarketHourData(market, event.block.timestamp, unwind.volume, event.params.mint)
 
+  // Save all the updated and new entities
   position.save()
   market.save()
   unwind.save()
@@ -470,61 +553,76 @@ export function handleUnwind(event: UnwindEvent): void {
   analytics.save()
 }
 
+
 export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
+  // Load the market entity using the market address from the event
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
+  // Update the market state by retrieving fresh data from the state contract
+  // Load the account entity corresponding to the sender of the transaction
   let sender = loadAccount(event.params.sender)
 
+  // Convert the sender's ID to an Address type for further usage
   let senderAddress = Address.fromBytes(sender.id)
 
+  // Retrieve the position ID from the event and load the corresponding position entity
   let positionId = event.params.positionId
   let position = loadPosition(event, senderAddress, market, positionId)
+  // Track the current number of unwinds for this position
   let unwindNumber = position.numberOfUniwnds
 
+  // Increment the number of unwinds for this position
   position.numberOfUniwnds = position.numberOfUniwnds.plus(BigInt.fromI32(1))
 
-  market.oiLong = marketState.oiLong
-  market.oiShort = marketState.oiShort
+  // Update the market's open interest values based on the current market state
+  if (position.isLong) {
+    market.oiLong = market.oiLong.minus(position.currentOi)
+  } else {
+    market.oiShort = market.oiShort.minus(position.currentOi)
+  }
 
+  // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
-  let unwind = new Unwind(position.id.concatI32(unwindNumber.toI32())) as Unwind
+  // Create a new Unwind entity to represent this emergency withdrawal
+  let unwind = new Unwind(position.id.concat('-').concat(unwindNumber.toString())) as Unwind
 
-  // fraction of the position unwound BEFORE this transaction
+  // Calculate the fraction of the position that was unwound before this transaction
   const fractionUnwound = position.fractionUnwound
-  // this unwind size = intialCollateral * (1 - fractionUnwound) * unwindFraction
+  // Calculate the fraction of the position being unwound in this transaction
   const fractionOfPosition = (ONE_18DEC_BI.minus(fractionUnwound)).times(ONE_18DEC_BI).div(ONE_18DEC_BI)
 
+  // Assign values to the Unwind entity based on the event and position data
   unwind.position = position.id
   unwind.owner = sender.id
-  unwind.size = event.params.collateral
-  unwind.transferAmount = event.params.collateral
-  unwind.pnl = ZERO_BI
-  unwind.feeAmount = ZERO_BI
-  unwind.currentOi = position.currentOi
-  unwind.currentDebt = position.currentDebt
-  unwind.isLong = position.isLong
-  unwind.price = ZERO_BI
-  unwind.fraction = ONE_18DEC_BI
-  unwind.fractionOfPosition = fractionOfPosition
-  unwind.volume = ZERO_BI
-  unwind.mint = ZERO_BI
-  unwind.unwindNumber = unwindNumber
-  unwind.collateral = ZERO_BI
-  unwind.value = ZERO_BI
-  unwind.timestamp = transaction.timestamp
-  unwind.transaction = transaction.id
+  unwind.size = event.params.collateral // The size of the unwind is the collateral being withdrawn
+  unwind.transferAmount = event.params.collateral // The transfer amount is the same as the withdrawn collateral
+  unwind.pnl = ZERO_BI // PnL is zero since it's an emergency withdrawal
+  unwind.feeAmount = ZERO_BI // No fees are charged during an emergency withdrawal
+  unwind.oiUnwound = position.currentOi // Open interest at the time of the emergency withdrawal
+  unwind.price = ZERO_BI // Price is not applicable in an emergency withdrawal
+  unwind.fraction = ONE_18DEC_BI // The entire position is unwound
+  unwind.fractionOfPosition = fractionOfPosition // Fraction of the original position unwound
+  unwind.volume = ZERO_BI // No trading volume associated with an emergency withdrawal
+  unwind.mint = ZERO_BI // No minting occurs in an emergency withdrawal
+  unwind.unwindNumber = unwindNumber // The current unwind number for this position
+  unwind.timestamp = transaction.timestamp // Timestamp of the transaction
+  unwind.transaction = transaction.id // ID of the transaction
   unwind.fundingPayment = ZERO_BI
 
+  // Reset the position's open interest and debt to zero since the position is fully unwound
   position.currentOi = ZERO_BI
   position.currentDebt = ZERO_BI
 
+  // Increment the total number of unwinds in the market
   market.numberOfUnwinds = market.numberOfUnwinds.plus(ONE_BI)
 
+  // Set the fraction unwound to 1, indicating the entire position has been unwound
   position.fractionUnwound = ONE_18DEC_BI
 
+  // Update the sender's metrics: increment unwinds and decrement open positions
   sender.numberOfUnwinds = sender.numberOfUnwinds.plus(ONE_BI)
   sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
 
+  // Save the updated entities to the subgraph store
   position.save()
   market.save()
   unwind.save()
@@ -534,7 +632,6 @@ export function handleEmergencyWithdraw(event: EmergencyWithdrawEvent): void {
 
 export function handleCacheRiskCalc(event: CacheRiskCalcEvent): void {
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
 
   market.dpUpperLimit = event.params.newDpUpperLimit
 
@@ -543,7 +640,6 @@ export function handleCacheRiskCalc(event: CacheRiskCalcEvent): void {
 
 export function handleUpdate(event: UpdateEvent): void {
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
 
   market.oiLong = event.params.oiLong
   market.oiShort = event.params.oiShort
@@ -552,57 +648,70 @@ export function handleUpdate(event: UpdateEvent): void {
 }
 
 export function handleLiquidate(event: LiquidateEvent): void {
+  // Load the market entity using the market address from the event
   let market = loadMarket(event, event.address)
-  let marketState = updateMarketState(market.id)
+  // Load the account entity corresponding to the sender (liquidator) of the transaction
   let sender = loadAccount(event.params.sender)
+  // Load the account entity corresponding to the owner of the liquidated position
   let owner = loadAccount(event.params.owner)
 
+  // Convert the owner's ID to an Address type for further usage
   let ownerAddress = Address.fromBytes(owner.id)
 
+  // Retrieve the position ID from the event and load the corresponding position entity
   let positionId = event.params.positionId
   let position = loadPosition(event, ownerAddress, market, positionId)
 
+  // Retrieve the transaction receipt and initialize variables for fee and liquidator amounts
   let receipt = event.receipt
-  // initialize variables
   let transferFeeAmount = ZERO_BI
   let transferLiquidatorAmount = ZERO_BI
   let factory = Factory.load(market.factory)
+
+  // This block of code is to get `transferFeeAmount` and `transferLiquidatorAmount` from the logs
+  // Liquidate transaction consists of 4 relevant logs:
+  // Liquidate, (Approve for the first Liquidate in the market), Transfer from SC to liquidator, Transfer from SC to fee recipient
+  // The code below adjusts the index to correctly identify the transfer logs
+
   if (receipt && factory) {
-    const logLength = receipt.logs.length
-    log.warning("handleLiquidate: START: tx: {}, transactionLogIndex: {}, logIndex: {}, transaction.index: {}, logs length: {}, logs[0].logIndex: {}, logs[0].transactionIndex: {}, logs[0].transactionLogIndex: {}", [
-      event.transaction.hash.toHexString(),
-      event.transactionLogIndex.toI32().toString(),
-      event.logIndex.toI32().toString(),
-      event.transaction.index.toI32().toString(),
-      logLength.toString(),
-      receipt.logs[0].logIndex.toI32().toString(),
-      receipt.logs[0].transactionIndex.toI32().toString(),
-      receipt.logs[0].transactionLogIndex.toI32().toString(),
-    ])
+    // Initialize the index for the Liquidate event log
     let liquidateIndex = 0
+
+    // Iterate over the logs to find the log corresponding to the Liquidate event
     for (let i = 0; i < receipt.logs.length; i++) {
       if (receipt.logs[i].logIndex.toI32() === event.logIndex.toI32()) {
         liquidateIndex = i
         break
       }
     }
+
+    // Check if the next log is not an ERC20 transfer event, adjust index if necessary
+    // The first Liquidate event on each market emits an Approve event after the Liquidate event
     if (receipt.logs[liquidateIndex + 1].topics[0].notEqual(TRANSFER_SIG)) {
       liquidateIndex += 1
     }
+
+    // Calculate the index for the fee transfer event log
     const feeIndex = +liquidateIndex + 3
     let _topic0 = receipt.logs[feeIndex].topics[0]
     let _address = receipt.logs[feeIndex].address
-    // find the log that matches the ERC20 transfer to the feeRecipient
+
+    // Find the log that matches the ERC20 transfer to the feeRecipient
     if (
       _topic0.equals(TRANSFER_SIG) &&
       _address.toHexString() == OVL_ADDRESS &&
       receipt.logs[feeIndex].topics.length > 1
     ) {
+      // Decode the recipient address from the log's topics
       let topics2address = ethereum.decode('address', receipt.logs[feeIndex].topics[2])!.toAddress()
+
+      // Check if the recipient is the fee recipient and decode the transfer amount
       if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
         const _transferAmount = receipt.logs[feeIndex].data
+        // Save the transferFeeAmount from the ERC20 Transfer event
         transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
       } else {
+        // Log an error if the recipient does not match the expected fee recipient
         log.error("handleLiquidate: 2nd if: transaction: {}, liquidateIndex: {}, feeIndex {}", [
           event.transaction.hash.toHexString(),
           liquidateIndex.toString(),
@@ -610,26 +719,35 @@ export function handleLiquidate(event: LiquidateEvent): void {
         ])
       }
     } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
       log.error("handleLiquidate: 1st if: transaction: {}, liquidateIndex: {}, feeIndex {}", [
         event.transaction.hash.toHexString(),
         liquidateIndex.toString(),
         feeIndex.toString()
       ])
     }
+
+    // Calculate the index for the liquidator transfer event log
     const liquidatorTransferIndex = +liquidateIndex + 2
     _topic0 = receipt.logs[liquidatorTransferIndex].topics[0]
     _address = receipt.logs[liquidatorTransferIndex].address
-    // find the log that matches the ERC20 transfer to the sender
+
+    // Find the log that matches the ERC20 transfer to the sender (liquidator)
     if (
       _topic0.equals(TRANSFER_SIG) &&
       _address.toHexString() == OVL_ADDRESS &&
       receipt.logs[liquidatorTransferIndex].topics.length > 1
     ) {
+      // Decode the recipient address from the log's topics
       let topics2address = ethereum.decode('address', receipt.logs[liquidatorTransferIndex].topics[2])!.toAddress()
+
+      // Check if the recipient is the sender (liquidator) and decode the transfer amount
       if (topics2address == Address.fromBytes(sender.id)) {
         const _transferAmount = receipt.logs[liquidatorTransferIndex].data
+        // Save the transferLiquidatorAmount from the ERC20 Transfer event
         transferLiquidatorAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
       } else {
+        // Log an error if the recipient does not match the expected sender (liquidator)
         log.error("handleLiquidate: 2nd if: transaction: {}, liquidateIndex: {}, liquidatorTransferIndex {}", [
           event.transaction.hash.toHexString(),
           liquidateIndex.toString(),
@@ -637,6 +755,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
         ])
       }
     } else {
+      // Log an error if the log does not match the expected ERC20 transfer event
       log.error("handleLiquidate: 1st if: transaction: {}, liquidateIndex: {}, liquidatorTransferIndex {}", [
         event.transaction.hash.toHexString(),
         liquidateIndex.toString(),
@@ -644,17 +763,24 @@ export function handleLiquidate(event: LiquidateEvent): void {
       ])
     }
   }
+
+  // Calculate the fraction of the position that is being liquidated
   const fractionOfPosition = ONE_18DEC_BI.minus(position.fractionUnwound)
+  // Calculate the size of the liquidated position
   const liquidateSize = position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI)
 
+  // Update the owner's realized PnL by subtracting the liquidated position's size
   owner.realizedPnl = owner.realizedPnl.minus(liquidateSize)
 
+  // Update the position with the liquidation information
   position.mint = position.mint.plus(event.params.mint)
   position.isLiquidated = true
   position.fractionUnwound = ONE_18DEC_BI
 
+  // Initialize a variable to hold the amount of open interest unwound
   let oiUnwound: BigInt; // used later for fundingPayment calculations
 
+  // Update the market's open interest and open interest shares based on the position's side (long/short)
   if (position.isLong) {
     oiUnwound = market.oiLong.minus(event.params.oiAfterLiquidate)
     market.oiLong = event.params.oiAfterLiquidate
@@ -664,61 +790,71 @@ export function handleLiquidate(event: LiquidateEvent): void {
     market.oiShort = event.params.oiAfterLiquidate
     market.oiShortShares = event.params.oiSharesAfterLiquidate
   }
+
+  // Update market-level metrics with the calculated fee and notional
   market.totalLiquidateFees = market.totalLiquidateFees.plus(transferFeeAmount)
   market.numberOfLiquidates = market.numberOfLiquidates.plus(ONE_BI)
   market.totalFees = market.totalFees.plus(transferFeeAmount)
 
+  // Load or create the Transaction entity for this event
   let transaction = loadTransaction(event)
+  // Create a new Liquidate entity to track this specific liquidation event
   let liquidate = new Liquidate(position.id) as Liquidate
 
+  // Calculate the funding payment for the liquidation operation
   // funding = exitPrice * (oiUnwound - oiInitial * fractionUnwound)
   // oiUnwound = oiBeforeUnwind - oiAfterUnwind
   const fundingPayment = event.params.price.times(
-    oiUnwound.minus(fractionOfPosition)
-  )
+    oiUnwound.minus(
+      position.initialOi.times(fractionOfPosition).div(ONE_18DEC_BI)
+    )
+  ).div(ONE_18DEC_BI)
   liquidate.fundingPayment = fundingPayment
+
+  // Assign values to the Liquidate entity based on the event and calculations
   liquidate.position = position.id
   liquidate.owner = owner.id
   liquidate.sender = sender.id
-  liquidate.currentOi = position.currentOi
-  liquidate.currentDebt = position.currentDebt
-  liquidate.isLong = position.isLong
   liquidate.price = event.params.price
   liquidate.mint = event.params.mint
-  liquidate.collateral = ZERO_BI
-  liquidate.value = ZERO_BI
   liquidate.timestamp = transaction.timestamp
   liquidate.transaction = transaction.id
   liquidate.fractionOfPosition = fractionOfPosition
   liquidate.size = liquidateSize
   liquidate.liquidationFee = transferLiquidatorAmount
-  // marginToBurn  = feeRecipientAmount / (1/ MaintenanceMarginBurnRate - 1) 
+  // marginToBurn = feeRecipientAmount / (1 / MaintenanceMarginBurnRate - 1)
   const marginToBurn = transferFeeAmount.times(ONE_18DEC_BI).div(ONE_18DEC_BI.times(ONE_18DEC_BI).div(market.maintenanceMarginBurnRate).minus(ONE_18DEC_BI))
   // volume = transferFeeAmount + initialDebt * fractionOfPosition / ONE + transferLiquidatorAmount
   liquidate.volume = transferFeeAmount.plus(position.initialDebt.times(fractionOfPosition).div(ONE_18DEC_BI)).plus(transferLiquidatorAmount)
   liquidate.marginToBurn = marginToBurn
   liquidate.transferFeeAmount = transferFeeAmount
 
-  // analytics update
+  // Update the analytics entity to reflect the new liquidation and market activity
   let analytics = loadAnalytics(market.factory)
   analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
   analytics.totalTokensLocked = analytics.totalTokensLocked.minus(position.initialCollateral.times(fractionOfPosition).div(ONE_18DEC_BI))
   analytics.totalVolumeLiquidations = analytics.totalVolumeLiquidations.plus(liquidate.volume)
   analytics.totalVolume = analytics.totalVolume.plus(liquidate.volume)
 
+  // Update hourly analytics data for this market
   updateAnalyticsHourData(analytics, event.block.timestamp)
 
+  // Update market-level metrics with the new liquidation's volume and mint amount
   market.totalVolume = market.totalVolume.plus(liquidate.volume)
   market.totalMint = market.totalMint.plus(event.params.mint)
 
+  // Set the position's open interest and debt to zero after liquidation
   position.currentOi = ZERO_BI
   position.currentDebt = ZERO_BI
 
+  // Update the owner's metrics: increment liquidated positions and decrement open positions
   owner.numberOfLiquidatedPositions = owner.numberOfLiquidatedPositions.plus(ONE_BI)
   owner.numberOfOpenPositions = owner.numberOfOpenPositions.minus(ONE_BI)
 
+  // Update hourly market data with the new liquidation's volume and mint amount
   updateMarketHourData(market, event.block.timestamp, liquidate.volume, event.params.mint)
 
+  // Save all the updated and new entities
   position.save()
   market.save()
   liquidate.save()

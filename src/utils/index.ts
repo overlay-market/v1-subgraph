@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { Market, Transaction, Position, Factory, Account, Analytics, AnalyticsHourData } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
@@ -65,6 +65,7 @@ export function loadMarket(event: ethereum.Event, marketId: Bytes): Market {
     market.minCollateral = marketContract.params(integer.fromNumber(12))
     market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
+    log.warning("loadMarket makes external calls!", [])
     market.oiLong = stateContract.ois(marketAddress).value0
     market.oiShort = stateContract.ois(marketAddress).value1
     market.oiLongShares = marketContract.oiLongShares()
@@ -88,7 +89,7 @@ export function loadMarket(event: ethereum.Event, marketId: Bytes): Market {
 }
 
 export function loadPosition(event: ethereum.Event, sender: Address, market: Market, positionId: BigInt): Position {
-  let marketPositionId = market.id.concatI32(positionId.toI32())
+  let marketPositionId = market.id.toHexString().concat('-').concat(positionId.toHexString())
   let marketAddress = Address.fromBytes(market.id)
   let position = Position.load(marketPositionId)
 
@@ -99,6 +100,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.owner = sender
     position.market = market.id
 
+    log.warning("loadPosition makes external calls!", [])
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
     position.initialDebt = stateContract.debt(marketAddress, sender, positionId)
 
