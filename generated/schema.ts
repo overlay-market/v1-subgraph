@@ -435,6 +435,48 @@ export class Factory extends Entity {
   }
 }
 
+export class Router extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Router entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type Router must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("Router", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): Router | null {
+    return changetype<Router | null>(
+      store.get_in_block("Router", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): Router | null {
+    return changetype<Router | null>(store.get("Router", id.toHexString()));
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+}
+
 export class Market extends Entity {
   constructor(id: Bytes) {
     super();
@@ -1195,6 +1237,23 @@ export class Position extends Entity {
     this.set("owner", Value.fromBytes(value));
   }
 
+  get router(): Bytes | null {
+    let value = this.get("router");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set router(value: Bytes | null) {
+    if (!value) {
+      this.unset("router");
+    } else {
+      this.set("router", Value.fromBytes(<Bytes>value));
+    }
+  }
+
   get market(): Bytes {
     let value = this.get("market");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1420,6 +1479,102 @@ export class Position extends Entity {
   }
 }
 
+export class RouterParams extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save RouterParams entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type RouterParams must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("RouterParams", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): RouterParams | null {
+    return changetype<RouterParams | null>(
+      store.get_in_block("RouterParams", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): RouterParams | null {
+    return changetype<RouterParams | null>(
+      store.get("RouterParams", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get router(): Bytes {
+    let value = this.get("router");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set router(value: Bytes) {
+    this.set("router", Value.fromBytes(value));
+  }
+
+  get brokerId(): BigInt {
+    let value = this.get("brokerId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set brokerId(value: BigInt) {
+    this.set("brokerId", Value.fromBigInt(value));
+  }
+
+  get performer(): Bytes {
+    let value = this.get("performer");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set performer(value: Bytes) {
+    this.set("performer", Value.fromBytes(value));
+  }
+
+  get transaction(): Bytes {
+    let value = this.get("transaction");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transaction(value: Bytes) {
+    this.set("transaction", Value.fromBytes(value));
+  }
+}
+
 export class Transaction extends Entity {
   constructor(id: Bytes) {
     super();
@@ -1600,6 +1755,23 @@ export class Build extends Entity {
     this.set("owner", Value.fromBytes(value));
   }
 
+  get routerParams(): Bytes | null {
+    let value = this.get("routerParams");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set routerParams(value: Bytes | null) {
+    if (!value) {
+      this.unset("routerParams");
+    } else {
+      this.set("routerParams", Value.fromBytes(<Bytes>value));
+    }
+  }
+
   get position(): string {
     let value = this.get("position");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1716,6 +1888,23 @@ export class Unwind extends Entity {
 
   set owner(value: Bytes) {
     this.set("owner", Value.fromBytes(value));
+  }
+
+  get routerParams(): Bytes | null {
+    let value = this.get("routerParams");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set routerParams(value: Bytes | null) {
+    if (!value) {
+      this.unset("routerParams");
+    } else {
+      this.set("routerParams", Value.fromBytes(<Bytes>value));
+    }
   }
 
   get position(): string {

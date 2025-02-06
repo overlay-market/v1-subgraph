@@ -45,6 +45,13 @@ type Factory @entity {
   markets: [Market!]! @derivedFrom(field: "factory")
 }
 
+type Router @entity {
+  # router address
+  id: Bytes!
+  # we can add more fields here in the future
+  # to get router analytics
+}
+
 type Market @entity {
   # market contract address
   id: Bytes!
@@ -110,9 +117,9 @@ type Market @entity {
   # sum of all build fees
   totalLiquidateFees: BigInt!
   # sum of all fees
-  totalFees: BigInt!  
+  totalFees: BigInt!
   # sum of volume
-  totalVolume: BigInt!  
+  totalVolume: BigInt!
   # positive means net minting | negative means net burning
   totalMint: BigInt!
   # used in dataIsValid function
@@ -148,6 +155,9 @@ type Position @entity {
   positionId: String!
   # owner of position
   owner: Account!
+  # router through which position was opened
+  # empty if was opened directly on market
+  router: Router
   # market contract address related to position
   market: Market!
   # initial oi when building position
@@ -181,10 +191,23 @@ type Position @entity {
   # number of unwinds
   numberOfUniwnds: BigInt!
 
-   # derived fields
+  # derived fields
   builds: [Build!]! @derivedFrom(field: "position")
   liquidates: [Liquidate!]! @derivedFrom(field: "position")
   unwinds: [Unwind!]! @derivedFrom(field: "position")
+}
+
+type RouterParams @entity {
+  # address of the router + build/unwind ID
+  id: Bytes!
+  # router
+  router: Router!
+  # broker id
+  brokerId: BigInt!
+  # performer of the action (build/unwind)
+  performer: Bytes!
+  # transaction of the action
+  transaction: Transaction!
 }
 
 type Transaction @entity {
@@ -209,6 +232,9 @@ type Build @entity {
   id: ID!
   # account performing action
   owner: Account!
+  # router params
+  # empty if was built directly on market
+  routerParams: RouterParams
   # position entitie
   position: Position!
   # price at time of build
@@ -226,6 +252,9 @@ type Unwind @entity {
   id: ID!
   # account performing action
   owner: Account!
+  # router params
+  # empty if was unwinded directly on market
+  routerParams: RouterParams
   # position id
   position: Position!
   # unwind number
@@ -248,7 +277,7 @@ type Unwind @entity {
   fundingPayment: BigInt!
   # fraction of initial collateral of this unwind
   size: BigInt!
-  # volume = transferAmount + (initialDebt * fractionOfPosition) 
+  # volume = transferAmount + (initialDebt * fractionOfPosition)
   volume: BigInt!
   # total ovl minted/burned in this unwind
   mint: BigInt!
@@ -294,7 +323,7 @@ type Account @entity {
   # account address
   id: Bytes!
   # totalRealizedPnl
-  realizedPnl:  BigInt!
+  realizedPnl: BigInt!
   # numberOfUnwinds of the account
   numberOfUnwinds: BigInt!
   # numberOfLiquidatedPositions
@@ -310,7 +339,8 @@ type Account @entity {
   liquidates: [Liquidate!]! @derivedFrom(field: "owner")
   stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
   referralPositions: [ReferralPosition!]! @derivedFrom(field: "owner")
-  tradingMiningEpochVolumes: [TradingMiningEpochVolume!]! @derivedFrom(field: "trader")
+  tradingMiningEpochVolumes: [TradingMiningEpochVolume!]!
+    @derivedFrom(field: "trader")
   tokens: [TokenPosition!]! @derivedFrom(field: "owner")
   nfts: [ERC721NFT!]! @derivedFrom(field: "owner")
   erc1155Tokens: [ERC1155TokenBalance!]! @derivedFrom(field: "owner")
@@ -475,7 +505,7 @@ type TradingMiningEpochVolume @entity {
   id: Bytes! # trading mining address + trader address + epoch
   epoch: BigInt!
   volume: BigInt!
-  trader: Account!  
+  trader: Account!
 }
 
 type TotalSupplyHourData @entity {
