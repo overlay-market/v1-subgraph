@@ -7,7 +7,7 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt
+  BigInt,
 } from "@graphprotocol/graph-ts";
 
 export class ClaimContractInitialized extends ethereum.Event {
@@ -121,7 +121,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.call(
       "claimContractForEpoch",
       "claimContractForEpoch(uint256):(address)",
-      [ethereum.Value.fromUnsignedBigInt(epoch)]
+      [ethereum.Value.fromUnsignedBigInt(epoch)],
     );
 
     return result[0].toAddress();
@@ -131,7 +131,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.tryCall(
       "claimContractForEpoch",
       "claimContractForEpoch(uint256):(address)",
-      [ethereum.Value.fromUnsignedBigInt(epoch)]
+      [ethereum.Value.fromUnsignedBigInt(epoch)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -159,7 +159,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.call(
       "getCurrentEpoch",
       "getCurrentEpoch():(uint256)",
-      []
+      [],
     );
 
     return result[0].toBigInt();
@@ -169,7 +169,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.tryCall(
       "getCurrentEpoch",
       "getCurrentEpoch():(uint256)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -184,8 +184,8 @@ export class TradingMining extends ethereum.SmartContract {
       "hasClaimed(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(epoch)
-      ]
+        ethereum.Value.fromUnsignedBigInt(epoch),
+      ],
     );
 
     return result[0].toBoolean();
@@ -197,8 +197,8 @@ export class TradingMining extends ethereum.SmartContract {
       "hasClaimed(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(epoch)
-      ]
+        ethereum.Value.fromUnsignedBigInt(epoch),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -211,7 +211,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.call(
       "maxRewardPerEpochPerAddress",
       "maxRewardPerEpochPerAddress():(uint256)",
-      []
+      [],
     );
 
     return result[0].toBigInt();
@@ -221,7 +221,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.tryCall(
       "maxRewardPerEpochPerAddress",
       "maxRewardPerEpochPerAddress():(uint256)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -249,7 +249,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.call(
       "pcdHolderBonusPercentage",
       "pcdHolderBonusPercentage():(uint8)",
-      []
+      [],
     );
 
     return result[0].toI32();
@@ -259,7 +259,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.tryCall(
       "pcdHolderBonusPercentage",
       "pcdHolderBonusPercentage():(uint8)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -317,7 +317,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.call(
       "token1Percentage",
       "token1Percentage():(uint8)",
-      []
+      [],
     );
 
     return result[0].toI32();
@@ -327,7 +327,7 @@ export class TradingMining extends ethereum.SmartContract {
     let result = super.tryCall(
       "token1Percentage",
       "token1Percentage():(uint8)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();

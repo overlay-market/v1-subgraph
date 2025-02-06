@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
-import { Market, Transaction, Position, Factory, Account, Analytics, AnalyticsHourData } from '../../generated/schema'
+import { Market, Transaction, Position, Factory, Account, Analytics, AnalyticsHourData, Router, Build, Unwind } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
@@ -193,4 +193,28 @@ export function loadAnalyticsHourData(factory: Bytes, eventTimestamp: BigInt): A
   }
 
   return analyticsHourData
+}
+
+export function loadRouter(routerAddress: Bytes): Router {
+  const router = new Router(routerAddress)
+
+  return router
+}
+
+export function loadBuild(position: Position): Build {
+  let build = Build.load(position.id)
+  
+  if (!build) {
+    log.error("Build not found for position: {}", [position.id.toString()])
+    build = new Build("0")
+  }
+
+  return build
+}
+
+export function loadLatestUnwind(position: Position): Unwind | null {
+  if (position.numberOfUniwnds.equals(BigInt.zero())) return null
+  
+  const unwindId = position.id.concat('-').concat(position.numberOfUniwnds.toString())
+  return Unwind.load(unwindId)
 }
