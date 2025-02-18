@@ -1756,14 +1756,14 @@ export class UpdateCall__Outputs {
     this._call = call;
   }
 
-  get value0(): UpdateCallValue0Struct {
-    return changetype<UpdateCallValue0Struct>(
+  get value0(): UpdateCallValue0OutputStruct {
+    return changetype<UpdateCallValue0OutputStruct>(
       this._call.outputValues[0].value.toTuple(),
     );
   }
 }
 
-export class UpdateCallValue0Struct extends ethereum.Tuple {
+export class UpdateCallValue0OutputStruct extends ethereum.Tuple {
   get timestamp(): BigInt {
     return this[0].toBigInt();
   }

@@ -204,7 +204,7 @@ export function loadRouter(routerAddress: Bytes): Router {
 export function loadBuild(position: Position): Build {
   let build = Build.load(position.id)
   
-  if (!build) {
+  if (build === null) {
     log.error("Build not found for position: {}", [position.id.toString()])
     build = new Build("0")
   }
@@ -215,6 +215,7 @@ export function loadBuild(position: Position): Build {
 export function loadLatestUnwind(position: Position): Unwind | null {
   if (position.numberOfUniwnds.equals(BigInt.zero())) return null
   
-  const unwindId = position.id.concat('-').concat(position.numberOfUniwnds.toString())
+  const unwindId = position.id.concat('-').concat(position.numberOfUniwnds.minus(BigInt.fromI32(1)).toString())
+  
   return Unwind.load(unwindId)
 }

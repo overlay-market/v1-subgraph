@@ -105,6 +105,12 @@ dataSources:
       abis:
         - name: Shiva
           file: ./abis/Shiva.json
+        - name: OverlayV1Market
+          file: ./abis/OverlayV1Market.json
+        - name: OverlayV1State
+          file: ./abis/OverlayV1State.json
+        - name: OverlayV1Factory
+          file: ./abis/OverlayV1Factory.json
       eventHandlers:
         - event: ShivaBuild(indexed address,indexed address,address,uint256,uint256,uint256,uint32,bool)
           handler: handleShivaBuild
