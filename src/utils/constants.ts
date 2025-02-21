@@ -4,12 +4,12 @@ import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Fa
 import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factory/OverlayV1State'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-export const FACTORY_ADDRESS = '0xbe048017966c2787f548de1df5834449ec4c4f50' // berachain-bartio
-export const PERIPHERY_ADDRESS = '0x4f69dfb24958fcf69b70bca73c3e74f2c82bb405' // berachain-bartio
-export const OVL_ADDRESS = '0x97576e088f0d05ef68cac2eec63d017fe90952a0' // berachain-bartio
+export const FACTORY_ADDRESS = '0xc5f85207a16fb6634ead4f17ad5222f122e8f0de' // berachain-bartio
+export const PERIPHERY_ADDRESS = '0x2a154eba61a182e726a540ae2856fc012106e763' // berachain-bartio
+export const OVL_ADDRESS = '0xaeD2f0c7AaCfE2B59Cc70964833EA4C28C2CdbDB' // berachain-bartio
 export const REFERRAL_ADDRESS = '0x1cee53AB89004b2a9E173edc6F51509f8eB32122'
 export const TRADING_MINING_ADDRESS = '0xFDf98Ac225Aa3B2788dcE96ffe55C2Bb3edCf4c9'
-export const SHIVA_ADDRESS = '0x148aE412a84dcAC728cFf695B957a40d80416F35'
+export const SHIVA_ADDRESS = '0x7a555c83F7d2D26362C2b4954Cf01EBf9fA07DA0'
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)

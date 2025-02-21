@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: berachain-bartio
+    network: berachain
     source:
-      address: "0xbe048017966c2787f548de1df5834449ec4c4f50"
+      address: "0xc5f85207a16fb6634ead4f17ad5222f122e8f0de"
       abi: OverlayV1Factory
-      startBlock: 2643295
+      startBlock: 1047495
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -45,11 +45,11 @@ dataSources:
       file: ./src/mapping.ts
   - kind: ethereum
     name: OverlayV1Token
-    network: berachain-bartio
+    network: berachain
     source:
-      address: "0x97576e088f0d05ef68cac2eec63d017fe90952a0"
+      address: "0xaeD2f0c7AaCfE2B59Cc70964833EA4C28C2CdbDB"
       abi: OverlayV1Token
-      startBlock: 1838307
+      startBlock: 1047495
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -67,11 +67,11 @@ dataSources:
       file: ./src/erc20.ts
   - kind: ethereum
     name: PowerCard
-    network: berachain-bartio
+    network: berachain
     source:
       address: "0x07e70171D6a764a9370546Eb39Bc74A0E34424a0"
       abi: PowerCard
-      startBlock: 232882664
+      startBlock: 1047495
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -91,11 +91,11 @@ dataSources:
       file: ./src/power-card.ts
   - kind: ethereum
     name: Shiva
-    network: berachain-bartio
+    network: berachain
     source:
-      address: "0x148aE412a84dcAC728cFf695B957a40d80416F35"
+      address: "0x7a555c83F7d2D26362C2b4954Cf01EBf9fA07DA0"
       abi: Shiva
-      startBlock: 9855741
+      startBlock: 1047495
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -120,7 +120,7 @@ dataSources:
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: berachain-bartio
+    network: berachain
     source:
       abi: OverlayV1Market
     mapping:
