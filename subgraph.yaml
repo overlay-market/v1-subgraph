@@ -4,7 +4,7 @@ schema:
 dataSources:
   - kind: ethereum
     name: OverlayV1Factory
-    network: berachain
+    network: berachain-mainnet
     source:
       address: "0xc5f85207a16fb6634ead4f17ad5222f122e8f0de"
       abi: OverlayV1Factory
@@ -45,7 +45,7 @@ dataSources:
       file: ./src/mapping.ts
   - kind: ethereum
     name: OverlayV1Token
-    network: berachain
+    network: berachain-mainnet
     source:
       address: "0xaeD2f0c7AaCfE2B59Cc70964833EA4C28C2CdbDB"
       abi: OverlayV1Token
@@ -67,7 +67,7 @@ dataSources:
       file: ./src/erc20.ts
   - kind: ethereum
     name: PowerCard
-    network: berachain
+    network: berachain-mainnet
     source:
       address: "0x07e70171D6a764a9370546Eb39Bc74A0E34424a0"
       abi: PowerCard
@@ -91,7 +91,7 @@ dataSources:
       file: ./src/power-card.ts
   - kind: ethereum
     name: Shiva
-    network: berachain
+    network: berachain-mainnet
     source:
       address: "0x7a555c83F7d2D26362C2b4954Cf01EBf9fA07DA0"
       abi: Shiva
@@ -120,7 +120,7 @@ dataSources:
 templates:
   - kind: ethereum
     name: OverlayV1Market
-    network: berachain
+    network: berachain-mainnet
     source:
       abi: OverlayV1Market
     mapping:
