@@ -5,13 +5,14 @@ import {
   ShivaUnwind as ShivaUnwindEvent,
 } from "../generated/Shiva/Shiva"
 import { Position, RouterParams } from "../generated/schema"
-import { loadBuild, loadLatestUnwind, loadMarket, loadRouter, loadTransaction } from "./utils"
-import { SHIVA_ADDRESS } from "./utils/constants"
+import { loadAccount, loadAnalytics, loadBuild, loadLatestUnwind, loadMarket, loadRouter, loadTransaction } from "./utils"
+import { ONE_18DEC_BI, ONE_BI, SHIVA_ADDRESS, ZERO_BI } from "./utils/constants"
 
 const shivaAddress = Address.fromString(SHIVA_ADDRESS)
 
 export function handleShivaBuild(event: ShivaBuildEvent): void {
-  const owner = event.params.owner
+  const owner = loadAccount(event.params.owner)
+  const shivaAccount = loadAccount(shivaAddress)
   const performer = event.params.performer
   const positionId = event.params.positionId
   const brokerId = event.params.brokerId
@@ -32,7 +33,15 @@ export function handleShivaBuild(event: ShivaBuildEvent): void {
 
   const build = loadBuild(position)
 
-  position.owner = owner
+  let analytics = loadAnalytics(market.factory)
+  if (owner.ovlVolumeTraded.equals(ZERO_BI)) {
+    analytics.totalUsers = analytics.totalUsers.plus(ONE_BI)
+  }
+
+  shivaAccount.numberOfOpenPositions = shivaAccount.numberOfOpenPositions.minus(ONE_BI)
+  owner.numberOfOpenPositions = owner.numberOfOpenPositions.plus(ONE_BI)
+  
+  position.owner = owner.id
   position.router = router.id
 
   const routerParamsId = shivaAddress.concat(Bytes.fromUTF8(position.id))
@@ -44,8 +53,15 @@ export function handleShivaBuild(event: ShivaBuildEvent): void {
   routerParams.transaction = transaction.id
 
   build.routerParams = routerParams.id
-  build.owner = owner
+  build.owner = owner.id
 
+  if (position.initialNotional) {
+    owner.ovlVolumeTraded = owner.ovlVolumeTraded.plus(position.initialNotional)
+    shivaAccount.ovlVolumeTraded = shivaAccount.ovlVolumeTraded.minus(position.initialNotional)
+  }
+
+  shivaAccount.save()
+  owner.save()
   router.save()
   position.save()
   routerParams.save()
@@ -53,7 +69,8 @@ export function handleShivaBuild(event: ShivaBuildEvent): void {
 }
 
 export function handleShivaUnwind(event: ShivaUnwindEvent): void {
-  const owner = event.params.owner
+  const owner = loadAccount(event.params.owner)
+  const shivaAccount = loadAccount(shivaAddress)
   const performer = event.params.performer
   const positionId = event.params.positionId
   const brokerId = event.params.brokerId
@@ -78,7 +95,25 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
     return
   }
 
-  position.owner = owner
+  if (event.params.fraction == ONE_18DEC_BI) {
+    owner.numberOfOpenPositions = owner.numberOfOpenPositions.plus(ONE_BI)
+    shivaAccount.numberOfOpenPositions = shivaAccount.numberOfOpenPositions.minus(ONE_BI)
+  }
+
+  owner.numberOfUnwinds = owner.numberOfUnwinds.plus(ONE_BI)
+  shivaAccount.numberOfUnwinds = shivaAccount.numberOfUnwinds.minus(ONE_BI)
+
+  if (latestUnwind.pnl) {
+    owner.realizedPnl = owner.realizedPnl.plus(latestUnwind.pnl)
+    shivaAccount.realizedPnl = shivaAccount.realizedPnl.minus(latestUnwind.pnl)
+
+    if (latestUnwind.volume) {
+      owner.ovlVolumeTraded = owner.ovlVolumeTraded.plus(latestUnwind.volume)
+      shivaAccount.ovlVolumeTraded = shivaAccount.ovlVolumeTraded.minus(latestUnwind.volume)
+    }
+  }
+  
+  position.owner = owner.id
   position.router = router.id
 
   const routerParamsId = shivaAddress.concat(Bytes.fromUTF8(latestUnwind.id))
@@ -89,8 +124,10 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
   routerParams.transaction = transaction.id
 
   latestUnwind.routerParams = routerParams.id
-  latestUnwind.owner = owner
+  latestUnwind.owner = owner.id
 
+  shivaAccount.save()
+  owner.save()
   router.save()
   position.save()
   routerParams.save()
