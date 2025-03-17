@@ -7,6 +7,8 @@ import {
 import { Position, RouterParams } from "../generated/schema"
 import { loadAccount, loadAnalytics, loadBuild, loadLatestUnwind, loadMarket, loadRouter, loadTransaction } from "./utils"
 import { ONE_18DEC_BI, ONE_BI, SHIVA_ADDRESS, ZERO_BI } from "./utils/constants"
+import { updateReferralRewards } from './referral'
+import { updateTraderEpochVolume } from './trading-mining'
 
 const shivaAddress = Address.fromString(SHIVA_ADDRESS)
 
@@ -25,7 +27,6 @@ export function handleShivaBuild(event: ShivaBuildEvent): void {
   let marketPositionId = market.id.toHexString().concat('-').concat(positionId.toHexString())
   let position = Position.load(marketPositionId)
   
-    
   if (position === null) {
     log.error('No Position for handleShivaBuild. Market: {}', [market.id.toHexString()])
     return
@@ -59,6 +60,9 @@ export function handleShivaBuild(event: ShivaBuildEvent): void {
     owner.ovlVolumeTraded = owner.ovlVolumeTraded.plus(position.initialNotional)
     shivaAccount.ovlVolumeTraded = shivaAccount.ovlVolumeTraded.minus(position.initialNotional)
   }
+
+  updateReferralRewards(event, event.params.owner, build.feeAmount)
+  updateTraderEpochVolume(event.params.owner, position.initialNotional)
 
   shivaAccount.save()
   owner.save()
@@ -125,6 +129,9 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
 
   latestUnwind.routerParams = routerParams.id
   latestUnwind.owner = owner.id
+
+  updateReferralRewards(event, event.params.owner, latestUnwind.feeAmount)
+  updateTraderEpochVolume(event.params.owner, latestUnwind.volume)
 
   shivaAccount.save()
   owner.save()
