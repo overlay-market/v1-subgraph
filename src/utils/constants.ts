@@ -9,6 +9,7 @@ export const PERIPHERY_ADDRESS = '0x4f69dfb24958fcf69b70bca73c3e74f2c82bb405' //
 export const OVL_ADDRESS = '0x97576e088f0d05ef68cac2eec63d017fe90952a0' // berachain-bartio
 export const REFERRAL_ADDRESS = '0x1cee53AB89004b2a9E173edc6F51509f8eB32122'
 export const TRADING_MINING_ADDRESS = '0xFDf98Ac225Aa3B2788dcE96ffe55C2Bb3edCf4c9'
+export const SHIVA_ADDRESS = '0x148aE412a84dcAC728cFf695B957a40d80416F35'
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)

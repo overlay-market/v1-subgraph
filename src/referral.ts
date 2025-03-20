@@ -1,7 +1,7 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { ReferralProgram, ReferralPosition } from '../generated/schema'
 import { ReferralList, AllowAffiliate, AddAffiliateOrKOL, SetRewardToken, SetAffiliateComission, SetTraderDiscount, AllowKOL, ClaimRewards } from '../generated/ReferralList/ReferralList'
-import { ZERO_BI, REFERRAL_ADDRESS, BPS_BASE_BI } from './utils/constants'
+import { ZERO_BI, REFERRAL_ADDRESS, BPS_BASE_BI, SHIVA_ADDRESS } from './utils/constants'
 import { loadAccount, loadTransaction } from './utils'
 
 export enum Tier {
@@ -84,6 +84,8 @@ export function handleClaimRewards(event: ClaimRewards): void {
 }
 
 export function updateReferralRewards(event: ethereum.Event, owner: Address, transferFeeAmount: BigInt): void {
+    if (owner == Address.fromString(SHIVA_ADDRESS)) return;
+    
     const ownerReferralPosition = loadReferralPosition(Address.fromString(REFERRAL_ADDRESS), owner)
     const affiliatedTo = ownerReferralPosition.affiliatedTo
 
