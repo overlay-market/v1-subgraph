@@ -100,22 +100,17 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
   }
 
   if (event.params.fraction == ONE_18DEC_BI) {
-    owner.numberOfOpenPositions = owner.numberOfOpenPositions.plus(ONE_BI)
-    shivaAccount.numberOfOpenPositions = shivaAccount.numberOfOpenPositions.minus(ONE_BI)
+    owner.numberOfOpenPositions = owner.numberOfOpenPositions.minus(ONE_BI)
   }
 
   owner.numberOfUnwinds = owner.numberOfUnwinds.plus(ONE_BI)
   shivaAccount.numberOfUnwinds = shivaAccount.numberOfUnwinds.minus(ONE_BI)
 
-  if (latestUnwind.pnl) {
-    owner.realizedPnl = owner.realizedPnl.plus(latestUnwind.pnl)
-    shivaAccount.realizedPnl = shivaAccount.realizedPnl.minus(latestUnwind.pnl)
+  owner.realizedPnl = owner.realizedPnl.plus(latestUnwind.pnl)
+  shivaAccount.realizedPnl = shivaAccount.realizedPnl.minus(latestUnwind.pnl)
 
-    if (latestUnwind.volume) {
-      owner.ovlVolumeTraded = owner.ovlVolumeTraded.plus(latestUnwind.volume)
-      shivaAccount.ovlVolumeTraded = shivaAccount.ovlVolumeTraded.minus(latestUnwind.volume)
-    }
-  }
+  owner.ovlVolumeTraded = owner.ovlVolumeTraded.plus(latestUnwind.volume)
+  shivaAccount.ovlVolumeTraded = shivaAccount.ovlVolumeTraded.minus(latestUnwind.volume)
   
   position.owner = owner.id
   position.router = router.id

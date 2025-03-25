@@ -156,7 +156,7 @@ export function handleBuild(event: BuildEvent): void {
     // Verify that the log is an ERC20 Transfer event and matches the OVL token address
     if (
       _topic0Fee.equals(TRANSFER_SIG) &&
-      _addressFee.toHexString() == OVL_ADDRESS &&
+      _addressFee.toHexString().toLowerCase() == OVL_ADDRESS.toLowerCase() &&
       receipt.logs[index].topics.length > 1
     ) {
       // Decode the recipient address from the log's topics
@@ -394,7 +394,7 @@ export function handleUnwind(event: UnwindEvent): void {
     // Find the log that matches the ERC20 transfer to the owner
     if (
       _topic0user.equals(TRANSFER_SIG) &&
-      _addressuser.toHexString() == OVL_ADDRESS &&
+      _addressuser.toHexString().toLowerCase() == OVL_ADDRESS.toLowerCase() &&
       receipt.logs[userTransferIndex].topics.length > 1
     ) {
       // Decode the recipient address from the log's topics
