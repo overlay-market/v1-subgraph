@@ -181,6 +181,15 @@ export function handleBuild(event: BuildEvent): void {
         buildIndex.toString(),
         index.toString()
       ])
+
+      log.error("handleBuild data transferFeeAmount: transaction: {}, _topic0Fee: {}, _addressFee: {}, topics.length {}, TRANSFER_SIG {}, OVL_ADDRESS {}", [
+        event.transaction.hash.toHexString(),
+        _topic0Fee.toHexString(),
+        _addressFee.toHexString().toLowerCase(),
+        receipt.logs[index].topics.length.toString(),
+        TRANSFER_SIG.toHexString(),
+        OVL_ADDRESS.toLowerCase()
+      ])
     }
 
     index--
@@ -191,7 +200,7 @@ export function handleBuild(event: BuildEvent): void {
 
     if (
       _topic0Main.equals(TRANSFER_SIG) &&
-      _addressMain.toHexString() == OVL_ADDRESS &&
+      _addressMain.toHexString().toLowerCase() == OVL_ADDRESS.toLowerCase() &&
       receipt.logs[index].topics.length > 1
     ) {
       // Decode the recipient address from the log's topics
@@ -215,6 +224,15 @@ export function handleBuild(event: BuildEvent): void {
         event.transaction.hash.toHexString(),
         buildIndex.toString(),
         index.toString()
+      ])
+
+      log.error("handleBuild data userTransferAmount: transaction: {}, _topic0Fee: {}, _addressFee: {}, topics.length {}, TRANSFER_SIG {}, OVL_ADDRESS {}", [
+        event.transaction.hash.toHexString(),
+        _topic0Fee.toHexString(),
+        _addressFee.toHexString().toLowerCase(),
+        receipt.logs[index].topics.length.toString(),
+        TRANSFER_SIG.toHexString(),
+        OVL_ADDRESS.toLowerCase()
       ])
     }
   } else {
@@ -422,6 +440,15 @@ export function handleUnwind(event: UnwindEvent): void {
         unwindIndex.toString(),
         userTransferIndex.toString()
       ])
+
+      log.error("handleUnwind data userTransferIndex: transaction: {}, _topic0Fee: {}, _addressFee: {}, topics.length {}, TRANSFER_SIG {}, OVL_ADDRESS {}", [
+        event.transaction.hash.toHexString(),
+        _topic0user.toHexString(),
+        _addressuser.toHexString().toLowerCase(),
+        receipt.logs[userTransferIndex].topics.length.toString(),
+        TRANSFER_SIG.toHexString(),
+        OVL_ADDRESS.toLowerCase()
+      ])
     }
 
     // Extract the first topic and address of the fee transfer log
@@ -431,7 +458,7 @@ export function handleUnwind(event: UnwindEvent): void {
     // Find the log that matches the ERC20 transfer to the fee recipient
     if (
       _topic0.equals(TRANSFER_SIG) &&
-      _address.toHexString() == OVL_ADDRESS &&
+      _address.toHexString().toLowerCase() == OVL_ADDRESS.toLowerCase() &&
       receipt.logs[feeIndex].topics.length > 1
     ) {
       // Decode the recipient address from the log's topics
@@ -456,6 +483,15 @@ export function handleUnwind(event: UnwindEvent): void {
         event.transaction.hash.toHexString(),
         unwindIndex.toString(),
         feeIndex.toString()
+      ])
+
+      log.error("handleUnwind data feeIndex: transaction: {}, _topic0Fee: {}, _addressFee: {}, topics.length {}, TRANSFER_SIG {}, OVL_ADDRESS {}", [
+        event.transaction.hash.toHexString(),
+        _topic0user.toHexString(),
+        _addressuser.toHexString().toLowerCase(),
+        receipt.logs[userTransferIndex].topics.length.toString(),
+        TRANSFER_SIG.toHexString(),
+        OVL_ADDRESS.toLowerCase()
       ])
     }
   }
@@ -699,7 +735,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
     // Find the log that matches the ERC20 transfer to the feeRecipient
     if (
       _topic0.equals(TRANSFER_SIG) &&
-      _address.toHexString() == OVL_ADDRESS &&
+      _address.toHexString().toLowerCase() == OVL_ADDRESS.toLowerCase() &&
       receipt.logs[feeIndex].topics.length > 1
     ) {
       // Decode the recipient address from the log's topics
@@ -735,7 +771,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
     // Find the log that matches the ERC20 transfer to the sender (liquidator)
     if (
       _topic0.equals(TRANSFER_SIG) &&
-      _address.toHexString() == OVL_ADDRESS &&
+      _address.toHexString().toLowerCase() == OVL_ADDRESS.toLowerCase() &&
       receipt.logs[liquidatorTransferIndex].topics.length > 1
     ) {
       // Decode the recipient address from the log's topics

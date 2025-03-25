@@ -3,13 +3,26 @@ import { Bytes, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factory/OverlayV1State'
 
+// Import the addresses from config.ts which is generated during the build process
+import { 
+  FACTORY_ADDRESS,
+  PERIPHERY_ADDRESS,
+  OVL_ADDRESS,
+  REFERRAL_ADDRESS,
+  TRADING_MINING_ADDRESS,
+  SHIVA_ADDRESS
+} from './config'
+
+export { 
+  FACTORY_ADDRESS,
+  PERIPHERY_ADDRESS,
+  OVL_ADDRESS,
+  REFERRAL_ADDRESS,
+  TRADING_MINING_ADDRESS,
+  SHIVA_ADDRESS
+}
+
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-export const FACTORY_ADDRESS = '0x128AA6673cD244fA3e855f41B1596b3414297CF0' // berachain-bartio
-export const PERIPHERY_ADDRESS = '0xC50C7a502e6aE874A6299f385F938aF5C30CB91d' // berachain-bartio
-export const OVL_ADDRESS = '0xd37f15e6f2E5F4A624bbb9864f56bbd2e9b201b5' // berachain-bartio
-export const REFERRAL_ADDRESS = '0x0337507Bd36eCC6cAb708d1cBAa199F92F50EA63'
-export const TRADING_MINING_ADDRESS = '0xFDf98Ac225Aa3B2788dcE96ffe55C2Bb3edCf4c9'
-export const SHIVA_ADDRESS = '0xFf84cb66F0c302Cd860244868E10D110D8dc505D'
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)
