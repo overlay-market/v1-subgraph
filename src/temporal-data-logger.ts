@@ -32,14 +32,41 @@ export function updateMarketHourData(market: Market, eventTimestamp: BigInt, vol
     marketHourData.totalMint = marketHourData.totalMint.plus(mintAmount)
   }
 
-  let marketState = MarketState.load(market.id)
-  if (marketState) {
-    marketHourData.oiLong = marketState.oiLong
-    marketHourData.oiShort = marketState.oiShort
-    marketHourData.fundingRate = marketState.fundingRate
-  }
+  marketHourData.oiLong = market.oiLong
+  marketHourData.oiShort = market.oiShort
+  marketHourData.fundingRate = calculateFundingRate(market)
 
   marketHourData.volume = marketHourData.volume.plus(volumeAmount)
   marketHourData.accumulatedTotalMint = market.totalMint
   marketHourData.save()
+}
+
+function calculateFundingRate(market: Market): BigInt {
+  const oiLong = market.oiLong;
+  const oiShort = market.oiShort;
+
+  const isLongOverweight = oiLong.gt(oiShort);
+  const oiOverweight = isLongOverweight ? oiLong : oiShort;
+  const oiUnderweight = isLongOverweight ? oiShort : oiLong;
+
+  // Calculate total open interest and imbalance
+  const oiTotal = oiOverweight.plus(oiUnderweight);
+  const oiImbalance = oiOverweight.minus(oiUnderweight);
+
+  // If total open interest or imbalance is zero, return a funding rate of 0
+  if (oiTotal.isZero() || oiImbalance.isZero()) {
+    return BigInt.fromI32(0);
+  }
+
+  const k = market.k;
+
+  // Calculate funding rate using the formula: (oiImbalance / oiTotal) * (2 * k)
+  const twoK = k.times(BigInt.fromI32(2));
+
+  // To mimic Solidity's division and precision behavior, we need to scale the result.
+  // Multiply before dividing to retain precision.
+  const rate = oiImbalance.times(twoK).div(oiTotal);
+
+  // Return the funding rate, positive if long side is overweight, negative otherwise
+  return isLongOverweight ? rate : rate.neg();
 }

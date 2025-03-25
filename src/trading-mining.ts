@@ -7,7 +7,7 @@ import {
     PcdHolderBonusPercentageUpdated as PcdHolderBonusPercentageUpdatedEvent
 } from "../generated/TradingMining/TradingMining"
 import { TradingMining, TradingMiningEpoch, TradingMiningEpochVolume } from "../generated/schema"
-import { ZERO_BI, TRADING_MINING_ADDRESS } from "./utils/constants"
+import { ZERO_BI, TRADING_MINING_ADDRESS, SHIVA_ADDRESS } from "./utils/constants"
 import { loadAccount } from "./utils"
 
 export function handleRewardTokensUpdated(event: RewardTokensUpdatedEvent): void {
@@ -30,6 +30,8 @@ export function handlePcdHolderBonusPercentageUpdated(event: PcdHolderBonusPerce
 }
 
 export function updateTraderEpochVolume(trader: Address, volume: BigInt): void {
+    if (trader == Address.fromString(SHIVA_ADDRESS)) return;
+
     const account = loadAccount(trader)
     const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
     

@@ -3,12 +3,26 @@ import { Bytes, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factory/OverlayV1State'
 
+// Import the addresses from config.ts which is generated during the build process
+import { 
+  FACTORY_ADDRESS,
+  PERIPHERY_ADDRESS,
+  OVL_ADDRESS,
+  REFERRAL_ADDRESS,
+  TRADING_MINING_ADDRESS,
+  SHIVA_ADDRESS
+} from './config'
+
+export { 
+  FACTORY_ADDRESS,
+  PERIPHERY_ADDRESS,
+  OVL_ADDRESS,
+  REFERRAL_ADDRESS,
+  TRADING_MINING_ADDRESS,
+  SHIVA_ADDRESS
+}
+
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
-export const FACTORY_ADDRESS = '0xa2dBe262D27647243Ac3187d05DBF6c3C6ECC14D' // arbitrum-sepolia
-export const PERIPHERY_ADDRESS = '0x2878837ea173e8bd40db7cee360b15c1c27deb5a' // arbitrum-sepolia
-export const OVL_ADDRESS = '0x3E27fAe625f25291bFda517f74bf41DC40721dA2' // arbitrum-sepolia
-export const REFERRAL_ADDRESS = '0x1cee53AB89004b2a9E173edc6F51509f8eB32122'
-export const TRADING_MINING_ADDRESS = '0xFDf98Ac225Aa3B2788dcE96ffe55C2Bb3edCf4c9' // arbitrum-sepolia
 
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)
