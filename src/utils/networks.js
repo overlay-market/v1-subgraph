@@ -76,5 +76,43 @@ module.exports = {
       }
     },
     PERIPHERY_ADDRESS: "0x4f69dfb24958fcf69b70bca73c3e74f2c82bb405"
+  },
+
+  "berachain-mainnet": {
+    contracts: {
+      OverlayV1Factory: {
+        address: "0xc5f85207a16fb6634ead4f17ad5222f122e8f0de",
+        startBlock: 1047495
+      },
+      OverlayV1Token: {
+        address: "0xaeD2f0c7AaCfE2B59Cc70964833EA4C28C2CdbDB",
+        startBlock: 1047495
+      },
+      TokenStake: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 1047495
+      },
+      ReferralList: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 1047495
+      },
+      TradingMining: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 1047495
+      },
+      PowerCard: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 1047495
+      },
+      PlanckCat: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 1047495
+      },
+      Shiva: {
+        address: "0x7a555c83F7d2D26362C2b4954Cf01EBf9fA07DA0",
+        startBlock: 1047495
+      }
+    },
+    PERIPHERY_ADDRESS: "0x2a154eba61a182e726a540ae2856fc012106e763"
   }
 };

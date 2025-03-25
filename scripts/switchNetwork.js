@@ -1,6 +1,6 @@
 /**
  * Update subgraph.yaml for the specified network
- * Usage: node update-subgraph.js <network>
+ * Usage: node scripts/switchNetwork.js <network>
  */
 
 const fs = require('fs');
