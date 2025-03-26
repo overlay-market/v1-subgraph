@@ -3,12 +3,20 @@
 Deployed Subgraphs
 | Chain | URL |
 | --- | --- |
-| Kovan | https://thegraph.com/hosted-service/subgraph/bigboydiamonds/overlay-v1-subgraph |
-| Rinkeby | https://thegraph.com/hosted-service/subgraph/bigboydiamonds/overlay-v1-subgraph-rinkeby |
+| Berachain Bepolia | https://api.goldsky.com/api/public/project_cm3n5avsu08tw01vthbry8fl7/subgraphs/overlay-bepolia/latest/gn |
+| Berachain Mainnet | https://api.goldsky.com/api/public/project_clyiptt06ifuv01ul9xiwfj28/subgraphs/overlay-berachain/prod/gn |
 
-# Run tests
+## Usage
 
-## Compatibility tests
+First, use `node scripts/switchNetwork.js <network-name>` to set correct addresses and the network.
+
+Available networks: `arbitrum-sepolia`, `berachain-bepolia`, `berachain-mainnet`
+
+Use `goldsky` CLI tool to deploy.
+
+## Run tests
+
+### Compatibility tests
 
 To run tests against the legacy subgraph, run:
 
@@ -16,7 +24,7 @@ To run tests against the legacy subgraph, run:
 yarn test:compat
 ```
 
-## Unit tests
+### Unit tests
 
 To run unit tests, you first need to build a Docker image:
 
