@@ -9,6 +9,8 @@ import { Account, ERC1155Token, ERC1155TokenBalance, ERC1155Transfer } from "../
 import { loadAccount, loadTransaction } from "./utils"
 import { ZERO_BI, ADDRESS_ZERO } from "./utils/constants"
 
+const ADDRESS_ZERO_AS_BYTES = Bytes.fromHexString(ADDRESS_ZERO);
+
 export function handleTransferSingle(event: TransferSingleEvent): void {
   const from = loadAccount(event.params.from)
   const to = loadAccount(event.params.to)
@@ -53,9 +55,9 @@ function handleTransferSingleInternal(from: Account, to: Account, tokenAddress: 
   const erc1155TokenBalanceFrom = loadERC1155TokenBalance(tokenAddress, tokenId, from)
   const erc1155TokenBalanceTo = loadERC1155TokenBalance(tokenAddress, tokenId, to)
 
-  if (from.id == Address.fromString(ADDRESS_ZERO)) {
+  if (from.id == ADDRESS_ZERO_AS_BYTES) {
     handleMinted(to, tokenAddress, tokenId, value);
-  } else if (to.id == Address.fromString(ADDRESS_ZERO)) {
+  } else if (to.id == ADDRESS_ZERO_AS_BYTES) { // log.warning("Entering handleBurnt: user {}, tokenId {}, value {}", [to.toString(), tokenId.toString(), value.toString()]);
     handleBurnt(from, tokenAddress, tokenId, value);
   } else {
     erc1155TokenBalanceFrom.amount = erc1155TokenBalanceFrom.amount.minus(value);
@@ -76,7 +78,7 @@ function handleBurnt(owner: Account, tokenAddress: Address, tokenId: BigInt, val
   erc1155Token.totalBurnt = erc1155Token.totalBurnt.plus(value)
 
   erc1155TokenBalance.amount = erc1155TokenBalance.amount.minus(value);
-  erc1155TokenBalance.burnt = erc1155TokenBalance.amount.plus(value);
+  erc1155TokenBalance.burnt = erc1155TokenBalance.burnt.plus(value);
 
   erc1155Token.save()
   erc1155TokenBalance.save();
