@@ -151,9 +151,9 @@ dataSources:
     name: Shiva
     network: chapel
     source:
-      address: "0x0000000000000000000000000000000000000000"
+      address: "0x6385C8b971e822CB02Ced25FCe9aA9604Bed213c"
       abi: Shiva
-      startBlock: 51602088
+      startBlock: 52786661
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
