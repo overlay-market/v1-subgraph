@@ -542,6 +542,43 @@ type MarketHourData @entity {
   fundingRate: BigInt!
 }
 
+# from https://github.com/messari/subgraphs/blob/master/schema-generic.graphql
+###############################
+##### Protocol Timeseries #####
+###############################
+
+type UsageMetricsDailySnapshot @entity @dailySnapshot {
+  " ID is # of days since Unix epoch time "
+  id: Bytes!
+
+  " Number of days since Unix epoch time "
+  day: Int!
+
+  " Protocol this snapshot is associated with "
+  protocol: Protocol!
+
+  " Number of unique daily active users "
+  dailyActiveUsers: Int!
+
+  " Number of cumulative unique users "
+  cumulativeUniqueUsers: Int!
+
+  " Total number of transactions occurred in a day. Transactions include all entities that implement the Event interface. "
+  dailyTransactionCount: Int!
+
+  " Total number of transactions. Transactions include events triggered by outside users (ie, deposit, withdraw, etc.)"
+  cumulativeTransactionCount: Int!
+
+  " Total number of pools "
+  totalPoolCount: Int!
+
+  " Timestamp of when this snapshot was taken/last modified (May be taken after interval has passed) "
+  timestamp: BigInt!
+
+  " Block number of when this snapshot was taken/last modified (May be taken after interval has passed) "
+  blockNumber: BigInt!
+}
+
 type ERC1155TokenBalance @entity {
   id: Bytes! # contract address + tokenId + owner
   owner: Account!
