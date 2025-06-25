@@ -555,7 +555,7 @@ type UsageMetricsDailySnapshot @entity @dailySnapshot {
   day: Int!
 
   " Protocol this snapshot is associated with "
-  protocol: Protocol!
+  # protocol: Protocol!
 
   " Number of unique daily active users "
   dailyActiveUsers: Int!
