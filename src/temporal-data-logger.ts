@@ -1,6 +1,51 @@
-import { BigInt } from "@graphprotocol/graph-ts"
-import { Market, MarketHourData, MarketState } from "../generated/schema"
-import { ZERO_BI } from "./utils/constants";
+import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
+import { Account, ActiveAccount, Market, MarketHourData, MarketState, UsageMetricsDailySnapshot } from "../generated/schema"
+import { SECONDS_PER_DAY, ZERO_BI } from "./utils/constants";
+
+export function takeSnapshots(
+  event: ethereum.Event,
+  market: Market,
+  account: Account,
+  volumeAmount: BigInt = ZERO_BI, 
+  mintAmount: BigInt = ZERO_BI
+): void {
+  if (volumeAmount) {
+    updateMarketHourData(market, event.block.timestamp, volumeAmount, mintAmount);
+  }
+  updateUsageMetricsDailySnapshot(event, account);
+}
+
+export function updateUsageMetricsDailySnapshot(event: ethereum.Event, account: Account): void {
+  const days = event.block.timestamp.toI32() / SECONDS_PER_DAY;
+  const id = Bytes.fromI32(days);
+  let usageMetrics = UsageMetricsDailySnapshot.load(id);
+
+  // TODO: finish implementation
+  if (usageMetrics === null) {
+    usageMetrics = new UsageMetricsDailySnapshot(id);
+    usageMetrics.day = days;
+    usageMetrics.dailyActiveUsers = 0;
+    usageMetrics.cumulativeUniqueUsers = 0;
+    usageMetrics.dailyTransactionCount = 0;
+    usageMetrics.cumulativeTransactionCount = 0;
+    usageMetrics.totalPoolCount = 0;
+  }
+
+  const dailyActiveAccountId = Bytes.fromUTF8(
+    `daily-${account.id.toHex()}-${days}`
+  );
+  let dailyActiveAccount = ActiveAccount.load(dailyActiveAccountId);
+  if (!dailyActiveAccount) {
+    dailyActiveAccount = new ActiveAccount(dailyActiveAccountId);
+    dailyActiveAccount.save();
+    usageMetrics.dailyActiveUsers += 1;
+  }
+
+  usageMetrics.timestamp = event.block.timestamp;
+  usageMetrics.blockNumber = event.block.number;
+
+  usageMetrics.save();
+}
 
 export function updateMarketHourData(market: Market, eventTimestamp: BigInt, volumeAmount: BigInt, mintAmount?: BigInt): void {
   let timestamp = eventTimestamp.toI32()

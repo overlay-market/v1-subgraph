@@ -3,7 +3,7 @@
 import {
   Address,
   DataSourceTemplate,
-  DataSourceContext,
+  DataSourceContext
 } from "@graphprotocol/graph-ts";
 
 export class OverlayV1Market extends DataSourceTemplate {
@@ -15,7 +15,7 @@ export class OverlayV1Market extends DataSourceTemplate {
     DataSourceTemplate.createWithContext(
       "OverlayV1Market",
       [address.toHex()],
-      context,
+      context
     );
   }
 }

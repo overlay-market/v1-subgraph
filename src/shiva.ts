@@ -9,6 +9,7 @@ import { loadAccount, loadAnalytics, loadBuild, loadLatestUnwind, loadMarket, lo
 import { ONE_18DEC_BI, ONE_BI, SHIVA_ADDRESS, ZERO_BI } from "./utils/constants"
 import { updateReferralRewards } from './referral'
 import { updateTraderEpochVolume } from './trading-mining'
+import { takeSnapshots } from './temporal-data-logger'
 
 const shivaAddress = Address.fromString(SHIVA_ADDRESS)
 
@@ -63,6 +64,7 @@ export function handleShivaBuild(event: ShivaBuildEvent): void {
 
   updateReferralRewards(event, event.params.owner, build.feeAmount)
   updateTraderEpochVolume(event.params.owner, position.initialNotional)
+  takeSnapshots(event, market, owner)
 
   shivaAccount.save()
   owner.save()
@@ -127,6 +129,7 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
 
   updateReferralRewards(event, event.params.owner, latestUnwind.feeAmount)
   updateTraderEpochVolume(event.params.owner, latestUnwind.volume)
+  takeSnapshots(event, market, owner)
 
   shivaAccount.save()
   owner.save()

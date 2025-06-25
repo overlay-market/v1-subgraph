@@ -23,7 +23,7 @@ import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount, loadAnalytics } from "./utils";
 import { updateReferralRewards } from "./referral";
 import { updateTraderEpochVolume } from "./trading-mining";
-import { updateMarketHourData } from "./temporal-data-logger";
+import { takeSnapshots } from "./temporal-data-logger";
 import { updateAnalyticsHourData, updateMarketState } from "./utils/helpers";
 
 // TODO: rename or separate this file into multiple files
@@ -323,7 +323,7 @@ export function handleBuild(event: BuildEvent): void {
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(initialNotional)
 
   // Update hourly market data with the new position's notional
-  updateMarketHourData(market, event.block.timestamp, initialNotional, ZERO_BI)
+  takeSnapshots(event, market, sender, initialNotional, ZERO_BI)
 
   // Save all the updated and new entities
   position.save()
@@ -578,7 +578,7 @@ export function handleUnwind(event: UnwindEvent): void {
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(unwind.volume)
 
   // Update hourly market data with the new position's notional
-  updateMarketHourData(market, event.block.timestamp, unwind.volume, event.params.mint)
+  takeSnapshots(event, market, sender, unwind.volume, event.params.mint)
 
   // Save all the updated and new entities
   position.save()
@@ -888,7 +888,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   owner.numberOfOpenPositions = owner.numberOfOpenPositions.minus(ONE_BI)
 
   // Update hourly market data with the new liquidation's volume and mint amount
-  updateMarketHourData(market, event.block.timestamp, liquidate.volume, event.params.mint)
+  takeSnapshots(event, market, sender, liquidate.volume, event.params.mint)
 
   // Save all the updated and new entities
   position.save()

@@ -7,7 +7,7 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt,
+  BigInt
 } from "@graphprotocol/graph-ts";
 
 export class ApprovalForAll extends ethereum.Event {
@@ -274,7 +274,7 @@ export class PowerCard extends ethereum.SmartContract {
     let result = super.call(
       "DEFAULT_ADMIN_ROLE",
       "DEFAULT_ADMIN_ROLE():(bytes32)",
-      [],
+      []
     );
 
     return result[0].toBytes();
@@ -284,7 +284,7 @@ export class PowerCard extends ethereum.SmartContract {
     let result = super.tryCall(
       "DEFAULT_ADMIN_ROLE",
       "DEFAULT_ADMIN_ROLE():(bytes32)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -312,7 +312,7 @@ export class PowerCard extends ethereum.SmartContract {
     let result = super.call(
       "UPGRADE_INTERFACE_VERSION",
       "UPGRADE_INTERFACE_VERSION():(string)",
-      [],
+      []
     );
 
     return result[0].toString();
@@ -322,7 +322,7 @@ export class PowerCard extends ethereum.SmartContract {
     let result = super.tryCall(
       "UPGRADE_INTERFACE_VERSION",
       "UPGRADE_INTERFACE_VERSION():(string)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -337,8 +337,8 @@ export class PowerCard extends ethereum.SmartContract {
       "balanceOf(address,uint256):(uint256)",
       [
         ethereum.Value.fromAddress(account),
-        ethereum.Value.fromUnsignedBigInt(id),
-      ],
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
     );
 
     return result[0].toBigInt();
@@ -350,8 +350,8 @@ export class PowerCard extends ethereum.SmartContract {
       "balanceOf(address,uint256):(uint256)",
       [
         ethereum.Value.fromAddress(account),
-        ethereum.Value.fromUnsignedBigInt(id),
-      ],
+        ethereum.Value.fromUnsignedBigInt(id)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -366,8 +366,8 @@ export class PowerCard extends ethereum.SmartContract {
       "balanceOfBatch(address[],uint256[]):(uint256[])",
       [
         ethereum.Value.fromAddressArray(accounts),
-        ethereum.Value.fromUnsignedBigIntArray(ids),
-      ],
+        ethereum.Value.fromUnsignedBigIntArray(ids)
+      ]
     );
 
     return result[0].toBigIntArray();
@@ -375,15 +375,15 @@ export class PowerCard extends ethereum.SmartContract {
 
   try_balanceOfBatch(
     accounts: Array<Address>,
-    ids: Array<BigInt>,
+    ids: Array<BigInt>
   ): ethereum.CallResult<Array<BigInt>> {
     let result = super.tryCall(
       "balanceOfBatch",
       "balanceOfBatch(address[],uint256[]):(uint256[])",
       [
         ethereum.Value.fromAddressArray(accounts),
-        ethereum.Value.fromUnsignedBigIntArray(ids),
-      ],
+        ethereum.Value.fromUnsignedBigIntArray(ids)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -394,7 +394,7 @@ export class PowerCard extends ethereum.SmartContract {
 
   exists(id: BigInt): boolean {
     let result = super.call("exists", "exists(uint256):(bool)", [
-      ethereum.Value.fromUnsignedBigInt(id),
+      ethereum.Value.fromUnsignedBigInt(id)
     ]);
 
     return result[0].toBoolean();
@@ -402,7 +402,7 @@ export class PowerCard extends ethereum.SmartContract {
 
   try_exists(id: BigInt): ethereum.CallResult<boolean> {
     let result = super.tryCall("exists", "exists(uint256):(bool)", [
-      ethereum.Value.fromUnsignedBigInt(id),
+      ethereum.Value.fromUnsignedBigInt(id)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -413,7 +413,7 @@ export class PowerCard extends ethereum.SmartContract {
 
   getRoleAdmin(role: Bytes): Bytes {
     let result = super.call("getRoleAdmin", "getRoleAdmin(bytes32):(bytes32)", [
-      ethereum.Value.fromFixedBytes(role),
+      ethereum.Value.fromFixedBytes(role)
     ]);
 
     return result[0].toBytes();
@@ -423,7 +423,7 @@ export class PowerCard extends ethereum.SmartContract {
     let result = super.tryCall(
       "getRoleAdmin",
       "getRoleAdmin(bytes32):(bytes32)",
-      [ethereum.Value.fromFixedBytes(role)],
+      [ethereum.Value.fromFixedBytes(role)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -435,7 +435,7 @@ export class PowerCard extends ethereum.SmartContract {
   hasRole(role: Bytes, account: Address): boolean {
     let result = super.call("hasRole", "hasRole(bytes32,address):(bool)", [
       ethereum.Value.fromFixedBytes(role),
-      ethereum.Value.fromAddress(account),
+      ethereum.Value.fromAddress(account)
     ]);
 
     return result[0].toBoolean();
@@ -444,7 +444,7 @@ export class PowerCard extends ethereum.SmartContract {
   try_hasRole(role: Bytes, account: Address): ethereum.CallResult<boolean> {
     let result = super.tryCall("hasRole", "hasRole(bytes32,address):(bool)", [
       ethereum.Value.fromFixedBytes(role),
-      ethereum.Value.fromAddress(account),
+      ethereum.Value.fromAddress(account)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -459,8 +459,8 @@ export class PowerCard extends ethereum.SmartContract {
       "isApprovedForAll(address,address):(bool)",
       [
         ethereum.Value.fromAddress(account),
-        ethereum.Value.fromAddress(operator),
-      ],
+        ethereum.Value.fromAddress(operator)
+      ]
     );
 
     return result[0].toBoolean();
@@ -468,15 +468,15 @@ export class PowerCard extends ethereum.SmartContract {
 
   try_isApprovedForAll(
     account: Address,
-    operator: Address,
+    operator: Address
   ): ethereum.CallResult<boolean> {
     let result = super.tryCall(
       "isApprovedForAll",
       "isApprovedForAll(address,address):(bool)",
       [
         ethereum.Value.fromAddress(account),
-        ethereum.Value.fromAddress(operator),
-      ],
+        ethereum.Value.fromAddress(operator)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -495,7 +495,7 @@ export class PowerCard extends ethereum.SmartContract {
     let result = super.tryCall(
       "proxiableUUID",
       "proxiableUUID():(bytes32)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -506,34 +506,34 @@ export class PowerCard extends ethereum.SmartContract {
 
   royaltyInfo(
     tokenId: BigInt,
-    salePrice: BigInt,
+    salePrice: BigInt
   ): PowerCard__royaltyInfoResult {
     let result = super.call(
       "royaltyInfo",
       "royaltyInfo(uint256,uint256):(address,uint256)",
       [
         ethereum.Value.fromUnsignedBigInt(tokenId),
-        ethereum.Value.fromUnsignedBigInt(salePrice),
-      ],
+        ethereum.Value.fromUnsignedBigInt(salePrice)
+      ]
     );
 
     return new PowerCard__royaltyInfoResult(
       result[0].toAddress(),
-      result[1].toBigInt(),
+      result[1].toBigInt()
     );
   }
 
   try_royaltyInfo(
     tokenId: BigInt,
-    salePrice: BigInt,
+    salePrice: BigInt
   ): ethereum.CallResult<PowerCard__royaltyInfoResult> {
     let result = super.tryCall(
       "royaltyInfo",
       "royaltyInfo(uint256,uint256):(address,uint256)",
       [
         ethereum.Value.fromUnsignedBigInt(tokenId),
-        ethereum.Value.fromUnsignedBigInt(salePrice),
-      ],
+        ethereum.Value.fromUnsignedBigInt(salePrice)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -542,8 +542,8 @@ export class PowerCard extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(
       new PowerCard__royaltyInfoResult(
         value[0].toAddress(),
-        value[1].toBigInt(),
-      ),
+        value[1].toBigInt()
+      )
     );
   }
 
@@ -551,7 +551,7 @@ export class PowerCard extends ethereum.SmartContract {
     let result = super.call(
       "supportsInterface",
       "supportsInterface(bytes4):(bool)",
-      [ethereum.Value.fromFixedBytes(interfaceId)],
+      [ethereum.Value.fromFixedBytes(interfaceId)]
     );
 
     return result[0].toBoolean();
@@ -561,7 +561,7 @@ export class PowerCard extends ethereum.SmartContract {
     let result = super.tryCall(
       "supportsInterface",
       "supportsInterface(bytes4):(bool)",
-      [ethereum.Value.fromFixedBytes(interfaceId)],
+      [ethereum.Value.fromFixedBytes(interfaceId)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -587,7 +587,7 @@ export class PowerCard extends ethereum.SmartContract {
 
   totalSupply1(id: BigInt): BigInt {
     let result = super.call("totalSupply", "totalSupply(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(id),
+      ethereum.Value.fromUnsignedBigInt(id)
     ]);
 
     return result[0].toBigInt();
@@ -597,7 +597,7 @@ export class PowerCard extends ethereum.SmartContract {
     let result = super.tryCall(
       "totalSupply",
       "totalSupply(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(id)],
+      [ethereum.Value.fromUnsignedBigInt(id)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -608,7 +608,7 @@ export class PowerCard extends ethereum.SmartContract {
 
   uri(tokenId: BigInt): string {
     let result = super.call("uri", "uri(uint256):(string)", [
-      ethereum.Value.fromUnsignedBigInt(tokenId),
+      ethereum.Value.fromUnsignedBigInt(tokenId)
     ]);
 
     return result[0].toString();
@@ -616,7 +616,7 @@ export class PowerCard extends ethereum.SmartContract {
 
   try_uri(tokenId: BigInt): ethereum.CallResult<string> {
     let result = super.tryCall("uri", "uri(uint256):(string)", [
-      ethereum.Value.fromUnsignedBigInt(tokenId),
+      ethereum.Value.fromUnsignedBigInt(tokenId)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
