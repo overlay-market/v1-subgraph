@@ -1,6 +1,15 @@
-import { BigInt } from "@graphprotocol/graph-ts"
+import { BigInt, ethereum } from "@graphprotocol/graph-ts"
 import { Market, MarketHourData, MarketState } from "../generated/schema"
 import { ZERO_BI } from "./utils/constants";
+
+export function takeSnapshots(
+  event: ethereum.Event,
+  market: Market,
+  volumeAmount: BigInt, 
+  mintAmount?: BigInt
+): void {
+  updateMarketHourData(market, event.block.timestamp, volumeAmount, mintAmount);
+}
 
 export function updateMarketHourData(market: Market, eventTimestamp: BigInt, volumeAmount: BigInt, mintAmount?: BigInt): void {
   let timestamp = eventTimestamp.toI32()
