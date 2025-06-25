@@ -6,8 +6,8 @@ export function takeSnapshots(
   event: ethereum.Event,
   market: Market,
   account: Account,
-  volumeAmount?: BigInt, 
-  mintAmount?: BigInt
+  volumeAmount: BigInt = ZERO_BI, 
+  mintAmount: BigInt = ZERO_BI
 ): void {
   if (volumeAmount) {
     updateMarketHourData(market, event.block.timestamp, volumeAmount, mintAmount);
@@ -18,10 +18,11 @@ export function takeSnapshots(
 export function updateUsageMetricsDailySnapshot(event: ethereum.Event, account: Account): void {
   const days = event.block.timestamp.toI32() / SECONDS_PER_DAY;
   const id = Bytes.fromI32(days);
-  const usageMetrics = new UsageMetricsDailySnapshot(id);
+  let usageMetrics = UsageMetricsDailySnapshot.load(id);
 
   // TODO: finish implementation
   if (usageMetrics === null) {
+    usageMetrics = new UsageMetricsDailySnapshot(id);
     usageMetrics.day = days;
     usageMetrics.dailyActiveUsers = 0;
     usageMetrics.cumulativeUniqueUsers = 0;
