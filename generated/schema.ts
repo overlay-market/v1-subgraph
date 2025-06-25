@@ -4908,6 +4908,50 @@ export class UsageMetricsDailySnapshot extends Entity {
   }
 }
 
+export class ActiveAccount extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ActiveAccount entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type ActiveAccount must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("ActiveAccount", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): ActiveAccount | null {
+    return changetype<ActiveAccount | null>(
+      store.get_in_block("ActiveAccount", id.toHexString())
+    );
+  }
+
+  static load(id: Bytes): ActiveAccount | null {
+    return changetype<ActiveAccount | null>(
+      store.get("ActiveAccount", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+}
+
 export class ERC1155TokenBalance extends Entity {
   constructor(id: Bytes) {
     super();

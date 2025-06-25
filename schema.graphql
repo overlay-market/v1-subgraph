@@ -579,6 +579,11 @@ type UsageMetricsDailySnapshot @entity @dailySnapshot {
   blockNumber: BigInt!
 }
 
+type ActiveAccount @entity {
+  " { daily/hourly }-{ Address of the account }-{ Days/hours since Unix epoch } "
+  id: Bytes!
+}
+
 type ERC1155TokenBalance @entity {
   id: Bytes! # contract address + tokenId + owner
   owner: Account!
