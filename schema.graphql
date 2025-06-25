@@ -554,7 +554,7 @@ type UsageMetricsDailySnapshot @entity @dailySnapshot {
   " Number of days since Unix epoch time "
   day: Int!
 
-  " Protocol this snapshot is associated with "
+  # " Protocol this snapshot is associated with "
   # protocol: Protocol!
 
   " Number of unique daily active users "
