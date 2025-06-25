@@ -323,7 +323,7 @@ export function handleBuild(event: BuildEvent): void {
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(initialNotional)
 
   // Update hourly market data with the new position's notional
-  takeSnapshots(event, market, initialNotional, ZERO_BI)
+  takeSnapshots(event, market, sender, initialNotional, ZERO_BI)
 
   // Save all the updated and new entities
   position.save()
@@ -578,7 +578,7 @@ export function handleUnwind(event: UnwindEvent): void {
   sender.ovlVolumeTraded = sender.ovlVolumeTraded.plus(unwind.volume)
 
   // Update hourly market data with the new position's notional
-  takeSnapshots(event, market, unwind.volume, event.params.mint)
+  takeSnapshots(event, market, sender, unwind.volume, event.params.mint)
 
   // Save all the updated and new entities
   position.save()
@@ -888,7 +888,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
   owner.numberOfOpenPositions = owner.numberOfOpenPositions.minus(ONE_BI)
 
   // Update hourly market data with the new liquidation's volume and mint amount
-  takeSnapshots(event, market, liquidate.volume, event.params.mint)
+  takeSnapshots(event, market, sender, liquidate.volume, event.params.mint)
 
   // Save all the updated and new entities
   position.save()

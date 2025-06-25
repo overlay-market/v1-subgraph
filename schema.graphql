@@ -580,7 +580,7 @@ type UsageMetricsDailySnapshot @entity @dailySnapshot {
 }
 
 type ActiveAccount @entity {
-  " { daily/hourly }-{ Address of the account }-{ Days/hours since Unix epoch } "
+  " { alltime/daily/hourly }-{ Address of the account }-{ None/Days/hours since Unix epoch } "
   id: Bytes!
 }
 
