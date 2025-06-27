@@ -9,9 +9,6 @@ export function takeSnapshots(
   volumeAmount: BigInt = ZERO_BI, 
   mintAmount: BigInt = ZERO_BI
 ): void {
-  if (volumeAmount) {
-    updateMarketHourData(market, event.block.timestamp, volumeAmount, mintAmount);
-  }
   updateUsageMetricsDailySnapshot(event, account);
 }
 
