@@ -114,5 +114,43 @@ module.exports = {
       }
     },
     PERIPHERY_ADDRESS: "0x2a154eba61a182e726a540ae2856fc012106e763"
+  },
+
+  "bsc": {
+    contracts: {
+      OverlayV1Factory: {
+        address: "0xC35093f76fF3D31Af27A893CDcec585F1899eE54",
+        startBlock: 55756263
+      },
+      OverlayV1Token: {
+        address: "0x1F34c87ded863Fe3A3Cd76FAc8adA9608137C8c3",
+        startBlock: 55756263
+      },
+      TokenStake: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      },
+      ReferralList: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      },
+      TradingMining: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      },
+      PowerCard: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      },
+      PlanckCat: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      },
+      Shiva: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      }
+    },
+    PERIPHERY_ADDRESS: "0x10575a9C8F36F9F42D7DB71Ef179eD9BEf8Df238"
   }
 };
