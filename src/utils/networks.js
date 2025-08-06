@@ -147,8 +147,8 @@ module.exports = {
         startBlock: 55756263
       },
       Shiva: {
-        address: "0x0000000000000000000000000000000000000000",
-        startBlock: 55756263
+        address: "0xeB497c228F130BD91E7F13f81c312243961d894A",
+        startBlock: 56557980
       }
     },
     PERIPHERY_ADDRESS: "0x10575a9C8F36F9F42D7DB71Ef179eD9BEf8Df238"
