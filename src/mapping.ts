@@ -19,7 +19,7 @@ import {
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, ZERO_BD, ADDRESS_ZERO, factoryContract, stateContract, RISK_PARAMS } from './utils/constants';
+import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, stateContract, RISK_PARAMS, SHIVA_ADDRESS } from './utils/constants';
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount, loadAnalytics } from "./utils";
 import { updateReferralRewards } from "./referral";
 import { updateTraderEpochVolume } from "./trading-mining";
@@ -301,7 +301,7 @@ export function handleBuild(event: BuildEvent): void {
 
   // Update the analytics entity to reflect the new build and market activity
   let analytics = loadAnalytics(market.factory)
-  if (sender.ovlVolumeTraded.equals(ZERO_BI)) {
+  if (sender.ovlVolumeTraded.equals(ZERO_BI) && sender.id !== Address.fromString(SHIVA_ADDRESS)) {
     analytics.totalUsers = analytics.totalUsers.plus(ONE_BI)
   }
   analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)
