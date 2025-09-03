@@ -301,7 +301,7 @@ export function handleBuild(event: BuildEvent): void {
 
   // Update the analytics entity to reflect the new build and market activity
   let analytics = loadAnalytics(market.factory)
-  if (sender.ovlVolumeTraded.equals(ZERO_BI) && sender.id !== Address.fromString(SHIVA_ADDRESS)) {
+  if (sender.ovlVolumeTraded.equals(ZERO_BI) && sender.id.toHexString().toLowerCase() !== SHIVA_ADDRESS.toLowerCase()) {
     analytics.totalUsers = analytics.totalUsers.plus(ONE_BI)
   }
   analytics.totalTransactions = analytics.totalTransactions.plus(ONE_BI)

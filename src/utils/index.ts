@@ -217,5 +217,10 @@ export function loadLatestUnwind(position: Position): Unwind | null {
   
   const unwindId = position.id.concat('-').concat(position.numberOfUniwnds.minus(BigInt.fromI32(1)).toString())
   
-  return Unwind.load(unwindId)
+  if (Unwind.load(unwindId)) {
+    return Unwind.load(unwindId)
+  } else {
+    log.error("Constructed unwind id is wrong, {}", [unwindId])
+    return null
+  }
 }
