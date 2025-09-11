@@ -70,6 +70,7 @@ export function handleShivaBuild(event: ShivaBuildEvent): void {
   position.save()
   routerParams.save()
   build.save()
+  analytics.save()
 }
 
 export function handleShivaUnwind(event: ShivaUnwindEvent): void {
