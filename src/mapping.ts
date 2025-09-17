@@ -691,13 +691,16 @@ export function handleLiquidate(event: LiquidateEvent): void {
   let sender = loadAccount(event.params.sender)
   // Load the account entity corresponding to the owner of the liquidated position
   let owner = loadAccount(event.params.owner)
-
-  // Convert the owner's ID to an Address type for further usage
   let ownerAddress = Address.fromBytes(owner.id)
 
   // Retrieve the position ID from the event and load the corresponding position entity
   let positionId = event.params.positionId
   let position = loadPosition(event, ownerAddress, market, positionId)
+
+  // If this is a Shiva position, update owner to the owner from position
+  if (owner.id.toHexString().toLowerCase() == SHIVA_ADDRESS.toLowerCase()) {
+    owner = loadAccount(Address.fromBytes(position.owner))
+  }
 
   // Retrieve the transaction receipt and initialize variables for fee and liquidator amounts
   let receipt = event.receipt
