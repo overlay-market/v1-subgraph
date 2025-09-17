@@ -70,6 +70,7 @@ export function handleShivaBuild(event: ShivaBuildEvent): void {
   position.save()
   routerParams.save()
   build.save()
+  analytics.save()
 }
 
 export function handleShivaUnwind(event: ShivaUnwindEvent): void {
@@ -88,6 +89,7 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
   let position = Position.load(marketPositionId)
     
   if (position === null) {
+    log.error('Position ID: {}', [marketPositionId])
     log.error('No Position for handleShivaUnwind. Market: {}', [market.id.toHexString()])
     return
   }
@@ -95,6 +97,7 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
   const latestUnwind = loadLatestUnwind(position)
 
   if (latestUnwind === null) {
+    log.error('Position id: {}', [marketPositionId])
     log.error('No Unwind for handleShivaUnwind', [])
     return
   }
