@@ -1,6 +1,5 @@
 /* eslint-disable prefer-const */
 import { Bytes, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
-import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factory/OverlayV1State'
 
 // Import the addresses from config.ts which is generated during the build process
@@ -32,7 +31,6 @@ export let ONE_BD = BigDecimal.fromString('1')
 export let BI_18 = BigInt.fromI32(18)
 export let BPS_BASE_BI = BigInt.fromString('10000')
 
-export let factoryContract = FactoryContract.bind(Address.fromString(FACTORY_ADDRESS))
 export let stateContract = StateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
 
 export enum RISK_PARAMS {

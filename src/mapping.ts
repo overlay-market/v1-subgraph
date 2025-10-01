@@ -19,7 +19,7 @@ import {
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { TRANSFER_SIG, OVL_ADDRESS, FACTORY_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, stateContract, RISK_PARAMS, SHIVA_ADDRESS } from './utils/constants';
+import { TRANSFER_SIG, OVL_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, stateContract, RISK_PARAMS, SHIVA_ADDRESS } from './utils/constants';
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount, loadAnalytics } from "./utils";
 import { updateReferralRewards } from "./referral";
 import { updateTraderEpochVolume } from "./trading-mining";
@@ -31,7 +31,7 @@ import { updateAnalyticsHourData, updateMarketState } from "./utils/helpers";
 export function handleMarketDeployed(event: MarketDeployed): void {
 
   // load factory
-  let factory = loadFactory(Address.fromString(FACTORY_ADDRESS))
+  let factory = loadFactory(event.address)
 
   // adding a new market to the count
   factory.marketCount = factory.marketCount.plus(ONE_BI)

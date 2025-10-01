@@ -3,7 +3,7 @@ import { Market, Transaction, Position, Factory, Account, MarketState, Analytics
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
-import { ZERO_BI, ZERO_BD, stateContract, factoryContract } from './constants'
+import { ZERO_BI, ZERO_BD, stateContract } from './constants'
 import { loadAnalyticsHourData } from '.';
 
 export function updateMarketState(marketAddress: Bytes): MarketState {

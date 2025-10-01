@@ -1,9 +1,10 @@
 import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { Market, Transaction, Position, Factory, Account, Analytics, AnalyticsHourData, Router, Build, Unwind } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
+import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
-import { ZERO_BI, ZERO_BD, stateContract, factoryContract, ADDRESS_ZERO } from './constants'
+import { ZERO_BI, ZERO_BD, stateContract, ADDRESS_ZERO } from './constants'
 
 export function loadTransaction(event: ethereum.Event): Transaction {
   let transaction = Transaction.load(event.transaction.hash)
@@ -21,6 +22,7 @@ export function loadTransaction(event: ethereum.Event): Transaction {
 
 export function loadFactory(factoryAddress: Bytes): Factory {
   let factory = Factory.load(factoryAddress)
+  let factoryContract = FactoryContract.bind(Address.fromBytes(factoryAddress))
   if (factory === null) {
     factory = new Factory(factoryAddress)
     factory.marketCount = ZERO_BI
