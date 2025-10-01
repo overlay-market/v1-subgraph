@@ -7,7 +7,7 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt,
+  BigInt
 } from "@graphprotocol/graph-ts";
 
 export class AdminChanged extends ethereum.Event {
@@ -475,7 +475,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.call(
       "BUILD_ON_BEHALF_OF_TYPEHASH",
       "BUILD_ON_BEHALF_OF_TYPEHASH():(bytes32)",
-      [],
+      []
     );
 
     return result[0].toBytes();
@@ -485,7 +485,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.tryCall(
       "BUILD_ON_BEHALF_OF_TYPEHASH",
       "BUILD_ON_BEHALF_OF_TYPEHASH():(bytes32)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -498,7 +498,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.call(
       "BUILD_SINGLE_ON_BEHALF_OF_TYPEHASH",
       "BUILD_SINGLE_ON_BEHALF_OF_TYPEHASH():(bytes32)",
-      [],
+      []
     );
 
     return result[0].toBytes();
@@ -508,7 +508,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.tryCall(
       "BUILD_SINGLE_ON_BEHALF_OF_TYPEHASH",
       "BUILD_SINGLE_ON_BEHALF_OF_TYPEHASH():(bytes32)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -536,7 +536,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.call(
       "UNWIND_ON_BEHALF_OF_TYPEHASH",
       "UNWIND_ON_BEHALF_OF_TYPEHASH():(bytes32)",
-      [],
+      []
     );
 
     return result[0].toBytes();
@@ -546,7 +546,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.tryCall(
       "UNWIND_ON_BEHALF_OF_TYPEHASH",
       "UNWIND_ON_BEHALF_OF_TYPEHASH():(bytes32)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -559,7 +559,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.call(
       "authorizedFactories",
       "authorizedFactories(uint256):(address)",
-      [ethereum.Value.fromUnsignedBigInt(param0)],
+      [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
     return result[0].toAddress();
@@ -569,7 +569,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.tryCall(
       "authorizedFactories",
       "authorizedFactories(uint256):(address)",
-      [ethereum.Value.fromUnsignedBigInt(param0)],
+      [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -580,12 +580,12 @@ export class Shiva extends ethereum.SmartContract {
 
   build(
     params: Shiva__buildInputParamsStruct,
-    onBehalfOf: Shiva__buildInputOnBehalfOfStruct,
+    onBehalfOf: Shiva__buildInputOnBehalfOfStruct
   ): BigInt {
     let result = super.call(
       "build",
       "build((address,uint32,bool,uint256,uint256,uint256),(address,uint48,bytes)):(uint256)",
-      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
+      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)]
     );
 
     return result[0].toBigInt();
@@ -593,12 +593,12 @@ export class Shiva extends ethereum.SmartContract {
 
   try_build(
     params: Shiva__buildInputParamsStruct,
-    onBehalfOf: Shiva__buildInputOnBehalfOfStruct,
+    onBehalfOf: Shiva__buildInputOnBehalfOfStruct
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "build",
       "build((address,uint32,bool,uint256,uint256,uint256),(address,uint48,bytes)):(uint256)",
-      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
+      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -611,19 +611,19 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.call(
       "build",
       "build((address,uint32,bool,uint256,uint256,uint256)):(uint256)",
-      [ethereum.Value.fromTuple(params)],
+      [ethereum.Value.fromTuple(params)]
     );
 
     return result[0].toBigInt();
   }
 
   try_build1(
-    params: Shiva__build1InputParamsStruct,
+    params: Shiva__build1InputParamsStruct
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "build",
       "build((address,uint32,bool,uint256,uint256,uint256)):(uint256)",
-      [ethereum.Value.fromTuple(params)],
+      [ethereum.Value.fromTuple(params)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -636,19 +636,19 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.call(
       "buildSingle",
       "buildSingle((address,uint32,uint16,uint256,uint256,uint256)):(uint256)",
-      [ethereum.Value.fromTuple(params)],
+      [ethereum.Value.fromTuple(params)]
     );
 
     return result[0].toBigInt();
   }
 
   try_buildSingle(
-    params: Shiva__buildSingleInputParamsStruct,
+    params: Shiva__buildSingleInputParamsStruct
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "buildSingle",
       "buildSingle((address,uint32,uint16,uint256,uint256,uint256)):(uint256)",
-      [ethereum.Value.fromTuple(params)],
+      [ethereum.Value.fromTuple(params)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -659,12 +659,12 @@ export class Shiva extends ethereum.SmartContract {
 
   buildSingle1(
     params: Shiva__buildSingle1InputParamsStruct,
-    onBehalfOf: Shiva__buildSingle1InputOnBehalfOfStruct,
+    onBehalfOf: Shiva__buildSingle1InputOnBehalfOfStruct
   ): BigInt {
     let result = super.call(
       "buildSingle",
       "buildSingle((address,uint32,uint16,uint256,uint256,uint256),(address,uint48,bytes)):(uint256)",
-      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
+      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)]
     );
 
     return result[0].toBigInt();
@@ -672,12 +672,12 @@ export class Shiva extends ethereum.SmartContract {
 
   try_buildSingle1(
     params: Shiva__buildSingle1InputParamsStruct,
-    onBehalfOf: Shiva__buildSingle1InputOnBehalfOfStruct,
+    onBehalfOf: Shiva__buildSingle1InputOnBehalfOfStruct
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "buildSingle",
       "buildSingle((address,uint32,uint16,uint256,uint256,uint256),(address,uint48,bytes)):(uint256)",
-      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
+      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -688,7 +688,7 @@ export class Shiva extends ethereum.SmartContract {
 
   getDigest(structHash: Bytes): Bytes {
     let result = super.call("getDigest", "getDigest(bytes32):(bytes32)", [
-      ethereum.Value.fromFixedBytes(structHash),
+      ethereum.Value.fromFixedBytes(structHash)
     ]);
 
     return result[0].toBytes();
@@ -696,7 +696,7 @@ export class Shiva extends ethereum.SmartContract {
 
   try_getDigest(structHash: Bytes): ethereum.CallResult<Bytes> {
     let result = super.tryCall("getDigest", "getDigest(bytes32):(bytes32)", [
-      ethereum.Value.fromFixedBytes(structHash),
+      ethereum.Value.fromFixedBytes(structHash)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -709,7 +709,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.call(
       "marketAllowance",
       "marketAllowance(address):(bool)",
-      [ethereum.Value.fromAddress(param0)],
+      [ethereum.Value.fromAddress(param0)]
     );
 
     return result[0].toBoolean();
@@ -719,7 +719,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.tryCall(
       "marketAllowance",
       "marketAllowance(address):(bool)",
-      [ethereum.Value.fromAddress(param0)],
+      [ethereum.Value.fromAddress(param0)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -730,7 +730,7 @@ export class Shiva extends ethereum.SmartContract {
 
   nonces(param0: Address): BigInt {
     let result = super.call("nonces", "nonces(address):(uint256)", [
-      ethereum.Value.fromAddress(param0),
+      ethereum.Value.fromAddress(param0)
     ]);
 
     return result[0].toBigInt();
@@ -738,7 +738,7 @@ export class Shiva extends ethereum.SmartContract {
 
   try_nonces(param0: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall("nonces", "nonces(address):(uint256)", [
-      ethereum.Value.fromAddress(param0),
+      ethereum.Value.fromAddress(param0)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -798,8 +798,8 @@ export class Shiva extends ethereum.SmartContract {
       "positionOwners(address,uint256):(address)",
       [
         ethereum.Value.fromAddress(param0),
-        ethereum.Value.fromUnsignedBigInt(param1),
-      ],
+        ethereum.Value.fromUnsignedBigInt(param1)
+      ]
     );
 
     return result[0].toAddress();
@@ -807,15 +807,15 @@ export class Shiva extends ethereum.SmartContract {
 
   try_positionOwners(
     param0: Address,
-    param1: BigInt,
+    param1: BigInt
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "positionOwners",
       "positionOwners(address,uint256):(address)",
       [
         ethereum.Value.fromAddress(param0),
-        ethereum.Value.fromUnsignedBigInt(param1),
-      ],
+        ethereum.Value.fromUnsignedBigInt(param1)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -834,7 +834,7 @@ export class Shiva extends ethereum.SmartContract {
     let result = super.tryCall(
       "proxiableUUID",
       "proxiableUUID():(bytes32)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -875,7 +875,7 @@ export class Shiva extends ethereum.SmartContract {
 
   validMarkets(param0: Address): boolean {
     let result = super.call("validMarkets", "validMarkets(address):(bool)", [
-      ethereum.Value.fromAddress(param0),
+      ethereum.Value.fromAddress(param0)
     ]);
 
     return result[0].toBoolean();
@@ -883,7 +883,7 @@ export class Shiva extends ethereum.SmartContract {
 
   try_validMarkets(param0: Address): ethereum.CallResult<boolean> {
     let result = super.tryCall("validMarkets", "validMarkets(address):(bool)", [
-      ethereum.Value.fromAddress(param0),
+      ethereum.Value.fromAddress(param0)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -968,13 +968,13 @@ export class BuildCall__Inputs {
 
   get params(): BuildCallParamsStruct {
     return changetype<BuildCallParamsStruct>(
-      this._call.inputValues[0].value.toTuple(),
+      this._call.inputValues[0].value.toTuple()
     );
   }
 
   get onBehalfOf(): BuildCallOnBehalfOfStruct {
     return changetype<BuildCallOnBehalfOfStruct>(
-      this._call.inputValues[1].value.toTuple(),
+      this._call.inputValues[1].value.toTuple()
     );
   }
 }
@@ -1050,7 +1050,7 @@ export class Build1Call__Inputs {
 
   get params(): Build1CallParamsStruct {
     return changetype<Build1CallParamsStruct>(
-      this._call.inputValues[0].value.toTuple(),
+      this._call.inputValues[0].value.toTuple()
     );
   }
 }
@@ -1112,7 +1112,7 @@ export class BuildSingleCall__Inputs {
 
   get params(): BuildSingleCallParamsStruct {
     return changetype<BuildSingleCallParamsStruct>(
-      this._call.inputValues[0].value.toTuple(),
+      this._call.inputValues[0].value.toTuple()
     );
   }
 }
@@ -1174,13 +1174,13 @@ export class BuildSingle1Call__Inputs {
 
   get params(): BuildSingle1CallParamsStruct {
     return changetype<BuildSingle1CallParamsStruct>(
-      this._call.inputValues[0].value.toTuple(),
+      this._call.inputValues[0].value.toTuple()
     );
   }
 
   get onBehalfOf(): BuildSingle1CallOnBehalfOfStruct {
     return changetype<BuildSingle1CallOnBehalfOfStruct>(
-      this._call.inputValues[1].value.toTuple(),
+      this._call.inputValues[1].value.toTuple()
     );
   }
 }
@@ -1444,7 +1444,7 @@ export class UnwindCall__Inputs {
 
   get params(): UnwindCallParamsStruct {
     return changetype<UnwindCallParamsStruct>(
-      this._call.inputValues[0].value.toTuple(),
+      this._call.inputValues[0].value.toTuple()
     );
   }
 }
@@ -1498,13 +1498,13 @@ export class Unwind1Call__Inputs {
 
   get params(): Unwind1CallParamsStruct {
     return changetype<Unwind1CallParamsStruct>(
-      this._call.inputValues[0].value.toTuple(),
+      this._call.inputValues[0].value.toTuple()
     );
   }
 
   get onBehalfOf(): Unwind1CallOnBehalfOfStruct {
     return changetype<Unwind1CallOnBehalfOfStruct>(
-      this._call.inputValues[1].value.toTuple(),
+      this._call.inputValues[1].value.toTuple()
     );
   }
 }

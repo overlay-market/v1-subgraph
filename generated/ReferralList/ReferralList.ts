@@ -7,7 +7,7 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt,
+  BigInt
 } from "@graphprotocol/graph-ts";
 
 export class AddAffiliateOrKOL extends ethereum.Event {
@@ -363,8 +363,8 @@ export class ReferralList extends ethereum.SmartContract {
       "hasAllRoles(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(roles),
-      ],
+        ethereum.Value.fromUnsignedBigInt(roles)
+      ]
     );
 
     return result[0].toBoolean();
@@ -376,8 +376,8 @@ export class ReferralList extends ethereum.SmartContract {
       "hasAllRoles(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(roles),
-      ],
+        ethereum.Value.fromUnsignedBigInt(roles)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -392,8 +392,8 @@ export class ReferralList extends ethereum.SmartContract {
       "hasAnyRole(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(roles),
-      ],
+        ethereum.Value.fromUnsignedBigInt(roles)
+      ]
     );
 
     return result[0].toBoolean();
@@ -405,8 +405,8 @@ export class ReferralList extends ethereum.SmartContract {
       "hasAnyRole(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(user),
-        ethereum.Value.fromUnsignedBigInt(roles),
-      ],
+        ethereum.Value.fromUnsignedBigInt(roles)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -434,19 +434,19 @@ export class ReferralList extends ethereum.SmartContract {
     let result = super.call(
       "ownershipHandoverExpiresAt",
       "ownershipHandoverExpiresAt(address):(uint256)",
-      [ethereum.Value.fromAddress(pendingOwner)],
+      [ethereum.Value.fromAddress(pendingOwner)]
     );
 
     return result[0].toBigInt();
   }
 
   try_ownershipHandoverExpiresAt(
-    pendingOwner: Address,
+    pendingOwner: Address
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "ownershipHandoverExpiresAt",
       "ownershipHandoverExpiresAt(address):(uint256)",
-      [ethereum.Value.fromAddress(pendingOwner)],
+      [ethereum.Value.fromAddress(pendingOwner)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -465,7 +465,7 @@ export class ReferralList extends ethereum.SmartContract {
     let result = super.tryCall(
       "proxiableUUID",
       "proxiableUUID():(bytes32)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -484,7 +484,7 @@ export class ReferralList extends ethereum.SmartContract {
     let result = super.tryCall(
       "referralClaim",
       "referralClaim():(address)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -495,7 +495,7 @@ export class ReferralList extends ethereum.SmartContract {
 
   referrals(trader: Address): Address {
     let result = super.call("referrals", "referrals(address):(address)", [
-      ethereum.Value.fromAddress(trader),
+      ethereum.Value.fromAddress(trader)
     ]);
 
     return result[0].toAddress();
@@ -503,7 +503,7 @@ export class ReferralList extends ethereum.SmartContract {
 
   try_referrals(trader: Address): ethereum.CallResult<Address> {
     let result = super.tryCall("referrals", "referrals(address):(address)", [
-      ethereum.Value.fromAddress(trader),
+      ethereum.Value.fromAddress(trader)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -529,7 +529,7 @@ export class ReferralList extends ethereum.SmartContract {
 
   rolesOf(user: Address): BigInt {
     let result = super.call("rolesOf", "rolesOf(address):(uint256)", [
-      ethereum.Value.fromAddress(user),
+      ethereum.Value.fromAddress(user)
     ]);
 
     return result[0].toBigInt();
@@ -537,7 +537,7 @@ export class ReferralList extends ethereum.SmartContract {
 
   try_rolesOf(user: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall("rolesOf", "rolesOf(address):(uint256)", [
-      ethereum.Value.fromAddress(user),
+      ethereum.Value.fromAddress(user)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -550,7 +550,7 @@ export class ReferralList extends ethereum.SmartContract {
     let result = super.call(
       "tierAffiliateComission",
       "tierAffiliateComission(uint8):(uint48)",
-      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))],
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
     );
 
     return result[0].toBigInt();
@@ -560,7 +560,7 @@ export class ReferralList extends ethereum.SmartContract {
     let result = super.tryCall(
       "tierAffiliateComission",
       "tierAffiliateComission(uint8):(uint48)",
-      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))],
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -573,7 +573,7 @@ export class ReferralList extends ethereum.SmartContract {
     let result = super.call(
       "tierTraderDiscount",
       "tierTraderDiscount(uint8):(uint48)",
-      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))],
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
     );
 
     return result[0].toBigInt();
@@ -583,7 +583,7 @@ export class ReferralList extends ethereum.SmartContract {
     let result = super.tryCall(
       "tierTraderDiscount",
       "tierTraderDiscount(uint8):(uint48)",
-      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))],
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -594,7 +594,7 @@ export class ReferralList extends ethereum.SmartContract {
 
   userTier(affiliate: Address): i32 {
     let result = super.call("userTier", "userTier(address):(uint8)", [
-      ethereum.Value.fromAddress(affiliate),
+      ethereum.Value.fromAddress(affiliate)
     ]);
 
     return result[0].toI32();
@@ -602,7 +602,7 @@ export class ReferralList extends ethereum.SmartContract {
 
   try_userTier(affiliate: Address): ethereum.CallResult<i32> {
     let result = super.tryCall("userTier", "userTier(address):(uint8)", [
-      ethereum.Value.fromAddress(affiliate),
+      ethereum.Value.fromAddress(affiliate)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -615,7 +615,7 @@ export class ReferralList extends ethereum.SmartContract {
     let result = super.call(
       "verifyingAddress",
       "verifyingAddress():(address)",
-      [],
+      []
     );
 
     return result[0].toAddress();
@@ -625,7 +625,7 @@ export class ReferralList extends ethereum.SmartContract {
     let result = super.tryCall(
       "verifyingAddress",
       "verifyingAddress():(address)",
-      [],
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
