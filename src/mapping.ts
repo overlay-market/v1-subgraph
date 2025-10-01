@@ -19,7 +19,7 @@ import {
 
 import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
-import { TRANSFER_SIG, OVL_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, stateContract, RISK_PARAMS, SHIVA_ADDRESS } from './utils/constants';
+import { TRANSFER_SIG, OVL_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, getStateContract, RISK_PARAMS, SHIVA_ADDRESS } from './utils/constants';
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount, loadAnalytics } from "./utils";
 import { updateReferralRewards } from "./referral";
 import { updateTraderEpochVolume } from "./trading-mining";
@@ -41,7 +41,7 @@ export function handleMarketDeployed(event: MarketDeployed): void {
   let feedAddress = event.params.feed
   let marketContract = OverlayV1Market.bind(event.params.market)
   let market = new Market(marketAddress) as Market
-  let marketState = updateMarketState(market.id)
+  let marketState = updateMarketState(market.id, event.address)
 
   // basic info about the market
   market.feedAddress = feedAddress.toHexString()
@@ -254,6 +254,7 @@ export function handleBuild(event: BuildEvent): void {
   // Calculate initial collateral and notional using the state contract
   let initialCollateral = userTransferAmount.minus(transferFeeAmount)
   if (initialCollateral.equals(new BigInt(0))) {
+    const stateContract = getStateContract(Address.fromString(market.factory.toHexString()))
     initialCollateral = stateContract.cost(marketAddress, senderAddress, positionId)
   }
   let initialNotional = initialCollateral.plus(event.params.debt)

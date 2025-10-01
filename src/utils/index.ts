@@ -4,7 +4,7 @@ import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/Overl
 import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
-import { ZERO_BI, ZERO_BD, stateContract, ADDRESS_ZERO } from './constants'
+import { ZERO_BI, ZERO_BD, getStateContract, ADDRESS_ZERO } from './constants'
 
 export function loadTransaction(event: ethereum.Event): Transaction {
   let transaction = Transaction.load(event.transaction.hash)
@@ -68,6 +68,7 @@ export function loadMarket(event: ethereum.Event, marketId: Bytes): Market {
     market.priceDriftUpperLimit = marketContract.params(integer.fromNumber(13))
     market.averageBlockTime = marketContract.params(integer.fromNumber(14))
     log.warning("loadMarket makes external calls!", [])
+    const stateContract = getStateContract(Address.fromString(market.factory.toHexString()))
     market.oiLong = stateContract.ois(marketAddress).value0
     market.oiShort = stateContract.ois(marketAddress).value1
     market.oiLongShares = marketContract.oiLongShares()
@@ -103,6 +104,7 @@ export function loadPosition(event: ethereum.Event, sender: Address, market: Mar
     position.market = market.id
 
     log.warning("loadPosition makes external calls!", [])
+    const stateContract = getStateContract(Address.fromString(market.factory.toHexString()))
     position.initialOi = stateContract.oi(marketAddress, sender, positionId)
     position.initialDebt = stateContract.debt(marketAddress, sender, positionId)
 

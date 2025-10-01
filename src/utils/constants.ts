@@ -3,18 +3,22 @@ import { Bytes, BigInt, BigDecimal, Address } from '@graphprotocol/graph-ts'
 import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factory/OverlayV1State'
 
 // Import the addresses from config.ts which is generated during the build process
-import { 
+import {
   FACTORY_ADDRESS,
+  PERIPHERY_ADDRESSES,
   PERIPHERY_ADDRESS,
+  getPeripheryAddressForFactory,
   OVL_ADDRESS,
   REFERRAL_ADDRESS,
   TRADING_MINING_ADDRESS,
   SHIVA_ADDRESS
 } from './config'
 
-export { 
+export {
   FACTORY_ADDRESS,
+  PERIPHERY_ADDRESSES,
   PERIPHERY_ADDRESS,
+  getPeripheryAddressForFactory,
   OVL_ADDRESS,
   REFERRAL_ADDRESS,
   TRADING_MINING_ADDRESS,
@@ -31,7 +35,13 @@ export let ONE_BD = BigDecimal.fromString('1')
 export let BI_18 = BigInt.fromI32(18)
 export let BPS_BASE_BI = BigInt.fromString('10000')
 
-export let stateContract = StateContract.bind(Address.fromString(PERIPHERY_ADDRESS))
+export function getStateContract(factoryAddress: Address | null = null): StateContract {
+  let periphery = PERIPHERY_ADDRESS
+  if (factoryAddress !== null) {
+    periphery = getPeripheryAddressForFactory(factoryAddress.toHexString())
+  }
+  return StateContract.bind(Address.fromString(periphery))
+}
 
 export enum RISK_PARAMS {
   k = 0,
