@@ -6,7 +6,6 @@ import { OverlayV1State as StateContract } from '../../generated/OverlayV1Factor
 import {
   FACTORY_ADDRESS,
   PERIPHERY_ADDRESSES,
-  PERIPHERY_ADDRESS,
   getPeripheryAddressForFactory,
   OVL_ADDRESS,
   REFERRAL_ADDRESS,
@@ -17,7 +16,6 @@ import {
 export {
   FACTORY_ADDRESS,
   PERIPHERY_ADDRESSES,
-  PERIPHERY_ADDRESS,
   getPeripheryAddressForFactory,
   OVL_ADDRESS,
   REFERRAL_ADDRESS,
@@ -36,7 +34,7 @@ export let BI_18 = BigInt.fromI32(18)
 export let BPS_BASE_BI = BigInt.fromString('10000')
 
 export function getStateContract(factoryAddress: Address | null = null): StateContract {
-  let periphery = PERIPHERY_ADDRESS
+  let periphery = PERIPHERY_ADDRESSES[0]
   if (factoryAddress !== null) {
     periphery = getPeripheryAddressForFactory(factoryAddress.toHexString())
   }

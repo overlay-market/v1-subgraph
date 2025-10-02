@@ -18,7 +18,7 @@ import { Build as BuildEvent, Unwind as UnwindEvent } from "../../../generated/t
 import { handleShivaBuild, handleShivaUnwind } from "../../shiva"
 import { handleBuild, handleUnwind } from "../../mapping"
 import { Build, Market } from "../../../generated/schema"
-import { PERIPHERY_ADDRESS, SHIVA_ADDRESS, TRADING_MINING_ADDRESS } from "../../utils/constants"
+import { PERIPHERY_ADDRESSES, SHIVA_ADDRESS, TRADING_MINING_ADDRESS } from "../../utils/constants"
 import { setupMarketMockedFunctions, setupTradingMiningMockedFunctions } from "./shared/mockedFunctions"
 import { MARKET_COLLATERAL, MARKET_POSITION_ID, MARKET_SENDER } from "./shared/constants"
 
@@ -27,7 +27,7 @@ const market = Address.fromString("0x0000000000000000000000000000000000000001")
 const owner = MARKET_SENDER
 const performer = Address.fromString("0x0000000000000000000000000000000000000003")
 const factoryAddress = Address.fromString("0x0000000000000000000000000000000000000004")
-const peripheryAddress = Address.fromString(PERIPHERY_ADDRESS)
+const peripheryAddress = Address.fromString(PERIPHERY_ADDRESSES[0])
 const positionId = MARKET_POSITION_ID
 const brokerId = BigInt.fromI32(123)
 
