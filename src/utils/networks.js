@@ -152,5 +152,47 @@ module.exports = {
       }
     },
     PERIPHERY_ADDRESS: "0x10575a9C8F36F9F42D7DB71Ef179eD9BEf8Df238"
+  },
+
+  "chapel": {
+    contracts: {
+      OverlayV1Factory: {
+        address: "0xC35093f76fF3D31Af27A893CDcec585F1899eE54",
+        startBlock: 55756263
+      },
+      OverlayV1Factory2: {
+        address: "0x73ed124e6426e81cac4becae2720e19ce5836f45",
+        startBlock: 67323434
+      },
+      OverlayV1Token: {
+        address: "0x1F34c87ded863Fe3A3Cd76FAc8adA9608137C8c3",
+        startBlock: 55756263
+      },
+      TokenStake: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      },
+      ReferralList: {
+        address: "0x1a0ef183d548405705bb9b00e8b4ef3524ae090e",
+        startBlock: 60694597
+      },
+      TradingMining: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      },
+      PowerCard: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      },
+      PlanckCat: {
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 55756263
+      },
+      Shiva: {
+        address: "0xeB497c228F130BD91E7F13f81c312243961d894A",
+        startBlock: 56557980
+      }
+    },
+    PERIPHERY_ADDRESSES: ["0x10575a9C8F36F9F42D7DB71Ef179eD9BEf8Df238", "0xb5A2FaCa54082758EE78eA7022EE178c4F909A80"]
   }
 };
