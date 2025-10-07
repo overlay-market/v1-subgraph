@@ -7,7 +7,7 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt
+  BigInt,
 } from "@graphprotocol/graph-ts";
 
 export class EmergencyShutdown extends ethereum.Event {
@@ -161,7 +161,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
 
   PARAMS_MAX(param0: BigInt): BigInt {
     let result = super.call("PARAMS_MAX", "PARAMS_MAX(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
+      ethereum.Value.fromUnsignedBigInt(param0),
     ]);
 
     return result[0].toBigInt();
@@ -169,7 +169,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
 
   try_PARAMS_MAX(param0: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall("PARAMS_MAX", "PARAMS_MAX(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
+      ethereum.Value.fromUnsignedBigInt(param0),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -180,7 +180,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
 
   PARAMS_MIN(param0: BigInt): BigInt {
     let result = super.call("PARAMS_MIN", "PARAMS_MIN(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
+      ethereum.Value.fromUnsignedBigInt(param0),
     ]);
 
     return result[0].toBigInt();
@@ -188,7 +188,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
 
   try_PARAMS_MIN(param0: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall("PARAMS_MIN", "PARAMS_MIN(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
+      ethereum.Value.fromUnsignedBigInt(param0),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -200,7 +200,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
   deployMarket(
     feedFactory: Address,
     feed: Address,
-    params: Array<BigInt>
+    params: Array<BigInt>,
   ): Address {
     let result = super.call(
       "deployMarket",
@@ -208,8 +208,8 @@ export class OverlayV1Factory extends ethereum.SmartContract {
       [
         ethereum.Value.fromAddress(feedFactory),
         ethereum.Value.fromAddress(feed),
-        ethereum.Value.fromUnsignedBigIntArray(params)
-      ]
+        ethereum.Value.fromUnsignedBigIntArray(params),
+      ],
     );
 
     return result[0].toAddress();
@@ -218,7 +218,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
   try_deployMarket(
     feedFactory: Address,
     feed: Address,
-    params: Array<BigInt>
+    params: Array<BigInt>,
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "deployMarket",
@@ -226,8 +226,8 @@ export class OverlayV1Factory extends ethereum.SmartContract {
       [
         ethereum.Value.fromAddress(feedFactory),
         ethereum.Value.fromAddress(feed),
-        ethereum.Value.fromUnsignedBigIntArray(params)
-      ]
+        ethereum.Value.fromUnsignedBigIntArray(params),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -268,7 +268,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
 
   getMarket(param0: Address): Address {
     let result = super.call("getMarket", "getMarket(address):(address)", [
-      ethereum.Value.fromAddress(param0)
+      ethereum.Value.fromAddress(param0),
     ]);
 
     return result[0].toAddress();
@@ -276,7 +276,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
 
   try_getMarket(param0: Address): ethereum.CallResult<Address> {
     let result = super.tryCall("getMarket", "getMarket(address):(address)", [
-      ethereum.Value.fromAddress(param0)
+      ethereum.Value.fromAddress(param0),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -287,7 +287,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
 
   isFeedFactory(param0: Address): boolean {
     let result = super.call("isFeedFactory", "isFeedFactory(address):(bool)", [
-      ethereum.Value.fromAddress(param0)
+      ethereum.Value.fromAddress(param0),
     ]);
 
     return result[0].toBoolean();
@@ -297,7 +297,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
     let result = super.tryCall(
       "isFeedFactory",
       "isFeedFactory(address):(bool)",
-      [ethereum.Value.fromAddress(param0)]
+      [ethereum.Value.fromAddress(param0)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -308,7 +308,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
 
   isMarket(param0: Address): boolean {
     let result = super.call("isMarket", "isMarket(address):(bool)", [
-      ethereum.Value.fromAddress(param0)
+      ethereum.Value.fromAddress(param0),
     ]);
 
     return result[0].toBoolean();
@@ -316,7 +316,7 @@ export class OverlayV1Factory extends ethereum.SmartContract {
 
   try_isMarket(param0: Address): ethereum.CallResult<boolean> {
     let result = super.tryCall("isMarket", "isMarket(address):(bool)", [
-      ethereum.Value.fromAddress(param0)
+      ethereum.Value.fromAddress(param0),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();

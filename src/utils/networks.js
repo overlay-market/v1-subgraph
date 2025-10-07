@@ -157,42 +157,42 @@ module.exports = {
   "chapel": {
     contracts: {
       OverlayV1Factory: {
-        address: "0xC35093f76fF3D31Af27A893CDcec585F1899eE54",
-        startBlock: 55756263
+        address: "0x222Ef39b61f868992F77bd68Fc9d7c82683ffA20",
+        startBlock: 67907766
       },
       OverlayV1Factory2: {
-        address: "0x73ed124e6426e81cac4becae2720e19ce5836f45",
-        startBlock: 67323434
+        address: "0xb5F885b61e2cC1515a66A2E6636FCAA43daBf044",
+        startBlock: 68007894
       },
       OverlayV1Token: {
-        address: "0x1F34c87ded863Fe3A3Cd76FAc8adA9608137C8c3",
-        startBlock: 55756263
+        address: "0x1A0eF183D548405705bb9B00E8b4ef3524AE090E",
+        startBlock: 67907766
       },
       TokenStake: {
         address: "0x0000000000000000000000000000000000000000",
-        startBlock: 55756263
+        startBlock: 67907766
       },
       ReferralList: {
-        address: "0x1a0ef183d548405705bb9b00e8b4ef3524ae090e",
-        startBlock: 60694597
+        address: "0x0000000000000000000000000000000000000000",
+        startBlock: 67907766
       },
       TradingMining: {
         address: "0x0000000000000000000000000000000000000000",
-        startBlock: 55756263
+        startBlock: 67907766
       },
       PowerCard: {
         address: "0x0000000000000000000000000000000000000000",
-        startBlock: 55756263
+        startBlock: 67907766
       },
       PlanckCat: {
         address: "0x0000000000000000000000000000000000000000",
-        startBlock: 55756263
+        startBlock: 67907766
       },
       Shiva: {
-        address: "0xeB497c228F130BD91E7F13f81c312243961d894A",
-        startBlock: 56557980
+        address: "0x9fB7D92526Fc13bB3c0603d39E55e5C371c26Ce6",
+        startBlock: 68004676
       }
     },
-    PERIPHERY_ADDRESSES: ["0x10575a9C8F36F9F42D7DB71Ef179eD9BEf8Df238", "0xb5A2FaCa54082758EE78eA7022EE178c4F909A80"]
+    PERIPHERY_ADDRESSES: ["0x6C57F1d360027c10b3b698b302120DaD31CB34c9", "0x3A6892e5da2f87F3865aA1aEA2fcaCCE27C44ea8"]
   }
 };

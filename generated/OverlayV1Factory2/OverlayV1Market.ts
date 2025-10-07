@@ -7,7 +7,7 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt
+  BigInt,
 } from "@graphprotocol/graph-ts";
 
 export class Build extends ethereum.Event {
@@ -503,7 +503,7 @@ export class OverlayV1Market__positionsResult {
     value4: boolean,
     value5: boolean,
     value6: BigInt,
-    value7: i32
+    value7: i32,
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -526,7 +526,7 @@ export class OverlayV1Market__positionsResult {
     map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
     map.set(
       "value7",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value7))
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value7)),
     );
     return map;
   }
@@ -705,8 +705,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
       "ask((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool),uint256):(uint256)",
       [
         ethereum.Value.fromTuple(data),
-        ethereum.Value.fromUnsignedBigInt(volume)
-      ]
+        ethereum.Value.fromUnsignedBigInt(volume),
+      ],
     );
 
     return result[0].toBigInt();
@@ -714,15 +714,15 @@ export class OverlayV1Market extends ethereum.SmartContract {
 
   try_ask(
     data: OverlayV1Market__askInputDataStruct,
-    volume: BigInt
+    volume: BigInt,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "ask",
       "ask((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool),uint256):(uint256)",
       [
         ethereum.Value.fromTuple(data),
-        ethereum.Value.fromUnsignedBigInt(volume)
-      ]
+        ethereum.Value.fromUnsignedBigInt(volume),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -735,19 +735,19 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "backRunBound",
       "backRunBound((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool)):(uint256)",
-      [ethereum.Value.fromTuple(data)]
+      [ethereum.Value.fromTuple(data)],
     );
 
     return result[0].toBigInt();
   }
 
   try_backRunBound(
-    data: OverlayV1Market__backRunBoundInputDataStruct
+    data: OverlayV1Market__backRunBoundInputDataStruct,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "backRunBound",
       "backRunBound((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool)):(uint256)",
-      [ethereum.Value.fromTuple(data)]
+      [ethereum.Value.fromTuple(data)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -762,8 +762,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
       "bid((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool),uint256):(uint256)",
       [
         ethereum.Value.fromTuple(data),
-        ethereum.Value.fromUnsignedBigInt(volume)
-      ]
+        ethereum.Value.fromUnsignedBigInt(volume),
+      ],
     );
 
     return result[0].toBigInt();
@@ -771,15 +771,15 @@ export class OverlayV1Market extends ethereum.SmartContract {
 
   try_bid(
     data: OverlayV1Market__bidInputDataStruct,
-    volume: BigInt
+    volume: BigInt,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "bid",
       "bid((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool),uint256):(uint256)",
       [
         ethereum.Value.fromTuple(data),
-        ethereum.Value.fromUnsignedBigInt(volume)
-      ]
+        ethereum.Value.fromUnsignedBigInt(volume),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -792,7 +792,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
     collateral: BigInt,
     leverage: BigInt,
     isLong: boolean,
-    priceLimit: BigInt
+    priceLimit: BigInt,
   ): BigInt {
     let result = super.call(
       "build",
@@ -801,8 +801,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
         ethereum.Value.fromUnsignedBigInt(collateral),
         ethereum.Value.fromUnsignedBigInt(leverage),
         ethereum.Value.fromBoolean(isLong),
-        ethereum.Value.fromUnsignedBigInt(priceLimit)
-      ]
+        ethereum.Value.fromUnsignedBigInt(priceLimit),
+      ],
     );
 
     return result[0].toBigInt();
@@ -812,7 +812,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
     collateral: BigInt,
     leverage: BigInt,
     isLong: boolean,
-    priceLimit: BigInt
+    priceLimit: BigInt,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "build",
@@ -821,8 +821,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
         ethereum.Value.fromUnsignedBigInt(collateral),
         ethereum.Value.fromUnsignedBigInt(leverage),
         ethereum.Value.fromBoolean(isLong),
-        ethereum.Value.fromUnsignedBigInt(priceLimit)
-      ]
+        ethereum.Value.fromUnsignedBigInt(priceLimit),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -833,12 +833,12 @@ export class OverlayV1Market extends ethereum.SmartContract {
 
   capNotionalAdjustedForBounds(
     data: OverlayV1Market__capNotionalAdjustedForBoundsInputDataStruct,
-    cap: BigInt
+    cap: BigInt,
   ): BigInt {
     let result = super.call(
       "capNotionalAdjustedForBounds",
       "capNotionalAdjustedForBounds((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool),uint256):(uint256)",
-      [ethereum.Value.fromTuple(data), ethereum.Value.fromUnsignedBigInt(cap)]
+      [ethereum.Value.fromTuple(data), ethereum.Value.fromUnsignedBigInt(cap)],
     );
 
     return result[0].toBigInt();
@@ -846,12 +846,12 @@ export class OverlayV1Market extends ethereum.SmartContract {
 
   try_capNotionalAdjustedForBounds(
     data: OverlayV1Market__capNotionalAdjustedForBoundsInputDataStruct,
-    cap: BigInt
+    cap: BigInt,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "capNotionalAdjustedForBounds",
       "capNotionalAdjustedForBounds((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool),uint256):(uint256)",
-      [ethereum.Value.fromTuple(data), ethereum.Value.fromUnsignedBigInt(cap)]
+      [ethereum.Value.fromTuple(data), ethereum.Value.fromUnsignedBigInt(cap)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -864,7 +864,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "capOiAdjustedForCircuitBreaker",
       "capOiAdjustedForCircuitBreaker(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(cap)]
+      [ethereum.Value.fromUnsignedBigInt(cap)],
     );
 
     return result[0].toBigInt();
@@ -874,7 +874,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.tryCall(
       "capOiAdjustedForCircuitBreaker",
       "capOiAdjustedForCircuitBreaker(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(cap)]
+      [ethereum.Value.fromUnsignedBigInt(cap)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -885,15 +885,15 @@ export class OverlayV1Market extends ethereum.SmartContract {
 
   circuitBreaker(
     snapshot: OverlayV1Market__circuitBreakerInputSnapshotStruct,
-    cap: BigInt
+    cap: BigInt,
   ): BigInt {
     let result = super.call(
       "circuitBreaker",
       "circuitBreaker((uint32,uint32,int192),uint256):(uint256)",
       [
         ethereum.Value.fromTuple(snapshot),
-        ethereum.Value.fromUnsignedBigInt(cap)
-      ]
+        ethereum.Value.fromUnsignedBigInt(cap),
+      ],
     );
 
     return result[0].toBigInt();
@@ -901,15 +901,15 @@ export class OverlayV1Market extends ethereum.SmartContract {
 
   try_circuitBreaker(
     snapshot: OverlayV1Market__circuitBreakerInputSnapshotStruct,
-    cap: BigInt
+    cap: BigInt,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "circuitBreaker",
       "circuitBreaker((uint32,uint32,int192),uint256):(uint256)",
       [
         ethereum.Value.fromTuple(snapshot),
-        ethereum.Value.fromUnsignedBigInt(cap)
-      ]
+        ethereum.Value.fromUnsignedBigInt(cap),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -922,19 +922,19 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "dataIsValid",
       "dataIsValid((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool)):(bool)",
-      [ethereum.Value.fromTuple(data)]
+      [ethereum.Value.fromTuple(data)],
     );
 
     return result[0].toBoolean();
   }
 
   try_dataIsValid(
-    data: OverlayV1Market__dataIsValidInputDataStruct
+    data: OverlayV1Market__dataIsValidInputDataStruct,
   ): ethereum.CallResult<boolean> {
     let result = super.tryCall(
       "dataIsValid",
       "dataIsValid((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool)):(bool)",
-      [ethereum.Value.fromTuple(data)]
+      [ethereum.Value.fromTuple(data)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -992,19 +992,19 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "frontRunBound",
       "frontRunBound((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool)):(uint256)",
-      [ethereum.Value.fromTuple(data)]
+      [ethereum.Value.fromTuple(data)],
     );
 
     return result[0].toBigInt();
   }
 
   try_frontRunBound(
-    data: OverlayV1Market__frontRunBoundInputDataStruct
+    data: OverlayV1Market__frontRunBoundInputDataStruct,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "frontRunBound",
       "frontRunBound((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool)):(uint256)",
-      [ethereum.Value.fromTuple(data)]
+      [ethereum.Value.fromTuple(data)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1031,7 +1031,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
   oiAfterFunding(
     oiOverweight: BigInt,
     oiUnderweight: BigInt,
-    timeElapsed: BigInt
+    timeElapsed: BigInt,
   ): OverlayV1Market__oiAfterFundingResult {
     let result = super.call(
       "oiAfterFunding",
@@ -1039,20 +1039,20 @@ export class OverlayV1Market extends ethereum.SmartContract {
       [
         ethereum.Value.fromUnsignedBigInt(oiOverweight),
         ethereum.Value.fromUnsignedBigInt(oiUnderweight),
-        ethereum.Value.fromUnsignedBigInt(timeElapsed)
-      ]
+        ethereum.Value.fromUnsignedBigInt(timeElapsed),
+      ],
     );
 
     return new OverlayV1Market__oiAfterFundingResult(
       result[0].toBigInt(),
-      result[1].toBigInt()
+      result[1].toBigInt(),
     );
   }
 
   try_oiAfterFunding(
     oiOverweight: BigInt,
     oiUnderweight: BigInt,
-    timeElapsed: BigInt
+    timeElapsed: BigInt,
   ): ethereum.CallResult<OverlayV1Market__oiAfterFundingResult> {
     let result = super.tryCall(
       "oiAfterFunding",
@@ -1060,8 +1060,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
       [
         ethereum.Value.fromUnsignedBigInt(oiOverweight),
         ethereum.Value.fromUnsignedBigInt(oiUnderweight),
-        ethereum.Value.fromUnsignedBigInt(timeElapsed)
-      ]
+        ethereum.Value.fromUnsignedBigInt(timeElapsed),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1070,8 +1070,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(
       new OverlayV1Market__oiAfterFundingResult(
         value[0].toBigInt(),
-        value[1].toBigInt()
-      )
+        value[1].toBigInt(),
+      ),
     );
   }
 
@@ -1081,8 +1081,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
       "oiFromNotional(uint256,uint256):(uint256)",
       [
         ethereum.Value.fromUnsignedBigInt(notional),
-        ethereum.Value.fromUnsignedBigInt(midPrice)
-      ]
+        ethereum.Value.fromUnsignedBigInt(midPrice),
+      ],
     );
 
     return result[0].toBigInt();
@@ -1090,15 +1090,15 @@ export class OverlayV1Market extends ethereum.SmartContract {
 
   try_oiFromNotional(
     notional: BigInt,
-    midPrice: BigInt
+    midPrice: BigInt,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "oiFromNotional",
       "oiFromNotional(uint256,uint256):(uint256)",
       [
         ethereum.Value.fromUnsignedBigInt(notional),
-        ethereum.Value.fromUnsignedBigInt(midPrice)
-      ]
+        ethereum.Value.fromUnsignedBigInt(midPrice),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1162,7 +1162,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.tryCall(
       "oiShortShares",
       "oiShortShares():(uint256)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1188,7 +1188,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
 
   params(param0: BigInt): BigInt {
     let result = super.call("params", "params(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
+      ethereum.Value.fromUnsignedBigInt(param0),
     ]);
 
     return result[0].toBigInt();
@@ -1196,7 +1196,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
 
   try_params(param0: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall("params", "params(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
+      ethereum.Value.fromUnsignedBigInt(param0),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1224,7 +1224,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "positions",
       "positions(bytes32):(uint96,uint96,int24,int24,bool,bool,uint240,uint16)",
-      [ethereum.Value.fromFixedBytes(param0)]
+      [ethereum.Value.fromFixedBytes(param0)],
     );
 
     return new OverlayV1Market__positionsResult(
@@ -1235,17 +1235,17 @@ export class OverlayV1Market extends ethereum.SmartContract {
       result[4].toBoolean(),
       result[5].toBoolean(),
       result[6].toBigInt(),
-      result[7].toI32()
+      result[7].toI32(),
     );
   }
 
   try_positions(
-    param0: Bytes
+    param0: Bytes,
   ): ethereum.CallResult<OverlayV1Market__positionsResult> {
     let result = super.tryCall(
       "positions",
       "positions(bytes32):(uint96,uint96,int24,int24,bool,bool,uint240,uint16)",
-      [ethereum.Value.fromFixedBytes(param0)]
+      [ethereum.Value.fromFixedBytes(param0)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1260,8 +1260,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
         value[4].toBoolean(),
         value[5].toBoolean(),
         value[6].toBigInt(),
-        value[7].toI32()
-      )
+        value[7].toI32(),
+      ),
     );
   }
 
@@ -1269,23 +1269,21 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "snapshotMinted",
       "snapshotMinted():(uint32,uint32,int192)",
-      []
+      [],
     );
 
     return new OverlayV1Market__snapshotMintedResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
-      result[2].toBigInt()
+      result[2].toBigInt(),
     );
   }
 
-  try_snapshotMinted(): ethereum.CallResult<
-    OverlayV1Market__snapshotMintedResult
-  > {
+  try_snapshotMinted(): ethereum.CallResult<OverlayV1Market__snapshotMintedResult> {
     let result = super.tryCall(
       "snapshotMinted",
       "snapshotMinted():(uint32,uint32,int192)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1295,8 +1293,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
       new OverlayV1Market__snapshotMintedResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
-        value[2].toBigInt()
-      )
+        value[2].toBigInt(),
+      ),
     );
   }
 
@@ -1304,23 +1302,21 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "snapshotVolumeAsk",
       "snapshotVolumeAsk():(uint32,uint32,int192)",
-      []
+      [],
     );
 
     return new OverlayV1Market__snapshotVolumeAskResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
-      result[2].toBigInt()
+      result[2].toBigInt(),
     );
   }
 
-  try_snapshotVolumeAsk(): ethereum.CallResult<
-    OverlayV1Market__snapshotVolumeAskResult
-  > {
+  try_snapshotVolumeAsk(): ethereum.CallResult<OverlayV1Market__snapshotVolumeAskResult> {
     let result = super.tryCall(
       "snapshotVolumeAsk",
       "snapshotVolumeAsk():(uint32,uint32,int192)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1330,8 +1326,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
       new OverlayV1Market__snapshotVolumeAskResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
-        value[2].toBigInt()
-      )
+        value[2].toBigInt(),
+      ),
     );
   }
 
@@ -1339,23 +1335,21 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "snapshotVolumeBid",
       "snapshotVolumeBid():(uint32,uint32,int192)",
-      []
+      [],
     );
 
     return new OverlayV1Market__snapshotVolumeBidResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
-      result[2].toBigInt()
+      result[2].toBigInt(),
     );
   }
 
-  try_snapshotVolumeBid(): ethereum.CallResult<
-    OverlayV1Market__snapshotVolumeBidResult
-  > {
+  try_snapshotVolumeBid(): ethereum.CallResult<OverlayV1Market__snapshotVolumeBidResult> {
     let result = super.tryCall(
       "snapshotVolumeBid",
       "snapshotVolumeBid():(uint32,uint32,int192)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1365,8 +1359,8 @@ export class OverlayV1Market extends ethereum.SmartContract {
       new OverlayV1Market__snapshotVolumeBidResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
-        value[2].toBigInt()
-      )
+        value[2].toBigInt(),
+      ),
     );
   }
 
@@ -1374,7 +1368,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "timestampUpdateLast",
       "timestampUpdateLast():(uint256)",
-      []
+      [],
     );
 
     return result[0].toBigInt();
@@ -1384,7 +1378,7 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.tryCall(
       "timestampUpdateLast",
       "timestampUpdateLast():(uint256)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1397,11 +1391,11 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.call(
       "update",
       "update():((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool))",
-      []
+      [],
     );
 
     return changetype<OverlayV1Market__updateResultValue0Struct>(
-      result[0].toTuple()
+      result[0].toTuple(),
     );
   }
 
@@ -1409,14 +1403,14 @@ export class OverlayV1Market extends ethereum.SmartContract {
     let result = super.tryCall(
       "update",
       "update():((uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool))",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<OverlayV1Market__updateResultValue0Struct>(value[0].toTuple())
+      changetype<OverlayV1Market__updateResultValue0Struct>(value[0].toTuple()),
     );
   }
 }
@@ -1762,14 +1756,14 @@ export class UpdateCall__Outputs {
     this._call = call;
   }
 
-  get value0(): UpdateCallValue0Struct {
-    return changetype<UpdateCallValue0Struct>(
-      this._call.outputValues[0].value.toTuple()
+  get value0(): UpdateCallValue0OutputStruct {
+    return changetype<UpdateCallValue0OutputStruct>(
+      this._call.outputValues[0].value.toTuple(),
     );
   }
 }
 
-export class UpdateCallValue0Struct extends ethereum.Tuple {
+export class UpdateCallValue0OutputStruct extends ethereum.Tuple {
   get timestamp(): BigInt {
     return this[0].toBigInt();
   }
