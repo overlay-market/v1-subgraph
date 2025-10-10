@@ -433,6 +433,19 @@ export class Factory extends Entity {
       "markets",
     );
   }
+
+  get stateAddress(): string {
+    let value = this.get("stateAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set stateAddress(value: string) {
+    this.set("stateAddress", Value.fromString(value));
+  }
 }
 
 export class Router extends Entity {
