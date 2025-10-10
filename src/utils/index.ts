@@ -4,7 +4,7 @@ import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/Overl
 import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
 import { integer } from '@protofire/subgraph-toolkit'
-import { ZERO_BI, ZERO_BD, getStateContract, ADDRESS_ZERO } from './constants'
+import { ZERO_BI, ZERO_BD, getStateContract, ADDRESS_ZERO, getPeripheryAddressForFactory } from './constants'
 
 export function loadTransaction(event: ethereum.Event): Transaction {
   let transaction = Transaction.load(event.transaction.hash)
@@ -32,6 +32,7 @@ export function loadFactory(factoryAddress: Bytes): Factory {
     factory.totalValueLockedOVL = ZERO_BD
     factory.feeRecipient = factoryContract.try_feeRecipient().reverted ? ADDRESS_ZERO : factoryContract.try_feeRecipient().value.toHexString()
     factory.owner = factoryContract.try_deployer().reverted ? ADDRESS_ZERO : factoryContract.try_deployer().value.toHexString()
+    factory.stateAddress = getPeripheryAddressForFactory(factoryAddress.toHexString())
   }
 
   return factory
