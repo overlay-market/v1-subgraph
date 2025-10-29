@@ -43,6 +43,8 @@ type Factory @entity {
   owner: ID!
   # markets held in factory contract
   markets: [Market!]! @derivedFrom(field: "factory")
+  # factory's state smart contract address
+  stateAddress: String!
 }
 
 type Router @entity {
