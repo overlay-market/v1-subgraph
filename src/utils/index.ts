@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
-import { Market, Transaction, Position, Factory, Account, Analytics, AnalyticsHourData, Router, Build, Unwind, ERC20Token } from '../../generated/schema'
+import { Market, Transaction, Position, Factory, Account, Analytics, AnalyticsHourData, Router, Build, Unwind } from '../../generated/schema'
 import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
 import { OverlayV1Factory as FactoryContract } from '../../generated/OverlayV1Factory/OverlayV1Factory'
 import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
