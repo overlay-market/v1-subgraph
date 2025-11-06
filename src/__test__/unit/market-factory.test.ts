@@ -17,7 +17,7 @@ import {
     EmergencyShutdown as EmergencyShutdownEvent
 } from "../../../generated/OverlayV1Factory/OverlayV1Factory"
 import { handleEmergencyShutdown, handleFeeRecipientUpdated, handleMarketDeployed, handleParamUpdated } from "../../mapping"
-import { FACTORY_ADDRESS, PERIPHERY_ADDRESS } from "../../utils/constants"
+import { FACTORY_ADDRESS, PERIPHERY_ADDRESSES } from "../../utils/constants"
 import { setupMarketMockedFunctions } from "./shared/mockedFunctions"
 import { loadFactory } from "../../utils"
 
@@ -29,7 +29,7 @@ const feed = Address.fromString("0x0000000000000000000000000000000000000005");
 const recipientAddress = Address.fromString("0x0000000000000000000000000000000000000006");
 
 const factoryAddress = Address.fromString(FACTORY_ADDRESS)
-const marketStateAddress = Address.fromString(PERIPHERY_ADDRESS)
+const marketStateAddress = Address.fromString(PERIPHERY_ADDRESSES[0])
 
 // createParamUpdatedEvent attrs
 

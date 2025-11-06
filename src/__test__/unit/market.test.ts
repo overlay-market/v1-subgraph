@@ -23,7 +23,7 @@ import { handleBuild, handleLiquidate, handleUnwind, handleEmergencyWithdraw, ha
 import { loadAccount } from "../../utils"
 import { loadTradingMining } from "../../trading-mining"
 import { loadReferralProgram, loadReferralPosition } from "../../referral"
-import { PERIPHERY_ADDRESS, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS, ADDRESS_ZERO, ONE_18DEC_BI } from "../../utils/constants"
+import { PERIPHERY_ADDRESSES, TRADING_MINING_ADDRESS, REFERRAL_ADDRESS, ADDRESS_ZERO, ONE_18DEC_BI } from "../../utils/constants"
 import { setupMarketMockedFunctions, setupTradingMiningMockedFunctions } from "./shared/mockedFunctions"
 import { MARKET_COLLATERAL, MARKET_PCD_HOLDER, MARKET_POSITION_ID, MARKET_SENDER } from "./shared/constants"
 
@@ -33,7 +33,7 @@ export { handleBuild, handleCacheRiskCalc, handleUpdate }
 const market = Address.fromString("0x0000000000000000000000000000000000000001")
 const tmAddress = Address.fromString(TRADING_MINING_ADDRESS)
 const referralAddress = Address.fromString(REFERRAL_ADDRESS)
-const marketStateAddress = Address.fromString(PERIPHERY_ADDRESS)
+const marketStateAddress = Address.fromString(PERIPHERY_ADDRESSES[0])
 const zeroAddress = Address.fromString(ADDRESS_ZERO)
 
 // Build event parameters
