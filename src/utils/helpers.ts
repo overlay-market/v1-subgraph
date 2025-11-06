@@ -1,8 +1,5 @@
-import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
-import { Market, Transaction, Position, Factory, Account, MarketState, Analytics, AnalyticsHourData } from '../../generated/schema'
-import { OverlayV1Market } from '../../generated/templates/OverlayV1Market/OverlayV1Market'
-import { OverlayV1Market as MarketTemplate } from '../../generated/templates';
-import { integer } from '@protofire/subgraph-toolkit'
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts'
+import { MarketState, Analytics, AnalyticsHourData } from '../../generated/schema'
 import { ZERO_BI, getStateContract } from './constants'
 import { loadAnalyticsHourData } from '.';
 
