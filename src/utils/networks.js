@@ -122,6 +122,10 @@ module.exports = {
         address: "0xC35093f76fF3D31Af27A893CDcec585F1899eE54",
         startBlock: 55756263
       },
+      OverlayV1Factory2: {
+        address: "0x17D4F2ea0c3227FB6b31ADA99265E41f3369150A",
+        startBlock: 66339154
+      },
       OverlayV1Token: {
         address: "0x1F34c87ded863Fe3A3Cd76FAc8adA9608137C8c3",
         startBlock: 55756263
@@ -151,7 +155,7 @@ module.exports = {
         startBlock: 56557980
       }
     },
-    PERIPHERY_ADDRESS: "0x10575a9C8F36F9F42D7DB71Ef179eD9BEf8Df238"
+    PERIPHERY_ADDRESSES: ["0x10575a9C8F36F9F42D7DB71Ef179eD9BEf8Df238", "0x9C52f7107efBe6e0010E924a0B53265ba4e8959d"]
   },
 
   "chapel": {
