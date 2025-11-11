@@ -446,6 +446,19 @@ export class Factory extends Entity {
   set stateAddress(value: string) {
     this.set("stateAddress", Value.fromString(value));
   }
+
+  get ovl(): Bytes {
+    let value = this.get("ovl");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set ovl(value: Bytes) {
+    this.set("ovl", Value.fromBytes(value));
+  }
 }
 
 export class Router extends Entity {
