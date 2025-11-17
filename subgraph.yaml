@@ -222,6 +222,28 @@ dataSources:
             address,address,uint256,uint256,uint32)
           handler: handleShivaUnwind
       file: ./src/shiva.ts
+  - kind: ethereum
+    name: LBSC
+    network: bsc
+    source:
+      address: "0x7017b3B9014D92812fAee1b628BCc13eBe09B04a"
+      abi: LBSC
+      startBlock: 73297453
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - LBSC
+      abis:
+        - name: LBSC
+          file: ./abis/LBSC.json
+      eventHandlers:
+        - event: LoanOpened(indexed uint256,indexed address,uint256,uint256,uint256)
+          handler: handleLoanOpened
+        - event: LoanSettled(indexed uint256,indexed address,uint256,uint256,uint256)
+          handler: handleLoanSettled
+      file: ./src/lbsc.ts
 templates:
   - kind: ethereum
     name: OverlayV1Market
