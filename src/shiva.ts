@@ -3,8 +3,10 @@ import { Address, Bytes, log } from '@graphprotocol/graph-ts'
 import {
   ShivaBuild as ShivaBuildEvent,
   ShivaUnwind as ShivaUnwindEvent,
+  ShivaBuildStable as ShivaBuildStableEvent,
+  LbscSet as LbscSetEvent,
 } from "../generated/Shiva/Shiva"
-import { Position, RouterParams } from "../generated/schema"
+import { Position, RouterParams, StableLoan } from "../generated/schema"
 import { loadAccount, loadAnalytics, loadBuild, loadLatestUnwind, loadMarket, loadRouter, loadTransaction } from "./utils"
 import { ONE_18DEC_BI, ONE_BI, SHIVA_ADDRESS, ZERO_BI } from "./utils/constants"
 import { updateReferralRewards } from './referral'
@@ -137,4 +139,45 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
   position.save()
   routerParams.save()
   latestUnwind.save()
+}
+
+export function handleLbscSet(event: LbscSetEvent): void {
+  const router = loadRouter(event.address)
+
+  router.lbsc = event.params.newLbsc
+
+  router.save()
+}
+
+export function handleShivaBuildStable(event: ShivaBuildStableEvent): void {
+  const marketId = event.params.market
+  const positionId = event.params.positionId
+  const loanId = event.params.loanId
+
+  const market = loadMarket(event, marketId)
+  const router = loadRouter(event.address)
+
+  let marketPositionId = market.id.toHexString().concat('-').concat(positionId.toHexString())
+  let position = Position.load(marketPositionId)
+  if (!position) {
+    log.error('No position found. marketPositionId: {}', [marketPositionId])
+    return
+  }
+
+  const lbscAddress = router.lbsc
+  if (!lbscAddress) {
+    log.error('No lbsc address found. LoanId: {}', [loanId.toHexString()])
+    return
+  }
+  const stableLoanId = lbscAddress.toHexString().concat('-').concat(loanId.toString())
+
+  const loan = StableLoan.load(stableLoanId)
+  if (!loan) {
+    log.error('No loan found. LoanId: {}', [loanId.toHexString()])
+    return
+  }
+
+  position.loan = loan.id
+
+  position.save()
 }

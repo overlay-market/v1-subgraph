@@ -221,6 +221,10 @@ dataSources:
         - event: ShivaUnwind(indexed address,indexed
             address,address,uint256,uint256,uint32)
           handler: handleShivaUnwind
+        - event: LbscSet(indexed address,indexed address)
+          handler: handleLbscSet
+        - event: ShivaBuildStable(indexed address,indexed uint256,uint256)
+          handler: handleShivaBuildStable
       file: ./src/shiva.ts
   - kind: ethereum
     name: LBSC

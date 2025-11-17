@@ -54,6 +54,9 @@ type Router @entity {
   id: Bytes!
   # we can add more fields here in the future
   # to get router analytics
+
+  # lbsc address
+  lbsc: Bytes
 }
 
 type Market @entity {
@@ -194,6 +197,8 @@ type Position @entity {
   createdAtBlockNumber: BigInt!
   # number of unwinds
   numberOfUniwnds: BigInt!
+  # lbsc loan
+  loan: StableLoan
 
   # derived fields
   builds: [Build!]! @derivedFrom(field: "position")
