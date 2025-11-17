@@ -24,6 +24,7 @@ export function handleLoanOpened(event: LoanOpenedEvent): void {
     stableLoan.collateralReturned = ZERO_BI
     stableLoan.collateralSeized = ZERO_BI
 
+    borrower.save()
     stableLoan.save()
 }
 
