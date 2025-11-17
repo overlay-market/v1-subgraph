@@ -573,7 +573,7 @@ type ERC1155Transfer @entity {
 }
 
 type StableLoan @entity {
-  id: Bytes! # lbsc address + loanId
+  id: ID! # lbsc address + loanId
   loanId: BigInt!
   borrower: Account!
   stableAmount: BigInt!

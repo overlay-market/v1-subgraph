@@ -7,7 +7,7 @@ import { ZERO_BI } from "./utils/constants"
 export function handleLoanOpened(event: LoanOpenedEvent): void {
     const borrower = loadAccount(event.params.borrower)
     const loanId = event.params.loanId
-    const stableLoanId = event.address.concat(Bytes.fromBigInt(loanId))
+    const stableLoanId = event.address.toHexString().concat('-').concat(loanId.toString())
 
     let stableLoan = StableLoan.load(stableLoanId)
 
@@ -29,7 +29,7 @@ export function handleLoanOpened(event: LoanOpenedEvent): void {
 
 export function handleLoanSettled(event: LoanSettledEvent): void {
     const loanId = event.params.loanId
-    const stableLoanId = event.address.concat(Bytes.fromBigInt(loanId))
+    const stableLoanId = event.address.toHexString().concat('-').concat(loanId.toString())
 
     let stableLoan = StableLoan.load(stableLoanId)
 
