@@ -204,7 +204,11 @@ export function loadAnalyticsHourData(factory: Bytes, eventTimestamp: BigInt): A
 }
 
 export function loadRouter(routerAddress: Bytes): Router {
-  const router = new Router(routerAddress)
+  let router = Router.load(routerAddress)
+
+  if (router === null) {
+    router = new Router(routerAddress)
+  }
 
   return router
 }
