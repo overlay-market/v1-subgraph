@@ -1,1 +1,908 @@
-[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ExpiredDeadline","type":"error"},{"inputs":[],"name":"InvalidNonce","type":"error"},{"inputs":[],"name":"InvalidSignature","type":"error"},{"inputs":[],"name":"MarketNotValid","type":"error"},{"inputs":[],"name":"NotPositionOwner","type":"error"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"previousAdmin","type":"address"},{"indexed":false,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"beacon","type":"address"}],"name":"BeaconUpgraded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"factory","type":"address"}],"name":"FactoryAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"factory","type":"address"}],"name":"FactoryRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint8","name":"version","type":"uint8"}],"name":"Initialized","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousLbsc","type":"address"},{"indexed":true,"internalType":"address","name":"newLbsc","type":"address"}],"name":"LbscSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"market","type":"address"}],"name":"MarketValidated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"nonce","type":"uint256"}],"name":"NonceCancelled","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Paused","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"market","type":"address"},{"indexed":false,"internalType":"address","name":"performer","type":"address"},{"indexed":false,"internalType":"uint256","name":"positionId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"collateral","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"leverage","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"brokerId","type":"uint32"},{"indexed":false,"internalType":"bool","name":"isLong","type":"bool"}],"name":"ShivaBuild","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"market","type":"address"},{"indexed":true,"internalType":"uint256","name":"positionId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"loanId","type":"uint256"}],"name":"ShivaBuildStable","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"market","type":"address"},{"indexed":false,"internalType":"address","name":"performer","type":"address"},{"indexed":false,"internalType":"uint256","name":"positionId","type":"uint256"}],"name":"ShivaEmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ShivaStake","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ShivaUnstake","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"market","type":"address"},{"indexed":false,"internalType":"address","name":"performer","type":"address"},{"indexed":false,"internalType":"uint256","name":"positionId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"fraction","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"brokerId","type":"uint32"}],"name":"ShivaUnwind","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Unpaused","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"implementation","type":"address"}],"name":"Upgraded","type":"event"},{"inputs":[],"name":"BUILD_ON_BEHALF_OF_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"BUILD_SINGLE_ON_BEHALF_OF_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ONE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UNWIND_ON_BEHALF_OF_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract IOverlayV1Factory","name":"_factory","type":"address"}],"name":"addFactory","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"authorizedFactories","outputs":[{"internalType":"contract IOverlayV1Factory","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"components":[{"internalType":"contract IOverlayV1Market","name":"ovlMarket","type":"address"},{"internalType":"uint32","name":"brokerId","type":"uint32"},{"internalType":"bool","name":"isLong","type":"bool"},{"internalType":"uint256","name":"collateral","type":"uint256"},{"internalType":"uint256","name":"leverage","type":"uint256"},{"internalType":"uint256","name":"priceLimit","type":"uint256"}],"internalType":"struct ShivaStructs.Build","name":"params","type":"tuple"},{"components":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint48","name":"deadline","type":"uint48"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"bytes","name":"signature","type":"bytes"}],"internalType":"struct ShivaStructs.OnBehalfOf","name":"onBehalfOf","type":"tuple"}],"name":"build","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"components":[{"internalType":"contract IOverlayV1Market","name":"ovlMarket","type":"address"},{"internalType":"uint32","name":"brokerId","type":"uint32"},{"internalType":"bool","name":"isLong","type":"bool"},{"internalType":"uint256","name":"collateral","type":"uint256"},{"internalType":"uint256","name":"leverage","type":"uint256"},{"internalType":"uint256","name":"priceLimit","type":"uint256"}],"internalType":"struct ShivaStructs.Build","name":"params","type":"tuple"}],"name":"build","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"components":[{"internalType":"contract IOverlayV1Market","name":"ovlMarket","type":"address"},{"internalType":"uint32","name":"brokerId","type":"uint32"},{"internalType":"uint256","name":"unwindPriceLimit","type":"uint256"},{"internalType":"uint256","name":"buildPriceLimit","type":"uint256"},{"internalType":"uint256","name":"collateral","type":"uint256"},{"internalType":"uint256","name":"leverage","type":"uint256"},{"internalType":"uint256","name":"previousPositionId","type":"uint256"}],"internalType":"struct ShivaStructs.BuildSingle","name":"params","type":"tuple"},{"components":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint48","name":"deadline","type":"uint48"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"bytes","name":"signature","type":"bytes"}],"internalType":"struct ShivaStructs.OnBehalfOf","name":"onBehalfOf","type":"tuple"}],"name":"buildSingle","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"components":[{"internalType":"contract IOverlayV1Market","name":"ovlMarket","type":"address"},{"internalType":"uint32","name":"brokerId","type":"uint32"},{"internalType":"uint256","name":"unwindPriceLimit","type":"uint256"},{"internalType":"uint256","name":"buildPriceLimit","type":"uint256"},{"internalType":"uint256","name":"collateral","type":"uint256"},{"internalType":"uint256","name":"leverage","type":"uint256"},{"internalType":"uint256","name":"previousPositionId","type":"uint256"}],"internalType":"struct ShivaStructs.BuildSingle","name":"params","type":"tuple"}],"name":"buildSingle","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"components":[{"internalType":"contract IOverlayV1Market","name":"ovlMarket","type":"address"},{"internalType":"uint32","name":"brokerId","type":"uint32"},{"internalType":"bool","name":"isLong","type":"bool"},{"internalType":"uint256","name":"stableCollateral","type":"uint256"},{"internalType":"uint256","name":"leverage","type":"uint256"},{"internalType":"uint256","name":"priceLimit","type":"uint256"},{"internalType":"uint256","name":"minOvl","type":"uint256"}],"internalType":"struct ShivaStructs.BuildStable","name":"params","type":"tuple"}],"name":"buildStable","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"nonce","type":"uint256"}],"name":"cancelNonce","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"contract IOverlayV1Market","name":"market","type":"address"},{"internalType":"uint256","name":"positionId","type":"uint256"},{"internalType":"address","name":"owner","type":"address"}],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"structHash","type":"bytes32"}],"name":"getDigest","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_ovlToken","type":"address"},{"internalType":"address","name":"_vaultFactory","type":"address"}],"name":"initialize","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"lbsc","outputs":[{"internalType":"contract ILoanBasedStableCollateral","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract IOverlayV1Market","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"loanIds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract IOverlayV1Market","name":"","type":"address"}],"name":"marketAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"positionId","type":"uint256"}],"name":"overlayMarketLiquidateCallback","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ovlToken","outputs":[{"internalType":"contract IOverlayV1Token","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract IOverlayV1Market","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"positionOwners","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"proxiableUUID","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract IOverlayV1Factory","name":"_factory","type":"address"}],"name":"removeFactory","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardVault","outputs":[{"internalType":"contract IRewardsVault","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_lbsc","type":"address"}],"name":"setLbsc","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"stakingToken","outputs":[{"internalType":"contract StakingToken","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"components":[{"internalType":"contract IOverlayV1Market","name":"ovlMarket","type":"address"},{"internalType":"uint32","name":"brokerId","type":"uint32"},{"internalType":"uint256","name":"positionId","type":"uint256"},{"internalType":"uint256","name":"fraction","type":"uint256"},{"internalType":"uint256","name":"priceLimit","type":"uint256"}],"internalType":"struct ShivaStructs.Unwind","name":"params","type":"tuple"}],"name":"unwind","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"components":[{"internalType":"contract IOverlayV1Market","name":"ovlMarket","type":"address"},{"internalType":"uint32","name":"brokerId","type":"uint32"},{"internalType":"uint256","name":"positionId","type":"uint256"},{"internalType":"uint256","name":"fraction","type":"uint256"},{"internalType":"uint256","name":"priceLimit","type":"uint256"}],"internalType":"struct ShivaStructs.Unwind","name":"params","type":"tuple"},{"components":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint48","name":"deadline","type":"uint48"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"bytes","name":"signature","type":"bytes"}],"internalType":"struct ShivaStructs.OnBehalfOf","name":"onBehalfOf","type":"tuple"}],"name":"unwind","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newImplementation","type":"address"}],"name":"upgradeTo","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newImplementation","type":"address"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"upgradeToAndCall","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"usedNonces","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]
+[
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  { "inputs": [], "name": "ExpiredDeadline", "type": "error" },
+  { "inputs": [], "name": "InvalidNonce", "type": "error" },
+  { "inputs": [], "name": "InvalidSignature", "type": "error" },
+  { "inputs": [], "name": "MarketNotValid", "type": "error" },
+  { "inputs": [], "name": "NotPositionOwner", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "factory",
+        "type": "address"
+      }
+    ],
+    "name": "FactoryAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "factory",
+        "type": "address"
+      }
+    ],
+    "name": "FactoryRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousLbsc",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newLbsc",
+        "type": "address"
+      }
+    ],
+    "name": "LbscSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "market",
+        "type": "address"
+      }
+    ],
+    "name": "MarketValidated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "nonce",
+        "type": "uint256"
+      }
+    ],
+    "name": "NonceCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Paused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "market",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "performer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "positionId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "collateral",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "leverage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "brokerId",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isLong",
+        "type": "bool"
+      }
+    ],
+    "name": "ShivaBuild",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "market",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "positionId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ShivaBuildStable",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "market",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "performer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "positionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ShivaEmergencyWithdraw",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ShivaStake",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ShivaUnstake",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "market",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "performer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "positionId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fraction",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "brokerId",
+        "type": "uint32"
+      }
+    ],
+    "name": "ShivaUnwind",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Unpaused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "BUILD_ON_BEHALF_OF_TYPEHASH",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "BUILD_SINGLE_ON_BEHALF_OF_TYPEHASH",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ONE",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "UNWIND_ON_BEHALF_OF_TYPEHASH",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IOverlayV1Factory",
+        "name": "_factory",
+        "type": "address"
+      }
+    ],
+    "name": "addFactory",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "authorizedFactories",
+    "outputs": [
+      {
+        "internalType": "contract IOverlayV1Factory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IOverlayV1Market",
+            "name": "ovlMarket",
+            "type": "address"
+          },
+          { "internalType": "uint32", "name": "brokerId", "type": "uint32" },
+          { "internalType": "bool", "name": "isLong", "type": "bool" },
+          {
+            "internalType": "uint256",
+            "name": "collateral",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "leverage", "type": "uint256" },
+          { "internalType": "uint256", "name": "priceLimit", "type": "uint256" }
+        ],
+        "internalType": "struct ShivaStructs.Build",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          { "internalType": "address", "name": "owner", "type": "address" },
+          { "internalType": "uint48", "name": "deadline", "type": "uint48" },
+          { "internalType": "uint256", "name": "nonce", "type": "uint256" },
+          { "internalType": "bytes", "name": "signature", "type": "bytes" }
+        ],
+        "internalType": "struct ShivaStructs.OnBehalfOf",
+        "name": "onBehalfOf",
+        "type": "tuple"
+      }
+    ],
+    "name": "build",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IOverlayV1Market",
+            "name": "ovlMarket",
+            "type": "address"
+          },
+          { "internalType": "uint32", "name": "brokerId", "type": "uint32" },
+          { "internalType": "bool", "name": "isLong", "type": "bool" },
+          {
+            "internalType": "uint256",
+            "name": "collateral",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "leverage", "type": "uint256" },
+          { "internalType": "uint256", "name": "priceLimit", "type": "uint256" }
+        ],
+        "internalType": "struct ShivaStructs.Build",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "build",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IOverlayV1Market",
+            "name": "ovlMarket",
+            "type": "address"
+          },
+          { "internalType": "uint32", "name": "brokerId", "type": "uint32" },
+          {
+            "internalType": "uint256",
+            "name": "unwindPriceLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "buildPriceLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateral",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "leverage", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "previousPositionId",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ShivaStructs.BuildSingle",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          { "internalType": "address", "name": "owner", "type": "address" },
+          { "internalType": "uint48", "name": "deadline", "type": "uint48" },
+          { "internalType": "uint256", "name": "nonce", "type": "uint256" },
+          { "internalType": "bytes", "name": "signature", "type": "bytes" }
+        ],
+        "internalType": "struct ShivaStructs.OnBehalfOf",
+        "name": "onBehalfOf",
+        "type": "tuple"
+      }
+    ],
+    "name": "buildSingle",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IOverlayV1Market",
+            "name": "ovlMarket",
+            "type": "address"
+          },
+          { "internalType": "uint32", "name": "brokerId", "type": "uint32" },
+          {
+            "internalType": "uint256",
+            "name": "unwindPriceLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "buildPriceLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateral",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "leverage", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "previousPositionId",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ShivaStructs.BuildSingle",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "buildSingle",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IOverlayV1Market",
+            "name": "ovlMarket",
+            "type": "address"
+          },
+          { "internalType": "uint32", "name": "brokerId", "type": "uint32" },
+          { "internalType": "bool", "name": "isLong", "type": "bool" },
+          {
+            "internalType": "uint256",
+            "name": "stableCollateral",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "leverage", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "priceLimit",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "minOvl", "type": "uint256" }
+        ],
+        "internalType": "struct ShivaStructs.BuildStable",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "buildStable",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "nonce", "type": "uint256" }
+    ],
+    "name": "cancelNonce",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IOverlayV1Market",
+        "name": "market",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "positionId", "type": "uint256" },
+      { "internalType": "address", "name": "owner", "type": "address" }
+    ],
+    "name": "emergencyWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "structHash", "type": "bytes32" }
+    ],
+    "name": "getDigest",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_ovlToken", "type": "address" },
+      { "internalType": "address", "name": "_vaultFactory", "type": "address" }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lbsc",
+    "outputs": [
+      {
+        "internalType": "contract ILoanBasedStableCollateral",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IOverlayV1Market",
+        "name": "",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "loanIds",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IOverlayV1Market",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "marketAllowance",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "positionId", "type": "uint256" }
+    ],
+    "name": "overlayMarketLiquidateCallback",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ovlToken",
+    "outputs": [
+      {
+        "internalType": "contract IOverlayV1Token",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "paused",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IOverlayV1Market",
+        "name": "",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "positionOwners",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IOverlayV1Factory",
+        "name": "_factory",
+        "type": "address"
+      }
+    ],
+    "name": "removeFactory",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "rewardVault",
+    "outputs": [
+      {
+        "internalType": "contract IRewardsVault",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_lbsc", "type": "address" }
+    ],
+    "name": "setLbsc",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingToken",
+    "outputs": [
+      { "internalType": "contract StakingToken", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "unpause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IOverlayV1Market",
+            "name": "ovlMarket",
+            "type": "address"
+          },
+          { "internalType": "uint32", "name": "brokerId", "type": "uint32" },
+          {
+            "internalType": "uint256",
+            "name": "positionId",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "fraction", "type": "uint256" },
+          { "internalType": "uint256", "name": "priceLimit", "type": "uint256" }
+        ],
+        "internalType": "struct ShivaStructs.Unwind",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "unwind",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IOverlayV1Market",
+            "name": "ovlMarket",
+            "type": "address"
+          },
+          { "internalType": "uint32", "name": "brokerId", "type": "uint32" },
+          {
+            "internalType": "uint256",
+            "name": "positionId",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "fraction", "type": "uint256" },
+          { "internalType": "uint256", "name": "priceLimit", "type": "uint256" }
+        ],
+        "internalType": "struct ShivaStructs.Unwind",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          { "internalType": "address", "name": "owner", "type": "address" },
+          { "internalType": "uint48", "name": "deadline", "type": "uint48" },
+          { "internalType": "uint256", "name": "nonce", "type": "uint256" },
+          { "internalType": "bytes", "name": "signature", "type": "bytes" }
+        ],
+        "internalType": "struct ShivaStructs.OnBehalfOf",
+        "name": "onBehalfOf",
+        "type": "tuple"
+      }
+    ],
+    "name": "unwind",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "usedNonces",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
