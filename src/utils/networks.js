@@ -153,6 +153,10 @@ module.exports = {
       Shiva: {
         address: "0xeB497c228F130BD91E7F13f81c312243961d894A",
         startBlock: 56557980
+      },
+      LBSC: {
+        address: "0x7017b3B9014D92812fAee1b628BCc13eBe09B04a",
+        startBlock: 73297453
       }
     },
     PERIPHERY_ADDRESSES: ["0x10575a9C8F36F9F42D7DB71Ef179eD9BEf8Df238", "0x9C52f7107efBe6e0010E924a0B53265ba4e8959d"]
@@ -195,6 +199,10 @@ module.exports = {
       Shiva: {
         address: "0x9fB7D92526Fc13bB3c0603d39E55e5C371c26Ce6",
         startBlock: 68004676
+      },
+      LBSC: {
+        address: "0x7017b3B9014D92812fAee1b628BCc13eBe09B04a",
+        startBlock: 73297453
       }
     },
     PERIPHERY_ADDRESSES: ["0x6C57F1d360027c10b3b698b302120DaD31CB34c9", "0x3A6892e5da2f87F3865aA1aEA2fcaCCE27C44ea8"]

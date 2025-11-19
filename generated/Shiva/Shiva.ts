@@ -104,6 +104,28 @@ export class Initialized__Params {
   }
 }
 
+export class LbscSet extends ethereum.Event {
+  get params(): LbscSet__Params {
+    return new LbscSet__Params(this);
+  }
+}
+
+export class LbscSet__Params {
+  _event: LbscSet;
+
+  constructor(event: LbscSet) {
+    this._event = event;
+  }
+
+  get previousLbsc(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newLbsc(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
 export class MarketValidated extends ethereum.Event {
   get params(): MarketValidated__Params {
     return new MarketValidated__Params(this);
@@ -119,6 +141,28 @@ export class MarketValidated__Params {
 
   get market(): Address {
     return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class NonceCancelled extends ethereum.Event {
+  get params(): NonceCancelled__Params {
+    return new NonceCancelled__Params(this);
+  }
+}
+
+export class NonceCancelled__Params {
+  _event: NonceCancelled;
+
+  constructor(event: NonceCancelled) {
+    this._event = event;
+  }
+
+  get owner(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get nonce(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
   }
 }
 
@@ -183,6 +227,32 @@ export class ShivaBuild__Params {
 
   get isLong(): boolean {
     return this._event.parameters[7].value.toBoolean();
+  }
+}
+
+export class ShivaBuildStable extends ethereum.Event {
+  get params(): ShivaBuildStable__Params {
+    return new ShivaBuildStable__Params(this);
+  }
+}
+
+export class ShivaBuildStable__Params {
+  _event: ShivaBuildStable;
+
+  constructor(event: ShivaBuildStable) {
+    this._event = event;
+  }
+
+  get market(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get positionId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get loanId(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -335,7 +405,7 @@ export class Upgraded__Params {
 }
 
 export class Shiva__buildInputParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
+  get ovlMarket(): Address {
     return this[0].toAddress();
   }
 
@@ -369,13 +439,17 @@ export class Shiva__buildInputOnBehalfOfStruct extends ethereum.Tuple {
     return this[1].toBigInt();
   }
 
+  get nonce(): BigInt {
+    return this[2].toBigInt();
+  }
+
   get signature(): Bytes {
-    return this[2].toBytes();
+    return this[3].toBytes();
   }
 }
 
 export class Shiva__build1InputParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
+  get ovlMarket(): Address {
     return this[0].toAddress();
   }
 
@@ -401,7 +475,7 @@ export class Shiva__build1InputParamsStruct extends ethereum.Tuple {
 }
 
 export class Shiva__buildSingleInputParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
+  get ovlMarket(): Address {
     return this[0].toAddress();
   }
 
@@ -409,50 +483,28 @@ export class Shiva__buildSingleInputParamsStruct extends ethereum.Tuple {
     return this[1].toBigInt();
   }
 
-  get slippage(): i32 {
-    return this[2].toI32();
+  get unwindPriceLimit(): BigInt {
+    return this[2].toBigInt();
   }
 
-  get collateral(): BigInt {
+  get buildPriceLimit(): BigInt {
     return this[3].toBigInt();
   }
 
-  get leverage(): BigInt {
-    return this[4].toBigInt();
-  }
-
-  get previousPositionId(): BigInt {
-    return this[5].toBigInt();
-  }
-}
-
-export class Shiva__buildSingle1InputParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
-    return this[0].toAddress();
-  }
-
-  get brokerId(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get slippage(): i32 {
-    return this[2].toI32();
-  }
-
   get collateral(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get leverage(): BigInt {
     return this[4].toBigInt();
   }
 
-  get previousPositionId(): BigInt {
+  get leverage(): BigInt {
     return this[5].toBigInt();
+  }
+
+  get previousPositionId(): BigInt {
+    return this[6].toBigInt();
   }
 }
 
-export class Shiva__buildSingle1InputOnBehalfOfStruct extends ethereum.Tuple {
+export class Shiva__buildSingleInputOnBehalfOfStruct extends ethereum.Tuple {
   get owner(): Address {
     return this[0].toAddress();
   }
@@ -461,8 +513,72 @@ export class Shiva__buildSingle1InputOnBehalfOfStruct extends ethereum.Tuple {
     return this[1].toBigInt();
   }
 
+  get nonce(): BigInt {
+    return this[2].toBigInt();
+  }
+
   get signature(): Bytes {
-    return this[2].toBytes();
+    return this[3].toBytes();
+  }
+}
+
+export class Shiva__buildSingle1InputParamsStruct extends ethereum.Tuple {
+  get ovlMarket(): Address {
+    return this[0].toAddress();
+  }
+
+  get brokerId(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get unwindPriceLimit(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get buildPriceLimit(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get collateral(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get leverage(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get previousPositionId(): BigInt {
+    return this[6].toBigInt();
+  }
+}
+
+export class Shiva__buildStableInputParamsStruct extends ethereum.Tuple {
+  get ovlMarket(): Address {
+    return this[0].toAddress();
+  }
+
+  get brokerId(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get isLong(): boolean {
+    return this[2].toBoolean();
+  }
+
+  get stableCollateral(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get leverage(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get priceLimit(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get minOvl(): BigInt {
+    return this[6].toBigInt();
   }
 }
 
@@ -584,7 +700,7 @@ export class Shiva extends ethereum.SmartContract {
   ): BigInt {
     let result = super.call(
       "build",
-      "build((address,uint32,bool,uint256,uint256,uint256),(address,uint48,bytes)):(uint256)",
+      "build((address,uint32,bool,uint256,uint256,uint256),(address,uint48,uint256,bytes)):(uint256)",
       [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
     );
 
@@ -597,7 +713,7 @@ export class Shiva extends ethereum.SmartContract {
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "build",
-      "build((address,uint32,bool,uint256,uint256,uint256),(address,uint48,bytes)):(uint256)",
+      "build((address,uint32,bool,uint256,uint256,uint256),(address,uint48,uint256,bytes)):(uint256)",
       [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
     );
     if (result.reverted) {
@@ -632,11 +748,14 @@ export class Shiva extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  buildSingle(params: Shiva__buildSingleInputParamsStruct): BigInt {
+  buildSingle(
+    params: Shiva__buildSingleInputParamsStruct,
+    onBehalfOf: Shiva__buildSingleInputOnBehalfOfStruct,
+  ): BigInt {
     let result = super.call(
       "buildSingle",
-      "buildSingle((address,uint32,uint16,uint256,uint256,uint256)):(uint256)",
-      [ethereum.Value.fromTuple(params)],
+      "buildSingle((address,uint32,uint256,uint256,uint256,uint256,uint256),(address,uint48,uint256,bytes)):(uint256)",
+      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
     );
 
     return result[0].toBigInt();
@@ -644,10 +763,36 @@ export class Shiva extends ethereum.SmartContract {
 
   try_buildSingle(
     params: Shiva__buildSingleInputParamsStruct,
+    onBehalfOf: Shiva__buildSingleInputOnBehalfOfStruct,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "buildSingle",
-      "buildSingle((address,uint32,uint16,uint256,uint256,uint256)):(uint256)",
+      "buildSingle((address,uint32,uint256,uint256,uint256,uint256,uint256),(address,uint48,uint256,bytes)):(uint256)",
+      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  buildSingle1(params: Shiva__buildSingle1InputParamsStruct): BigInt {
+    let result = super.call(
+      "buildSingle",
+      "buildSingle((address,uint32,uint256,uint256,uint256,uint256,uint256)):(uint256)",
+      [ethereum.Value.fromTuple(params)],
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_buildSingle1(
+    params: Shiva__buildSingle1InputParamsStruct,
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "buildSingle",
+      "buildSingle((address,uint32,uint256,uint256,uint256,uint256,uint256)):(uint256)",
       [ethereum.Value.fromTuple(params)],
     );
     if (result.reverted) {
@@ -657,27 +802,23 @@ export class Shiva extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  buildSingle1(
-    params: Shiva__buildSingle1InputParamsStruct,
-    onBehalfOf: Shiva__buildSingle1InputOnBehalfOfStruct,
-  ): BigInt {
+  buildStable(params: Shiva__buildStableInputParamsStruct): BigInt {
     let result = super.call(
-      "buildSingle",
-      "buildSingle((address,uint32,uint16,uint256,uint256,uint256),(address,uint48,bytes)):(uint256)",
-      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
+      "buildStable",
+      "buildStable((address,uint32,bool,uint256,uint256,uint256,uint256)):(uint256)",
+      [ethereum.Value.fromTuple(params)],
     );
 
     return result[0].toBigInt();
   }
 
-  try_buildSingle1(
-    params: Shiva__buildSingle1InputParamsStruct,
-    onBehalfOf: Shiva__buildSingle1InputOnBehalfOfStruct,
+  try_buildStable(
+    params: Shiva__buildStableInputParamsStruct,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "buildSingle",
-      "buildSingle((address,uint32,uint16,uint256,uint256,uint256),(address,uint48,bytes)):(uint256)",
-      [ethereum.Value.fromTuple(params), ethereum.Value.fromTuple(onBehalfOf)],
+      "buildStable",
+      "buildStable((address,uint32,bool,uint256,uint256,uint256,uint256)):(uint256)",
+      [ethereum.Value.fromTuple(params)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -705,6 +846,46 @@ export class Shiva extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
+  lbsc(): Address {
+    let result = super.call("lbsc", "lbsc():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_lbsc(): ethereum.CallResult<Address> {
+    let result = super.tryCall("lbsc", "lbsc():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  loanIds(param0: Address, param1: BigInt): BigInt {
+    let result = super.call("loanIds", "loanIds(address,uint256):(uint256)", [
+      ethereum.Value.fromAddress(param0),
+      ethereum.Value.fromUnsignedBigInt(param1),
+    ]);
+
+    return result[0].toBigInt();
+  }
+
+  try_loanIds(param0: Address, param1: BigInt): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "loanIds",
+      "loanIds(address,uint256):(uint256)",
+      [
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromUnsignedBigInt(param1),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   marketAllowance(param0: Address): boolean {
     let result = super.call(
       "marketAllowance",
@@ -728,48 +909,14 @@ export class Shiva extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  nonces(param0: Address): BigInt {
-    let result = super.call("nonces", "nonces(address):(uint256)", [
-      ethereum.Value.fromAddress(param0),
-    ]);
-
-    return result[0].toBigInt();
-  }
-
-  try_nonces(param0: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("nonces", "nonces(address):(uint256)", [
-      ethereum.Value.fromAddress(param0),
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  ovState(): Address {
-    let result = super.call("ovState", "ovState():(address)", []);
+  ovlToken(): Address {
+    let result = super.call("ovlToken", "ovlToken():(address)", []);
 
     return result[0].toAddress();
   }
 
-  try_ovState(): ethereum.CallResult<Address> {
-    let result = super.tryCall("ovState", "ovState():(address)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  ovToken(): Address {
-    let result = super.call("ovToken", "ovToken():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_ovToken(): ethereum.CallResult<Address> {
-    let result = super.tryCall("ovToken", "ovToken():(address)", []);
+  try_ovlToken(): ethereum.CallResult<Address> {
+    let result = super.tryCall("ovlToken", "ovlToken():(address)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -873,18 +1020,31 @@ export class Shiva extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  validMarkets(param0: Address): boolean {
-    let result = super.call("validMarkets", "validMarkets(address):(bool)", [
-      ethereum.Value.fromAddress(param0),
-    ]);
+  usedNonces(param0: Address, param1: BigInt): boolean {
+    let result = super.call(
+      "usedNonces",
+      "usedNonces(address,uint256):(bool)",
+      [
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromUnsignedBigInt(param1),
+      ],
+    );
 
     return result[0].toBoolean();
   }
 
-  try_validMarkets(param0: Address): ethereum.CallResult<boolean> {
-    let result = super.tryCall("validMarkets", "validMarkets(address):(bool)", [
-      ethereum.Value.fromAddress(param0),
-    ]);
+  try_usedNonces(
+    param0: Address,
+    param1: BigInt,
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "usedNonces",
+      "usedNonces(address,uint256):(bool)",
+      [
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromUnsignedBigInt(param1),
+      ],
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -992,7 +1152,7 @@ export class BuildCall__Outputs {
 }
 
 export class BuildCallParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
+  get ovlMarket(): Address {
     return this[0].toAddress();
   }
 
@@ -1026,8 +1186,12 @@ export class BuildCallOnBehalfOfStruct extends ethereum.Tuple {
     return this[1].toBigInt();
   }
 
+  get nonce(): BigInt {
+    return this[2].toBigInt();
+  }
+
   get signature(): Bytes {
-    return this[2].toBytes();
+    return this[3].toBytes();
   }
 }
 
@@ -1068,7 +1232,7 @@ export class Build1Call__Outputs {
 }
 
 export class Build1CallParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
+  get ovlMarket(): Address {
     return this[0].toAddress();
   }
 
@@ -1115,6 +1279,12 @@ export class BuildSingleCall__Inputs {
       this._call.inputValues[0].value.toTuple(),
     );
   }
+
+  get onBehalfOf(): BuildSingleCallOnBehalfOfStruct {
+    return changetype<BuildSingleCallOnBehalfOfStruct>(
+      this._call.inputValues[1].value.toTuple(),
+    );
+  }
 }
 
 export class BuildSingleCall__Outputs {
@@ -1130,7 +1300,7 @@ export class BuildSingleCall__Outputs {
 }
 
 export class BuildSingleCallParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
+  get ovlMarket(): Address {
     return this[0].toAddress();
   }
 
@@ -1138,20 +1308,42 @@ export class BuildSingleCallParamsStruct extends ethereum.Tuple {
     return this[1].toBigInt();
   }
 
-  get slippage(): i32 {
-    return this[2].toI32();
+  get unwindPriceLimit(): BigInt {
+    return this[2].toBigInt();
   }
 
-  get collateral(): BigInt {
+  get buildPriceLimit(): BigInt {
     return this[3].toBigInt();
   }
 
-  get leverage(): BigInt {
+  get collateral(): BigInt {
     return this[4].toBigInt();
   }
 
-  get previousPositionId(): BigInt {
+  get leverage(): BigInt {
     return this[5].toBigInt();
+  }
+
+  get previousPositionId(): BigInt {
+    return this[6].toBigInt();
+  }
+}
+
+export class BuildSingleCallOnBehalfOfStruct extends ethereum.Tuple {
+  get owner(): Address {
+    return this[0].toAddress();
+  }
+
+  get deadline(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get nonce(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get signature(): Bytes {
+    return this[3].toBytes();
   }
 }
 
@@ -1177,12 +1369,6 @@ export class BuildSingle1Call__Inputs {
       this._call.inputValues[0].value.toTuple(),
     );
   }
-
-  get onBehalfOf(): BuildSingle1CallOnBehalfOfStruct {
-    return changetype<BuildSingle1CallOnBehalfOfStruct>(
-      this._call.inputValues[1].value.toTuple(),
-    );
-  }
 }
 
 export class BuildSingle1Call__Outputs {
@@ -1198,7 +1384,7 @@ export class BuildSingle1Call__Outputs {
 }
 
 export class BuildSingle1CallParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
+  get ovlMarket(): Address {
     return this[0].toAddress();
   }
 
@@ -1206,11 +1392,77 @@ export class BuildSingle1CallParamsStruct extends ethereum.Tuple {
     return this[1].toBigInt();
   }
 
-  get slippage(): i32 {
-    return this[2].toI32();
+  get unwindPriceLimit(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get buildPriceLimit(): BigInt {
+    return this[3].toBigInt();
   }
 
   get collateral(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get leverage(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get previousPositionId(): BigInt {
+    return this[6].toBigInt();
+  }
+}
+
+export class BuildStableCall extends ethereum.Call {
+  get inputs(): BuildStableCall__Inputs {
+    return new BuildStableCall__Inputs(this);
+  }
+
+  get outputs(): BuildStableCall__Outputs {
+    return new BuildStableCall__Outputs(this);
+  }
+}
+
+export class BuildStableCall__Inputs {
+  _call: BuildStableCall;
+
+  constructor(call: BuildStableCall) {
+    this._call = call;
+  }
+
+  get params(): BuildStableCallParamsStruct {
+    return changetype<BuildStableCallParamsStruct>(
+      this._call.inputValues[0].value.toTuple(),
+    );
+  }
+}
+
+export class BuildStableCall__Outputs {
+  _call: BuildStableCall;
+
+  constructor(call: BuildStableCall) {
+    this._call = call;
+  }
+
+  get value0(): BigInt {
+    return this._call.outputValues[0].value.toBigInt();
+  }
+}
+
+export class BuildStableCallParamsStruct extends ethereum.Tuple {
+  get ovlMarket(): Address {
+    return this[0].toAddress();
+  }
+
+  get brokerId(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get isLong(): boolean {
+    return this[2].toBoolean();
+  }
+
+  get stableCollateral(): BigInt {
     return this[3].toBigInt();
   }
 
@@ -1218,22 +1470,42 @@ export class BuildSingle1CallParamsStruct extends ethereum.Tuple {
     return this[4].toBigInt();
   }
 
-  get previousPositionId(): BigInt {
+  get priceLimit(): BigInt {
     return this[5].toBigInt();
+  }
+
+  get minOvl(): BigInt {
+    return this[6].toBigInt();
   }
 }
 
-export class BuildSingle1CallOnBehalfOfStruct extends ethereum.Tuple {
-  get owner(): Address {
-    return this[0].toAddress();
+export class CancelNonceCall extends ethereum.Call {
+  get inputs(): CancelNonceCall__Inputs {
+    return new CancelNonceCall__Inputs(this);
   }
 
-  get deadline(): BigInt {
-    return this[1].toBigInt();
+  get outputs(): CancelNonceCall__Outputs {
+    return new CancelNonceCall__Outputs(this);
+  }
+}
+
+export class CancelNonceCall__Inputs {
+  _call: CancelNonceCall;
+
+  constructor(call: CancelNonceCall) {
+    this._call = call;
   }
 
-  get signature(): Bytes {
-    return this[2].toBytes();
+  get nonce(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class CancelNonceCall__Outputs {
+  _call: CancelNonceCall;
+
+  constructor(call: CancelNonceCall) {
+    this._call = call;
   }
 }
 
@@ -1292,16 +1564,12 @@ export class InitializeCall__Inputs {
     this._call = call;
   }
 
-  get _ovToken(): Address {
+  get _ovlToken(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _ovState(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
   get _vaultFactory(): Address {
-    return this._call.inputValues[2].value.toAddress();
+    return this._call.inputValues[1].value.toAddress();
   }
 }
 
@@ -1399,6 +1667,36 @@ export class RemoveFactoryCall__Outputs {
   }
 }
 
+export class SetLbscCall extends ethereum.Call {
+  get inputs(): SetLbscCall__Inputs {
+    return new SetLbscCall__Inputs(this);
+  }
+
+  get outputs(): SetLbscCall__Outputs {
+    return new SetLbscCall__Outputs(this);
+  }
+}
+
+export class SetLbscCall__Inputs {
+  _call: SetLbscCall;
+
+  constructor(call: SetLbscCall) {
+    this._call = call;
+  }
+
+  get _lbsc(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetLbscCall__Outputs {
+  _call: SetLbscCall;
+
+  constructor(call: SetLbscCall) {
+    this._call = call;
+  }
+}
+
 export class UnpauseCall extends ethereum.Call {
   get inputs(): UnpauseCall__Inputs {
     return new UnpauseCall__Inputs(this);
@@ -1458,7 +1756,7 @@ export class UnwindCall__Outputs {
 }
 
 export class UnwindCallParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
+  get ovlMarket(): Address {
     return this[0].toAddress();
   }
 
@@ -1518,7 +1816,7 @@ export class Unwind1Call__Outputs {
 }
 
 export class Unwind1CallParamsStruct extends ethereum.Tuple {
-  get ovMarket(): Address {
+  get ovlMarket(): Address {
     return this[0].toAddress();
   }
 
@@ -1548,8 +1846,12 @@ export class Unwind1CallOnBehalfOfStruct extends ethereum.Tuple {
     return this[1].toBigInt();
   }
 
+  get nonce(): BigInt {
+    return this[2].toBigInt();
+  }
+
   get signature(): Bytes {
-    return this[2].toBytes();
+    return this[3].toBytes();
   }
 }
 
