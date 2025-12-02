@@ -4,6 +4,7 @@ import {
   ShivaBuild as ShivaBuildEvent,
   ShivaUnwind as ShivaUnwindEvent,
   ShivaBuildStable as ShivaBuildStableEvent,
+  ShivaUnwindStable as ShivaUnwindStableEvent,
   LbscSet as LbscSetEvent,
 } from "../generated/Shiva/Shiva"
 import { Position, RouterParams, StableLoan } from "../generated/schema"
@@ -180,4 +181,36 @@ export function handleShivaBuildStable(event: ShivaBuildStableEvent): void {
   position.loan = loan.id
 
   position.save()
+}
+
+export function handleShivaUnwindStable(event: ShivaUnwindStableEvent): void {
+  const marketId = event.params.market
+  const positionId = event.params.positionId
+
+  const market = loadMarket(event, marketId)
+  const router = loadRouter(event.address)
+
+  let marketPositionId = market.id.toHexString().concat('-').concat(positionId.toHexString())
+  let position = Position.load(marketPositionId)
+  if (!position) {
+    log.error('No position found. marketPositionId: {}', [marketPositionId])
+    return
+  }
+
+  const latestUnwind = loadLatestUnwind(position)
+  if (!latestUnwind) {
+    log.error('No latest unwind found. marketPositionId: {}', [marketPositionId])
+    return
+  }
+
+  if (!event.params.ovlSwapped.equals(latestUnwind.transferAmount)) {
+    log.error('ovlSwapped mismatch. marketPositionId: {}, event: {}, unwind: {}', [
+      marketPositionId,
+      event.params.ovlSwapped.toString(),
+      latestUnwind.transferAmount.toString(),
+    ])
+  }
+
+  latestUnwind.stableOut = event.params.stableOut
+  latestUnwind.save()
 }
