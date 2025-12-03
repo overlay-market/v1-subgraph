@@ -10,6 +10,36 @@ import {
   BigInt,
 } from "@graphprotocol/graph-ts";
 
+export class ShivaUnwindStable extends ethereum.Event {
+  get params(): ShivaUnwindStable__Params {
+    return new ShivaUnwindStable__Params(this);
+  }
+}
+
+export class ShivaUnwindStable__Params {
+  _event: ShivaUnwindStable;
+
+  constructor(event: ShivaUnwindStable) {
+    this._event = event;
+  }
+
+  get market(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get positionId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get ovlSwapped(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get stableOut(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+}
+
 export class AdminChanged extends ethereum.Event {
   get params(): AdminChanged__Params {
     return new AdminChanged__Params(this);
