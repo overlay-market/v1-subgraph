@@ -213,11 +213,11 @@ export function handleShivaUnwindStable(event: ShivaUnwindStableEvent): void {
     ])
   }
 
-  const owner = loadAccount(position.owner)
+  const owner = loadAccount(Address.fromBytes(position.owner))
 
   owner.realizedPnlOvl = owner.realizedPnlOvl.minus(latestUnwind.pnl)
   const stablePnL = latestUnwind.pnl.times(event.params.stableOut).div(event.params.ovlSwapped)
-  owner.realizedPnlStables = owner.realizedPnlStables.minus(stablePnL)
+  owner.realizedPnlStables = owner.realizedPnlStables.plus(stablePnL)
 
   latestUnwind.stableOut = event.params.stableOut
 
