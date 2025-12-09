@@ -5307,6 +5307,14 @@ export class StableLoan extends Entity {
   set collateralSeized(value: BigInt) {
     this.set("collateralSeized", Value.fromBigInt(value));
   }
+
+  get positions(): PositionLoader {
+    return new PositionLoader(
+      "StableLoan",
+      this.get("id")!.toString(),
+      "positions",
+    );
+  }
 }
 
 export class MarketLoader extends Entity {

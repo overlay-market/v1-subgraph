@@ -596,4 +596,5 @@ type StableLoan @entity {
   ovlRepaid: BigInt!
   collateralReturned: BigInt!
   collateralSeized: BigInt!
+  positions: [Position!]! @derivedFrom(field: "loan")
 }
