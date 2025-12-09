@@ -144,6 +144,19 @@ export class Analytics extends Entity {
   set totalVolume(value: BigInt) {
     this.set("totalVolume", Value.fromBigInt(value));
   }
+
+  get totalVolumeStables(): BigInt {
+    let value = this.get("totalVolumeStables");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalVolumeStables(value: BigInt) {
+    this.set("totalVolumeStables", Value.fromBigInt(value));
+  }
 }
 
 export class AnalyticsHourData extends Entity {
@@ -291,6 +304,19 @@ export class AnalyticsHourData extends Entity {
 
   set totalVolume(value: BigInt) {
     this.set("totalVolume", Value.fromBigInt(value));
+  }
+
+  get totalVolumeStables(): BigInt {
+    let value = this.get("totalVolumeStables");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalVolumeStables(value: BigInt) {
+    this.set("totalVolumeStables", Value.fromBigInt(value));
   }
 }
 
@@ -2456,6 +2482,32 @@ export class Account extends Entity {
     this.set("realizedPnl", Value.fromBigInt(value));
   }
 
+  get realizedPnlOvl(): BigInt {
+    let value = this.get("realizedPnlOvl");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set realizedPnlOvl(value: BigInt) {
+    this.set("realizedPnlOvl", Value.fromBigInt(value));
+  }
+
+  get realizedPnlStables(): BigInt {
+    let value = this.get("realizedPnlStables");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set realizedPnlStables(value: BigInt) {
+    this.set("realizedPnlStables", Value.fromBigInt(value));
+  }
+
   get numberOfUnwinds(): BigInt {
     let value = this.get("numberOfUnwinds");
     if (!value || value.kind == ValueKind.NULL) {
@@ -2519,6 +2571,19 @@ export class Account extends Entity {
 
   set ovlVolumeTraded(value: BigInt) {
     this.set("ovlVolumeTraded", Value.fromBigInt(value));
+  }
+
+  get stablesVolumeTraded(): BigInt {
+    let value = this.get("stablesVolumeTraded");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set stablesVolumeTraded(value: BigInt) {
+    this.set("stablesVolumeTraded", Value.fromBigInt(value));
   }
 
   get positions(): PositionLoader {
