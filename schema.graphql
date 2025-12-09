@@ -8,7 +8,6 @@ type Analytics @entity {
   totalVolumeUnwinds: BigInt!
   totalVolumeLiquidations: BigInt!
   totalVolume: BigInt!
-  totalVolumeStables: BigInt!
 }
 
 type AnalyticsHourData @entity {
@@ -23,7 +22,6 @@ type AnalyticsHourData @entity {
   totalVolumeUnwinds: BigInt!
   totalVolumeLiquidations: BigInt!
   totalVolume: BigInt!
-  totalVolumeStables: BigInt!
 }
 
 type Factory @entity {
@@ -349,7 +347,6 @@ type Account @entity {
   numberOfOpenPositions: BigInt!
   planckCatBalance: BigInt! # number of PlanckCat NFTs owned
   ovlVolumeTraded: BigInt! # total OVL volume traded historically
-  stablesVolumeTraded: BigInt! # total stables volume traded historically
   # derived account info
   positions: [Position!]! @derivedFrom(field: "owner")
   builds: [Build!]! @derivedFrom(field: "owner")
