@@ -115,6 +115,9 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
   owner.realizedPnl = owner.realizedPnl.plus(latestUnwind.pnl)
   shivaAccount.realizedPnl = shivaAccount.realizedPnl.minus(latestUnwind.pnl)
 
+  owner.realizedPnlOvl = owner.realizedPnlOvl.plus(latestUnwind.pnl)
+  shivaAccount.realizedPnlOvl = shivaAccount.realizedPnlOvl.minus(latestUnwind.pnl)
+
   owner.ovlVolumeTraded = owner.ovlVolumeTraded.plus(latestUnwind.volume)
   shivaAccount.ovlVolumeTraded = shivaAccount.ovlVolumeTraded.minus(latestUnwind.volume)
   
@@ -188,7 +191,6 @@ export function handleShivaUnwindStable(event: ShivaUnwindStableEvent): void {
   const positionId = event.params.positionId
 
   const market = loadMarket(event, marketId)
-  const router = loadRouter(event.address)
 
   let marketPositionId = market.id.toHexString().concat('-').concat(positionId.toHexString())
   let position = Position.load(marketPositionId)
@@ -211,6 +213,14 @@ export function handleShivaUnwindStable(event: ShivaUnwindStableEvent): void {
     ])
   }
 
+  const owner = loadAccount(position.owner)
+
+  owner.realizedPnlOvl = owner.realizedPnlOvl.minus(latestUnwind.pnl)
+  const stablePnL = latestUnwind.pnl.times(event.params.stableOut).div(event.params.ovlSwapped)
+  owner.realizedPnlStables = owner.realizedPnlStables.minus(stablePnL)
+
   latestUnwind.stableOut = event.params.stableOut
+
+  owner.save()
   latestUnwind.save()
 }
