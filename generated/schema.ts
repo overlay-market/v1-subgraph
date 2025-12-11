@@ -2456,6 +2456,32 @@ export class Account extends Entity {
     this.set("realizedPnl", Value.fromBigInt(value));
   }
 
+  get realizedPnlOvl(): BigInt {
+    let value = this.get("realizedPnlOvl");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set realizedPnlOvl(value: BigInt) {
+    this.set("realizedPnlOvl", Value.fromBigInt(value));
+  }
+
+  get realizedPnlStables(): BigInt {
+    let value = this.get("realizedPnlStables");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set realizedPnlStables(value: BigInt) {
+    this.set("realizedPnlStables", Value.fromBigInt(value));
+  }
+
   get numberOfUnwinds(): BigInt {
     let value = this.get("numberOfUnwinds");
     if (!value || value.kind == ValueKind.NULL) {
@@ -5241,6 +5267,14 @@ export class StableLoan extends Entity {
 
   set collateralSeized(value: BigInt) {
     this.set("collateralSeized", Value.fromBigInt(value));
+  }
+
+  get positions(): PositionLoader {
+    return new PositionLoader(
+      "StableLoan",
+      this.get("id")!.toString(),
+      "positions",
+    );
   }
 }
 

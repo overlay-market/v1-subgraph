@@ -335,6 +335,10 @@ type Account @entity {
   id: Bytes!
   # totalRealizedPnl
   realizedPnl: BigInt!
+  # totalRealizedPnl in OVL (excluding stables PnL)
+  realizedPnlOvl: BigInt!
+  # totalRealizedPnl in Stables
+  realizedPnlStables: BigInt!
   # numberOfUnwinds of the account
   numberOfUnwinds: BigInt!
   # numberOfLiquidatedPositions
@@ -589,4 +593,5 @@ type StableLoan @entity {
   ovlRepaid: BigInt!
   collateralReturned: BigInt!
   collateralSeized: BigInt!
+  positions: [Position!]! @derivedFrom(field: "loan")
 }
