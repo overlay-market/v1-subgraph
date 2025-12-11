@@ -205,14 +205,6 @@ export function handleShivaUnwindStable(event: ShivaUnwindStableEvent): void {
     return
   }
 
-  if (!event.params.ovlSwapped.equals(latestUnwind.transferAmount)) {
-    log.error('ovlSwapped mismatch. marketPositionId: {}, event: {}, unwind: {}', [
-      marketPositionId,
-      event.params.ovlSwapped.toString(),
-      latestUnwind.transferAmount.toString(),
-    ])
-  }
-
   const owner = loadAccount(Address.fromBytes(position.owner))
 
   owner.realizedPnlOvl = owner.realizedPnlOvl.minus(latestUnwind.pnl)
@@ -220,6 +212,7 @@ export function handleShivaUnwindStable(event: ShivaUnwindStableEvent): void {
   owner.realizedPnlStables = owner.realizedPnlStables.plus(stablePnL)
 
   latestUnwind.stableOut = event.params.stableOut
+  latestUnwind.ovlSwapped = event.params.ovlSwapped
 
   owner.save()
   latestUnwind.save()

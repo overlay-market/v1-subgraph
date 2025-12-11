@@ -2058,6 +2058,23 @@ export class Unwind extends Entity {
     this.set("transferAmount", Value.fromBigInt(value));
   }
 
+  get ovlSwapped(): BigInt | null {
+    let value = this.get("ovlSwapped");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set ovlSwapped(value: BigInt | null) {
+    if (!value) {
+      this.unset("ovlSwapped");
+    } else {
+      this.set("ovlSwapped", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
   get stableOut(): BigInt | null {
     let value = this.get("stableOut");
     if (!value || value.kind == ValueKind.NULL) {
