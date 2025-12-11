@@ -4,6 +4,7 @@ import {
   ShivaBuild as ShivaBuildEvent,
   ShivaUnwind as ShivaUnwindEvent,
   ShivaBuildStable as ShivaBuildStableEvent,
+  ShivaUnwindStable as ShivaUnwindStableEvent,
   LbscSet as LbscSetEvent,
 } from "../generated/Shiva/Shiva"
 import { Position, RouterParams, StableLoan } from "../generated/schema"
@@ -114,6 +115,9 @@ export function handleShivaUnwind(event: ShivaUnwindEvent): void {
   owner.realizedPnl = owner.realizedPnl.plus(latestUnwind.pnl)
   shivaAccount.realizedPnl = shivaAccount.realizedPnl.minus(latestUnwind.pnl)
 
+  owner.realizedPnlOvl = owner.realizedPnlOvl.plus(latestUnwind.pnl)
+  shivaAccount.realizedPnlOvl = shivaAccount.realizedPnlOvl.minus(latestUnwind.pnl)
+
   owner.ovlVolumeTraded = owner.ovlVolumeTraded.plus(latestUnwind.volume)
   shivaAccount.ovlVolumeTraded = shivaAccount.ovlVolumeTraded.minus(latestUnwind.volume)
   
@@ -180,4 +184,43 @@ export function handleShivaBuildStable(event: ShivaBuildStableEvent): void {
   position.loan = loan.id
 
   position.save()
+}
+
+export function handleShivaUnwindStable(event: ShivaUnwindStableEvent): void {
+  const marketId = event.params.market
+  const positionId = event.params.positionId
+
+  const market = loadMarket(event, marketId)
+
+  let marketPositionId = market.id.toHexString().concat('-').concat(positionId.toHexString())
+  let position = Position.load(marketPositionId)
+  if (!position) {
+    log.error('No position found. marketPositionId: {}', [marketPositionId])
+    return
+  }
+
+  const latestUnwind = loadLatestUnwind(position)
+  if (!latestUnwind) {
+    log.error('No latest unwind found. marketPositionId: {}', [marketPositionId])
+    return
+  }
+
+  if (!event.params.ovlSwapped.equals(latestUnwind.transferAmount)) {
+    log.error('ovlSwapped mismatch. marketPositionId: {}, event: {}, unwind: {}', [
+      marketPositionId,
+      event.params.ovlSwapped.toString(),
+      latestUnwind.transferAmount.toString(),
+    ])
+  }
+
+  const owner = loadAccount(Address.fromBytes(position.owner))
+
+  owner.realizedPnlOvl = owner.realizedPnlOvl.minus(latestUnwind.pnl)
+  const stablePnL = latestUnwind.pnl.times(event.params.stableOut).div(event.params.ovlSwapped)
+  owner.realizedPnlStables = owner.realizedPnlStables.plus(stablePnL)
+
+  latestUnwind.stableOut = event.params.stableOut
+
+  owner.save()
+  latestUnwind.save()
 }

@@ -148,6 +148,8 @@ export function loadAccount(accountAddress: Address): Account {
     account = new Account(accountAddress)
 
     account.realizedPnl = ZERO_BI
+    account.realizedPnlOvl = ZERO_BI
+    account.realizedPnlStables = ZERO_BI
     account.numberOfUnwinds = ZERO_BI
     account.numberOfOpenPositions = ZERO_BI
     account.numberOfLiquidatedPositions = ZERO_BI

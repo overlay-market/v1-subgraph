@@ -570,6 +570,7 @@ export function handleUnwind(event: UnwindEvent): void {
   // Update the sender's metrics: increment unwinds, update realized PnL, and decrement open positions if fully unwound
   sender.numberOfUnwinds = sender.numberOfUnwinds.plus(ONE_BI)
   sender.realizedPnl = sender.realizedPnl.plus(pnl)
+  sender.realizedPnlOvl = sender.realizedPnlOvl.plus(pnl)
   if (event.params.fraction == ONE_18DEC_BI) {
     sender.numberOfOpenPositions = sender.numberOfOpenPositions.minus(ONE_BI)
   }
@@ -812,6 +813,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   // Update the owner's realized PnL by subtracting the liquidated position's size
   owner.realizedPnl = owner.realizedPnl.minus(liquidateSize)
+  owner.realizedPnlOvl = owner.realizedPnlOvl.minus(liquidateSize)
 
   // Update the position with the liquidation information
   position.mint = position.mint.plus(event.params.mint)

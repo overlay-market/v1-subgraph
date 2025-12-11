@@ -22,8 +22,8 @@
     "test:unit-win": "docker run -it --rm --mount type=bind,source=%PWD%,target=/matchstick matchstick"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.62.0",
-    "@graphprotocol/graph-ts": "0.29.3",
+    "@graphprotocol/graph-cli": "0.95.0",
+    "@graphprotocol/graph-ts": "0.38.2",
     "@protofire/subgraph-toolkit": "0.1.2",
     "axios": "^1.4.0"
   },

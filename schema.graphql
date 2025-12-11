@@ -278,6 +278,8 @@ type Unwind @entity {
   fractionOfPosition: BigInt!
   # amount of OVL transferred to the owner
   transferAmount: BigInt!
+  # amount of OVL transferred to the owner
+  stableOut: BigInt
   # PnL of this unwind
   pnl: BigInt!
   # Fee amount of this unwind
@@ -333,6 +335,10 @@ type Account @entity {
   id: Bytes!
   # totalRealizedPnl
   realizedPnl: BigInt!
+  # totalRealizedPnl in OVL (excluding stables PnL)
+  realizedPnlOvl: BigInt!
+  # totalRealizedPnl in Stables
+  realizedPnlStables: BigInt!
   # numberOfUnwinds of the account
   numberOfUnwinds: BigInt!
   # numberOfLiquidatedPositions
@@ -587,4 +593,5 @@ type StableLoan @entity {
   ovlRepaid: BigInt!
   collateralReturned: BigInt!
   collateralSeized: BigInt!
+  positions: [Position!]! @derivedFrom(field: "loan")
 }

@@ -6,6 +6,37 @@
   { "inputs": [], "name": "MarketNotValid", "type": "error" },
   { "inputs": [], "name": "NotPositionOwner", "type": "error" },
   {
+    "anonymous":false,
+    "inputs":[
+      {
+        "indexed":true,
+        "internalType":"address",
+        "name":"market",
+        "type":"address"
+      },
+      {
+        "indexed":true,
+        "internalType":"uint256",
+        "name":"positionId",
+        "type":"uint256"
+      },
+      {
+        "indexed":false,
+        "internalType":"uint256",
+        "name":"ovlSwapped",
+        "type":"uint256"
+      },
+      {
+        "indexed":false,
+        "internalType":"uint256",
+        "name":"stableOut",
+        "type":"uint256"
+      }
+    ],
+    "name":"ShivaUnwindStable",
+    "type":"event"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
