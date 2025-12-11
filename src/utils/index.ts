@@ -227,7 +227,7 @@ export function loadBuild(position: Position): Build {
 }
 
 export function loadLatestUnwind(position: Position): Unwind | null {
-  if (position.numberOfUniwnds.equals(BigInt.zero())) return null
+  if (position.numberOfUniwnds.equals(ZERO_BI)) return null
   
   const unwindId = position.id.concat('-').concat(position.numberOfUniwnds.minus(BigInt.fromI32(1)).toString())
   
