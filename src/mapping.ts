@@ -17,7 +17,7 @@ import {
   Update as UpdateEvent
 } from "../generated/templates/OverlayV1Market/OverlayV1Market";
 
-import { Factory, Market, Position, Build, Unwind, Liquidate } from "../generated/schema"
+import { Factory, Market, Position, Build, Unwind, Liquidate, StableLoan } from "../generated/schema"
 import { OverlayV1Market as MarketTemplate } from './../generated/templates';
 import { TRANSFER_SIG, OVL_ADDRESS, ZERO_BI, ONE_BI, ONE_18DEC_BI, getStateContract, RISK_PARAMS, SHIVA_ADDRESS } from './utils/constants';
 import { loadMarket, loadPosition, loadFactory, loadTransaction, loadAccount, loadAnalytics } from "./utils";
@@ -813,7 +813,17 @@ export function handleLiquidate(event: LiquidateEvent): void {
 
   // Update the owner's realized PnL by subtracting the liquidated position's size
   owner.realizedPnl = owner.realizedPnl.minus(liquidateSize)
-  owner.realizedPnlOvl = owner.realizedPnlOvl.minus(liquidateSize)
+  if (position.loan) {
+    const stableLoan = StableLoan.load(position.loan!)
+    if (!stableLoan) {
+      log.error('No StableLoan found for position {}', [position.id])
+      return
+    }
+    const liquidationPnlStable = liquidateSize.times(stableLoan.stableAmount).div(stableLoan.ovlAmount)
+    owner.realizedPnlStables = owner.realizedPnlStables.minus(liquidationPnlStable)
+  } else {
+    owner.realizedPnlOvl = owner.realizedPnlOvl.minus(liquidateSize)
+  }
 
   // Update the position with the liquidation information
   position.mint = position.mint.plus(event.params.mint)
