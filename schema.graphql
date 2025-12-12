@@ -278,7 +278,9 @@ type Unwind @entity {
   fractionOfPosition: BigInt!
   # amount of OVL transferred to the owner
   transferAmount: BigInt!
-  # amount of OVL transferred to the owner
+  # amount of OVL swapped
+  ovlSwapped: BigInt
+  # amount of Stables transferred to the owner
   stableOut: BigInt
   # PnL of this unwind
   pnl: BigInt!

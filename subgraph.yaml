@@ -249,6 +249,7 @@ dataSources:
           handler: handleLoanOpened
         - event: LoanSettled(indexed uint256,indexed address,uint256,uint256,uint256)
           handler: handleLoanSettled
+          receipt: true
       file: ./src/lbsc.ts
 templates:
   - kind: ethereum
