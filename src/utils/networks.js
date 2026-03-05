@@ -139,8 +139,8 @@ module.exports = {
         startBlock: 55756263
       },
       ReferralList: {
-        address: "0x1a0ef183d548405705bb9b00e8b4ef3524ae090e",
-        startBlock: 60694597
+        address: "0xd36a37a5c116ef661a84bd2314b4ef59e1a0f307",
+        startBlock: 84647979
       },
       TradingMining: {
         address: "0x0000000000000000000000000000000000000000",
