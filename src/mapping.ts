@@ -165,7 +165,7 @@ export function handleBuild(event: BuildEvent): void {
       // Check if the recipient is the fee recipient and decode the transfer amount
       if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
         const _transferAmount = receipt.logs[index].data
-        transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+        transferFeeAmount = ethereum.decode('uint256', _transferAmount)!.toBigInt()
       } else {
         // Log an error if the recipient does not match the expected fee recipient
         log.error("handleBuild: 2nd if: transaction: {}, buildIndex: {}, index {}", [
@@ -209,7 +209,7 @@ export function handleBuild(event: BuildEvent): void {
       // Check if the recipient is the fee recipient and decode the transfer amount
       if (topics2address.toHexString().toLowerCase() == market.id.toHexString().toLowerCase()) {
         const _transferAmount = receipt.logs[index].data
-        userTransferAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+        userTransferAmount = ethereum.decode('uint256', _transferAmount)!.toBigInt()
       } else {
         // Log an error if the recipient does not match the expected fee recipient
         log.error("handleBuild: 2nd if: transaction: {}, buildIndex: {}, index {}", [
@@ -424,7 +424,7 @@ export function handleUnwind(event: UnwindEvent): void {
       if (topics2address == event.params.sender) {
         const _transferAmount = receipt.logs[userTransferIndex].data
         // Save transferAmount from the ERC20 Transfer event
-        transferAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+        transferAmount = ethereum.decode('uint256', _transferAmount)!.toBigInt()
         // Calculate PnL = transferAmount - unwindSize
         pnl = transferAmount.minus(unwindSize)
       } else {
@@ -470,7 +470,7 @@ export function handleUnwind(event: UnwindEvent): void {
       if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
         const _transferAmount = receipt.logs[feeIndex].data
         // Save the transferFeeAmount from the ERC20 Transfer event
-        transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+        transferFeeAmount = ethereum.decode('uint256', _transferAmount)!.toBigInt()
       } else {
         // Log an error if the recipient does not match the expected fee recipient
         log.error("handleUnwind: 2nd if: transaction: {}, unwindIndex: {}, feeIndex {}", [
@@ -751,7 +751,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
       if (topics2address.toHexString().toLowerCase() == factory.feeRecipient.toLowerCase()) {
         const _transferAmount = receipt.logs[feeIndex].data
         // Save the transferFeeAmount from the ERC20 Transfer event
-        transferFeeAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+        transferFeeAmount = ethereum.decode('uint256', _transferAmount)!.toBigInt()
       } else {
         // Log an error if the recipient does not match the expected fee recipient
         log.error("handleLiquidate: 2nd if: transaction: {}, liquidateIndex: {}, feeIndex {}", [
@@ -787,7 +787,7 @@ export function handleLiquidate(event: LiquidateEvent): void {
       if (topics2address == Address.fromBytes(sender.id)) {
         const _transferAmount = receipt.logs[liquidatorTransferIndex].data
         // Save the transferLiquidatorAmount from the ERC20 Transfer event
-        transferLiquidatorAmount = ethereum.decode('uin256', _transferAmount)!.toBigInt()
+        transferLiquidatorAmount = ethereum.decode('uint256', _transferAmount)!.toBigInt()
       } else {
         // Log an error if the recipient does not match the expected sender (liquidator)
         log.error("handleLiquidate: 2nd if: transaction: {}, liquidateIndex: {}, liquidatorTransferIndex {}", [
